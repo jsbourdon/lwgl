@@ -4,27 +4,34 @@
 
 namespace lwgl
 {
-	namespace resources
-	{
-		class Mesh;
-	}
+    namespace resources
+    {
+        class Mesh;
+    }
 
-	using namespace resources;
+    namespace pipeline
+    {
+        class GfxPipeline;
+    }
 
-	namespace core
-	{
-		class GfxDeviceContext
-		{
-		public:
+    using namespace resources;
+    using namespace pipeline;
 
-			GfxDeviceContext(ID3D11DeviceContext* d3dContext);
-			~GfxDeviceContext();
+    namespace core
+    {
+        class GfxDeviceContext
+        {
+        public:
 
-			void DrawMesh(Mesh *mesh);
+            GfxDeviceContext(ID3D11DeviceContext* d3dContext);
+            ~GfxDeviceContext();
 
-		private:
+            void SetupPipeline(const GfxPipeline *pPipeline);
+            void DrawMesh(Mesh *mesh);
 
-			ID3D11DeviceContext* m_D3DContext;
-		};
-	}
+        private:
+
+            ID3D11DeviceContext* m_pD3DContext;
+        };
+    }
 }

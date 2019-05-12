@@ -159,13 +159,24 @@
     <ClInclude Include="Core\GfxDevice.h" />
     <ClInclude Include="Core\GfxDeviceContext.h" />
     <ClInclude Include="Core\IRenderer.h" />
+    <ClInclude Include="Core\Macros.h" />
     <ClInclude Include="Core\RenderCore.h" />
+    <ClInclude Include="Descriptors\BlendStateDescriptor.h" />
+    <ClInclude Include="Descriptors\DepthStencilStateDescriptor.h" />
+    <ClInclude Include="Descriptors\InputLayoutDescriptor.h" />
     <ClInclude Include="Descriptors\PipelineDescriptor.h" />
+    <ClInclude Include="Descriptors\PixelFormats.h" />
+    <ClInclude Include="Descriptors\ShaderDescriptor.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Pipeline\GfxPipeline.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Resources\BlendState.h" />
+    <ClInclude Include="Resources\DepthStencilState.h" />
+    <ClInclude Include="Resources\InputLayout.h" />
     <ClInclude Include="Resources\Mesh.h" />
     <ClInclude Include="Resources\RefCountedResource.h" />
+    <ClInclude Include="Resources\Shader.h" />
+    <ClInclude Include="Resources\Texture2D.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -173,7 +184,12 @@
     <ClCompile Include="Core\GfxDevice.cpp" />
     <ClCompile Include="Core\GfxDeviceContext.cpp" />
     <ClCompile Include="Core\RenderCore.cpp" />
+    <ClCompile Include="Pipeline\GfxPipeline.cpp" />
+    <ClCompile Include="Resources\BlendState.cpp" />
+    <ClCompile Include="Resources\DepthStencilState.cpp" />
+    <ClCompile Include="Resources\InputLayout.cpp" />
     <ClCompile Include="Resources\Mesh.cpp" />
+    <ClCompile Include="Resources\Shader.cpp" />
     <None Include="Resources\RefCountedResource.inl">
       <FileType>Document</FileType>
     </None>

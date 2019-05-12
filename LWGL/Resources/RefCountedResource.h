@@ -4,26 +4,28 @@
 
 namespace lwgl
 {
-	namespace resources
-	{
-		template<typename T>
-		class RefCountedResource
-		{
-		public:
+    namespace resources
+    {
+        template<typename T>
+        class RefCountedResource
+        {
+        public:
 
-			virtual ~RefCountedResource();
-			uint32_t AddRef();
-			uint32_t Release();
+            virtual ~RefCountedResource();
+            uint32_t AddRef();
+            uint32_t Release();
 
-		protected:
+        protected:
 
-			RefCountedResource();
-			
-		private:
+            typedef RefCountedResource<T> base;
 
-			uint32_t m_RefCount;
-		};
-	}
+            RefCountedResource();
+            
+        private:
+
+            uint32_t m_RefCount;
+        };
+    }
 }
 
 #include "RefCountedResource.inl"

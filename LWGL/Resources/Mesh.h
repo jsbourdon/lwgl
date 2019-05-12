@@ -6,27 +6,28 @@
 
 namespace lwgl
 {
-	namespace core
-	{
-		class GfxDevice;
-		class GfxDeviceContext;
-	}
+    namespace core
+    {
+        class GfxDevice;
+        class GfxDeviceContext;
+    }
 
-	using namespace core;
+    using namespace core;
 
-	namespace resources
-	{
-		class Mesh : public RefCountedResource<Mesh>
-		{
-		private:
+    namespace resources
+    {
+        class Mesh : public RefCountedResource<Mesh>
+        {
+        private:
 
-			friend class GfxDevice;
-			friend class GfxDeviceContext;
+            friend base;
+            friend class GfxDevice;
+            friend class GfxDeviceContext;
 
-			Mesh();
-			~Mesh();
+            Mesh();
+            ~Mesh();
 
-			CDXUTSDKMesh m_DXUTMesh;
-		};
-	}
+            CDXUTSDKMesh m_DXUTMesh;
+        };
+    }
 }
