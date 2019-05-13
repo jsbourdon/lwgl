@@ -7,8 +7,10 @@
 #include "../Descriptors/InputLayoutDescriptor.h"
 #include "../Descriptors/PixelFormats.h"
 #include "../Descriptors/PipelineDescriptor.h"
+#include "../Descriptors/BufferDescriptor.h"
 
 #include "../Resources/Mesh.h"
+#include "../Resources/Buffer.h"
 #include "../Resources/Shader.h"
 #include "../Resources/BlendState.h"
 #include "../Resources/InputLayout.h"
@@ -121,14 +123,16 @@ const LPCSTR GfxDevice::s_SemanticNames[] =
 {
     "POSITION",
     "NORMAL",
+    "TANGENT",
     "TEXCOORD",
     "TEXCOORD",
     "TEXCOORD",
     "TEXCOORD",
 };
 
-const DXGI_FORMAT GfxDevice::s_Formats[] =
+const DXGI_FORMAT GfxDevice::s_InputLayoutFormats[] =
 {
+    DXGI_FORMAT_R32G32B32_FLOAT,
     DXGI_FORMAT_R32G32B32_FLOAT,
     DXGI_FORMAT_R32G32B32_FLOAT,
     DXGI_FORMAT_R32G32_FLOAT,
@@ -161,6 +165,31 @@ const D3D11_COMPARISON_FUNC GfxDevice::s_ComparisonFuncs[] =
     D3D11_COMPARISON_ALWAYS
 };
 
+const uint32_t GfxDevice::s_BufferBindFlags[] =
+{
+    D3D11_BIND_CONSTANT_BUFFER,
+    D3D11_BIND_SHADER_RESOURCE,
+    D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_SHADER_RESOURCE,
+    D3D11_BIND_VERTEX_BUFFER,
+    D3D11_BIND_INDEX_BUFFER
+};
+
+const uint32_t GfxDevice::s_BufferCPUAccessFlags[] =
+{
+    0,
+    0,
+    D3D11_CPU_ACCESS_WRITE,
+    D3D11_CPU_ACCESS_READ
+};
+
+const D3D11_USAGE GfxDevice::s_BufferUsages[] =
+{
+    D3D11_USAGE_DEFAULT,
+    D3D11_USAGE_IMMUTABLE,
+    D3D11_USAGE_DYNAMIC,
+    D3D11_USAGE_STAGING,
+};
+
 GfxDevice::GfxDevice(ID3D11Device* d3dDevice)
     : m_pD3DDevice(d3dDevice)
 {
@@ -169,9 +198,12 @@ GfxDevice::GfxDevice(ID3D11Device* d3dDevice)
     static_assert(ARRAYSIZE(s_BlendValues) == size_t(BlendValue::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_BlendOperations) == size_t(BlendOperation::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_SemanticNames) == size_t(InputLayoutSemantic::EnumCount), "Array is missing values");
-    static_assert(ARRAYSIZE(s_Formats) == size_t(InputLayoutSemantic::EnumCount), "Array is missing values");
+    static_assert(ARRAYSIZE(s_InputLayoutFormats) == size_t(InputLayoutSemantic::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_StencilOps) == size_t(StencilOperation::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_ComparisonFuncs) == size_t(ComparisonFunction::EnumCount), "Array is missing values");
+    static_assert(ARRAYSIZE(s_BufferBindFlags) == size_t(BufferType::EnumCount), "Array is missing values");
+    static_assert(ARRAYSIZE(s_BufferCPUAccessFlags) == size_t(BufferUsage::EnumCount), "Array is missing values");
+    static_assert(ARRAYSIZE(s_BufferUsages) == size_t(BufferUsage::EnumCount), "Array is missing values");
 }
 
 GfxDevice::~GfxDevice()
@@ -183,9 +215,9 @@ GfxPipeline* GfxDevice::CreatePipeline(const PipelineDescriptor &desc)
 {
     GfxPipeline *pPipeline = new GfxPipeline();
 
-    pPipeline->m_pInputLayout = CreateInputLayout(desc.InputLayout);
     pPipeline->m_pVertexShader = CreateShader(desc.VertexShader);
     pPipeline->m_pFragmentShader = CreateShader(desc.FragmentShader);
+    pPipeline->m_pInputLayout = CreateInputLayout(desc.InputLayout, pPipeline->m_pVertexShader);
     pPipeline->m_pBlendState = CreateBlendState(desc.BlendState);
     pPipeline->m_pDepthStencilState = CreateDepthStencilState(desc.DepthStencilState);
 
@@ -197,6 +229,30 @@ Mesh* GfxDevice::CreateMesh(const wchar_t *filePath)
     Mesh* mesh = new Mesh();
     mesh->m_DXUTMesh.Create(m_pD3DDevice, filePath);
     return mesh;
+}
+
+Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
+{
+    HRESULT hr;
+
+    Buffer *pBuffer = new Buffer();
+
+    D3D11_BUFFER_DESC d3dDesc = {};
+    d3dDesc.ByteWidth = desc.ByteSize;
+    d3dDesc.StructureByteStride = desc.StructureStride;
+    d3dDesc.Usage = s_BufferUsages[size_t(desc.Usage)];
+    d3dDesc.BindFlags = s_BufferBindFlags[size_t(desc.Type)];
+    d3dDesc.CPUAccessFlags = s_BufferCPUAccessFlags[size_t(desc.Usage)];
+    d3dDesc.MiscFlags = 0;
+
+    CHECK_HRESULT_PTR(m_pD3DDevice->CreateBuffer(&d3dDesc, nullptr, &pBuffer->m_pD3DBuffer));
+
+    if (desc.DebugName)
+    {
+        DXUT_SetDebugName(pBuffer->m_pD3DBuffer, desc.DebugName);
+    }
+
+    return pBuffer;
 }
 
 Texture2D* GfxDevice::CreateTexture(const wchar_t *filePath)
@@ -213,8 +269,8 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
     Shader *pShader = new Shader();;
 
     ShaderType type = desc.Type;
-    wchar_t *filePath = desc.FilePath;
-    char *entryPoint = desc.EntryPoint;
+    const wchar_t *filePath = desc.FilePath;
+    const char *entryPoint = desc.EntryPoint;
     const char *debugName = desc.DebugName;
 
     DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -260,7 +316,7 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
     HRESULT hr;
     BlendState *pBlendState = nullptr;
 
-    D3D11_BLEND_DESC d3dDesc;
+    D3D11_BLEND_DESC d3dDesc = {};
     D3D11_RENDER_TARGET_BLEND_DESC &rtBlendDesc = d3dDesc.RenderTarget[0];
     d3dDesc.AlphaToCoverageEnable = false;
     d3dDesc.IndependentBlendEnable = true;
@@ -285,11 +341,11 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
     return pBlendState;
 }
 
-InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc)
+InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader)
 {
     HRESULT hr;
 
-    std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements(desc.Elements.size());
+    std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements;
 
     size_t elementCount = desc.Elements.size();
     for (int i = 0; i < elementCount; ++i)
@@ -298,7 +354,7 @@ InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc)
         AddInputLayoutElement(element, inputLayoutElements);
     }
 
-    ID3DBlob *pShaderBuffer = desc.InputSignatureShader->m_pShaderBuffer;
+    ID3DBlob *pShaderBuffer = pInputSignatureShader->m_pShaderBuffer;
     ID3D11InputLayout *pD3DInputLayout = nullptr;
 
     CHECK_HRESULT_PTR(m_pD3DDevice->CreateInputLayout(
@@ -350,7 +406,7 @@ void GfxDevice::AddInputLayoutElement(const InputLayoutElement &element, std::ve
 
     LPCSTR semantic = s_SemanticNames[szElement];
     uint32_t semanticIndex = GetInputLayoutSemanticIndex(elementSemantic, elements);
-    DXGI_FORMAT format = s_Formats[szElement];
+    DXGI_FORMAT format = s_InputLayoutFormats[szElement];
     uint32_t alignedByteOffset = GetInputLayoutElementAlignedByteOffset(elementSemantic, elements);
 
     elements.push_back({ semantic, semanticIndex, format, element.Slot, alignedByteOffset,  D3D11_INPUT_PER_VERTEX_DATA, 0 });

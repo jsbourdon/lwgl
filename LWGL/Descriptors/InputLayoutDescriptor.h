@@ -16,6 +16,7 @@ namespace lwgl
         {
             Position,
             Normal,
+            Tangent,
             UV,
             Float2,
             Float3,
@@ -32,7 +33,6 @@ namespace lwgl
         struct InputLayoutDescriptor
         {
             std::vector<InputLayoutElement> Elements;
-            Shader*                         InputSignatureShader;
         };
     }
 }

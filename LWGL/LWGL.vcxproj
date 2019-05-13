@@ -162,6 +162,7 @@
     <ClInclude Include="Core\Macros.h" />
     <ClInclude Include="Core\RenderCore.h" />
     <ClInclude Include="Descriptors\BlendStateDescriptor.h" />
+    <ClInclude Include="Descriptors\BufferDescriptor.h" />
     <ClInclude Include="Descriptors\DepthStencilStateDescriptor.h" />
     <ClInclude Include="Descriptors\InputLayoutDescriptor.h" />
     <ClInclude Include="Descriptors\PipelineDescriptor.h" />
@@ -171,6 +172,7 @@
     <ClInclude Include="Pipeline\GfxPipeline.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Resources\BlendState.h" />
+    <ClInclude Include="Resources\Buffer.h" />
     <ClInclude Include="Resources\DepthStencilState.h" />
     <ClInclude Include="Resources\InputLayout.h" />
     <ClInclude Include="Resources\Mesh.h" />
@@ -186,6 +188,7 @@
     <ClCompile Include="Core\RenderCore.cpp" />
     <ClCompile Include="Pipeline\GfxPipeline.cpp" />
     <ClCompile Include="Resources\BlendState.cpp" />
+    <ClCompile Include="Resources\Buffer.cpp" />
     <ClCompile Include="Resources\DepthStencilState.cpp" />
     <ClCompile Include="Resources\InputLayout.cpp" />
     <ClCompile Include="Resources\Mesh.cpp" />

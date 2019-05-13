@@ -96,6 +96,12 @@
     <ClInclude Include="Resources\Texture2D.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Descriptors\BufferDescriptor.h">
+      <Filter>Source Files\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Buffer.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\RenderCore.cpp">
@@ -123,6 +129,9 @@
       <Filter>Source Files\Pipeline</Filter>
     </ClCompile>
     <ClCompile Include="Resources\DepthStencilState.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Buffer.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -14,10 +14,10 @@ namespace lwgl
 
         struct ShaderDescriptor
         {
-            ShaderType      Type;
-            wchar_t*        FilePath;
-            char*           EntryPoint;
+            const wchar_t*  FilePath;
+            const char*     EntryPoint;
             const char*     DebugName;
+            ShaderType      Type;
         };
     }
 }
