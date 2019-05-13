@@ -9,16 +9,16 @@
 //--------------------------------------------------------------------------------------
 // Globals
 //--------------------------------------------------------------------------------------
-cbuffer cbPerObject : register( b0 )
-{
-	float4		g_vObjectColor			: packoffset( c0 );
-};
+//cbuffer cbPerObject : register( b0 )
+//{
+//	float4		g_vObjectColor			: packoffset( c0 );
+//};
 
-cbuffer cbPerFrame : register( b1 )
-{
-	float3		g_vLightDir				: packoffset( c0 );
-	float		g_fAmbient				: packoffset( c0.w );
-};
+//cbuffer cbPerFrame : register( b1 )
+//{
+//	float3		g_vLightDir				: packoffset( c0 );
+//	float		g_fAmbient				: packoffset( c0.w );
+//};
 
 //--------------------------------------------------------------------------------------
 // Textures and Samplers
@@ -42,9 +42,9 @@ float4 PSMain( PS_INPUT Input ) : SV_TARGET
 {
 	float4 vDiffuse = g_txDiffuse.Sample( g_samLinear, Input.vTexcoord );
 	
-	float fLighting = saturate( dot( g_vLightDir, Input.vNormal ) );
-	fLighting = max( fLighting, g_fAmbient );
+//	float fLighting = saturate( dot( g_vLightDir, Input.vNormal ) );
+//	fLighting = max( fLighting, g_fAmbient );
 	
-	return vDiffuse * fLighting;
+    return vDiffuse; // *fLighting;
 }
 

@@ -1,10 +1,18 @@
 #pragma once
 
 #include <stdafx.h>
+#include <vector>
 #include "IRenderer.h"
 
 namespace lwgl
 {
+    namespace utilities
+    {
+        class Camera;
+    }
+
+    using namespace utilities;
+
     namespace core
     {
         class RenderCore
@@ -15,8 +23,9 @@ namespace lwgl
             RenderCore(IRenderer *renderer);
             ~RenderCore();
 
-            void Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
-            void StartRenderLoop();
+            void        Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+            Camera*     CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
+            void        StartRenderLoop();
 
         private:
 
@@ -35,6 +44,7 @@ namespace lwgl
             IRenderer* m_Renderer;
             GfxDevice* m_Device;
             GfxDeviceContext* m_DeviceContext;
+            std::vector<Camera*> m_Cameras;
         };
 
     }

@@ -6,14 +6,15 @@ namespace lwgl
     {
         class GfxDevice;
         class GfxDeviceContext;
+        class RenderCore;
 
         class IRenderer
         {
         public:
-            virtual bool Init(GfxDevice* device) = 0;
-            virtual void Destroy(GfxDevice* device, GfxDeviceContext* context) = 0;
-            virtual void OnUpdate(double fTime, float fElapsedTime, void* pUserContext) = 0;
-            virtual void OnFrameRender(GfxDevice* device, GfxDeviceContext* context, double fTime, float fElapsedTime, void* pUserContext) = 0;
+            virtual bool Init(RenderCore *pRenderCore, GfxDevice* pDevice) = 0;
+            virtual void Destroy(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext) = 0;
+            virtual void OnUpdate(RenderCore *pRenderCore, double fTime, float fElapsedTime, void* pUserContext) = 0;
+            virtual void OnFrameRender(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext, double fTime, float fElapsedTime, void* pUserContext) = 0;
         };
     }
 }

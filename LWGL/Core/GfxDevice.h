@@ -18,6 +18,8 @@ namespace lwgl
         class InputLayout;
         class DepthStencilState;
         class Texture2D;
+        class SamplerState;
+        class RasterizerState;
     }
 
     namespace descriptors
@@ -29,6 +31,8 @@ namespace lwgl
         struct InputLayoutDescriptor;
         struct InputLayoutElement;
         struct BufferDescriptor;
+        struct SamplerStateDescriptor;
+        struct RasterizerStateDescriptor;
         enum class InputLayoutSemantic;
     }
     
@@ -49,6 +53,7 @@ namespace lwgl
             Mesh*           CreateMesh(const wchar_t *filePath);
             Buffer*         CreateBuffer(const BufferDescriptor &desc);
             Texture2D*      CreateTexture(const wchar_t *filePath);
+            SamplerState*   CreateSamplerState(const SamplerStateDescriptor &desc);
 
         private:
 
@@ -56,6 +61,7 @@ namespace lwgl
             BlendState*         CreateBlendState(const BlendStateDescriptor &desc);
             InputLayout*        CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader);
             DepthStencilState*  CreateDepthStencilState(const DepthStencilStateDescriptor &desc);
+            RasterizerState*    CreateRasterizerState(const RasterizerStateDescriptor &desc);
 
             static void         AddInputLayoutElement(const InputLayoutElement &element, std::vector<D3D11_INPUT_ELEMENT_DESC> &elements);
             static uint32_t     GetInputLayoutSemanticIndex(InputLayoutSemantic elementSemantic, const std::vector<D3D11_INPUT_ELEMENT_DESC> &elements);
@@ -74,6 +80,7 @@ namespace lwgl
             static const uint32_t               s_BufferBindFlags[];
             static const uint32_t               s_BufferCPUAccessFlags[];
             static const D3D11_USAGE            s_BufferUsages[];
+            static const D3D11_CULL_MODE        s_CullModes[];
 
             ID3D11Device*   m_pD3DDevice;
         };

@@ -8,3 +8,5 @@
 #include <assert.h>
 #include "../3rd/DXUT/Core/DXUT.h"
 #include "Core/Macros.h"
+#include "Core/TypeDefs.h"
+#include "Core/Constants.h"

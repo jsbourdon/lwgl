@@ -12,6 +12,7 @@ namespace lwgl
         class Shader;
         class BlendState;
         class DepthStencilState;
+        class RasterizerState;
     }
 
     using namespace descriptors;
@@ -38,6 +39,7 @@ namespace lwgl
             Shader*             m_pFragmentShader;
             BlendState*         m_pBlendState;
             DepthStencilState*  m_pDepthStencilState;
+            RasterizerState*    m_pRasterizerState;
             uint32_t            m_StencilRef;
         };
     }

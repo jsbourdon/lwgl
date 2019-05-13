@@ -7,8 +7,12 @@
 #include "Core/GfxDeviceContext.h"
 #include "Resources/Mesh.h"
 #include "Resources/Shader.h"
+#include "Resources/Buffer.h"
 #include "Pipeline/GfxPipeline.h"
 #include "Descriptors/PipelineDescriptor.h"
+#include "Descriptors/BufferDescriptor.h"
+#include "Descriptors/SamplerStateDescriptor.h"
+#include "Utilities/Camera.h"
 
 using namespace lwgl;
 using namespace core;
@@ -19,9 +23,9 @@ class RendererTest : public IRenderer
 {
 public:
 
-    bool Init(GfxDevice* device) override
+    bool Init(RenderCore *pRenderCore, GfxDevice *pDevice) override
     {
-        m_Mesh = device->CreateMesh(L"sponza/sponza.sdkmesh");
+        m_pMesh = pDevice->CreateMesh(L"sponza\\sponza.sdkmesh");
 
         PipelineDescriptor pipelineDesc = {};
 
@@ -47,32 +51,68 @@ public:
         pipelineDesc.FragmentShader.EntryPoint = "PSMain";
         pipelineDesc.FragmentShader.DebugName = "BasicHLSL11_PS";
 
-        m_Pipeline = device->CreatePipeline(pipelineDesc);
+        pipelineDesc.RasterizerState.CullMode = CullMode::Back;
+        pipelineDesc.RasterizerState.Winding = Winding::FrontClockwise;
+
+        m_pPipeline = pDevice->CreatePipeline(pipelineDesc);
+
+        BufferDescriptor bufferDesc;
+        bufferDesc.ByteSize = 128;
+        bufferDesc.DebugName = "VS_ConstantBuffer";
+        bufferDesc.StructureStride = 0;
+        bufferDesc.Type = BufferType::Constants;
+        bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
+
+        m_pVSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
+
+        SamplerStateDescriptor samplerDesc;
+        m_pSamplerState = pDevice->CreateSamplerState(samplerDesc);
+
+        Vector4 cameraPositionWS = { 0.0f, 0.0f, -100.0f, 0.0f };
+        Vector4 lookAtPositionWS = { 0.0f, 0.0f, 0.0f, 0.0f };
+        
+        m_pCamera = pRenderCore->CreateCamera(cameraPositionWS, lookAtPositionWS, lwgl::core::PI_ON_FOUR, 16.0f / 9.0f, 0.1f, 1000.0f);
 
         return true;
     }
 
-    void Destroy(GfxDevice* device, GfxDeviceContext* context) override
+    void Destroy(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext) override
     {
-        SAFE_RELEASE(m_Mesh);
-        SAFE_RELEASE(m_Pipeline);
+        SAFE_RELEASE(m_pMesh);
+        SAFE_RELEASE(m_pPipeline);
+        SAFE_RELEASE(m_pVSConstantBuffer);
+        SAFE_RELEASE(m_pCamera);
     }
 
-    void OnUpdate(double fTime, float fElapsedTime, void* pUserContext) override
+    void OnUpdate(RenderCore *pRenderCore, double fTime, float fElapsedTime, void* pUserContext) override
     {
-
+        
     }
 
-    void OnFrameRender(GfxDevice* device, GfxDeviceContext* context, double fTime, float fElapsedTime, void* pUserContext) override
+    void OnFrameRender(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext, double fTime, float fElapsedTime, void* pUserContext) override
     {
-        context->SetupPipeline(m_Pipeline);
-        context->DrawMesh(m_Mesh);
+        Matrix4x4 viewMatrix = m_pCamera->GetViewMatrix();
+        Matrix4x4 projMatrix = m_pCamera->GetProjMatrix();
+        Matrix4x4 viewProjection = viewMatrix * projMatrix;
+
+        Matrix4x4 *pConstantBufferData = static_cast<Matrix4x4*>(pContext->MapBuffer(m_pVSConstantBuffer, MapType::WriteDiscard));
+        *pConstantBufferData = viewProjection; // m_pCamera->GetViewMatrix() * m_pCamera->GetProjMatrix();
+        *(pConstantBufferData + 1) = m_pCamera->GetViewMatrix();
+        pContext->UnmapBuffer(m_pVSConstantBuffer);
+
+        pContext->SetupPipeline(m_pPipeline);
+        pContext->BindBuffer(m_pVSConstantBuffer, Stage::VS, 0);
+        pContext->BindSampler(m_pSamplerState, Stage::PS, 0);
+        pContext->DrawMesh(m_pMesh);
     }
 
 private:
 
-    Mesh* m_Mesh = nullptr;
-    GfxPipeline* m_Pipeline = nullptr;
+    Mesh*           m_pMesh = nullptr;
+    GfxPipeline*    m_pPipeline = nullptr;
+    Buffer*         m_pVSConstantBuffer = nullptr;
+    SamplerState*   m_pSamplerState = nullptr;
+    Camera*         m_pCamera = nullptr;
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

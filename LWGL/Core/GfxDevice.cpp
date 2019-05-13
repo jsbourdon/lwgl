@@ -16,6 +16,8 @@
 #include "../Resources/InputLayout.h"
 #include "../Resources/DepthStencilState.h"
 #include "../Resources/Texture2D.h"
+#include "../Resources/SamplerState.h"
+#include "../Resources/RasterizerState.h"
 
 #include "../Pipeline/GfxPipeline.h"
 
@@ -190,6 +192,13 @@ const D3D11_USAGE GfxDevice::s_BufferUsages[] =
     D3D11_USAGE_STAGING,
 };
 
+const D3D11_CULL_MODE GfxDevice::s_CullModes[] =
+{
+    D3D11_CULL_NONE,
+    D3D11_CULL_FRONT,
+    D3D11_CULL_BACK
+};
+
 GfxDevice::GfxDevice(ID3D11Device* d3dDevice)
     : m_pD3DDevice(d3dDevice)
 {
@@ -204,6 +213,7 @@ GfxDevice::GfxDevice(ID3D11Device* d3dDevice)
     static_assert(ARRAYSIZE(s_BufferBindFlags) == size_t(BufferType::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_BufferCPUAccessFlags) == size_t(BufferUsage::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_BufferUsages) == size_t(BufferUsage::EnumCount), "Array is missing values");
+    static_assert(ARRAYSIZE(s_CullModes) == size_t(CullMode::EnumCount), "Array is missing values");
 }
 
 GfxDevice::~GfxDevice()
@@ -220,6 +230,7 @@ GfxPipeline* GfxDevice::CreatePipeline(const PipelineDescriptor &desc)
     pPipeline->m_pInputLayout = CreateInputLayout(desc.InputLayout, pPipeline->m_pVertexShader);
     pPipeline->m_pBlendState = CreateBlendState(desc.BlendState);
     pPipeline->m_pDepthStencilState = CreateDepthStencilState(desc.DepthStencilState);
+    pPipeline->m_pRasterizerState = CreateRasterizerState(desc.RasterizerState);
 
     return pPipeline;
 }
@@ -235,21 +246,22 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
 {
     HRESULT hr;
 
-    Buffer *pBuffer = new Buffer();
-
     D3D11_BUFFER_DESC d3dDesc = {};
-    d3dDesc.ByteWidth = desc.ByteSize;
+    d3dDesc.ByteWidth = uint32_t(desc.ByteSize);
     d3dDesc.StructureByteStride = desc.StructureStride;
     d3dDesc.Usage = s_BufferUsages[size_t(desc.Usage)];
     d3dDesc.BindFlags = s_BufferBindFlags[size_t(desc.Type)];
     d3dDesc.CPUAccessFlags = s_BufferCPUAccessFlags[size_t(desc.Usage)];
     d3dDesc.MiscFlags = 0;
 
-    CHECK_HRESULT_PTR(m_pD3DDevice->CreateBuffer(&d3dDesc, nullptr, &pBuffer->m_pD3DBuffer));
+    ID3D11Buffer *pD3DBuffer = nullptr;
+    CHECK_HRESULT_PTR(m_pD3DDevice->CreateBuffer(&d3dDesc, nullptr, &pD3DBuffer));
+    Buffer *pBuffer = new Buffer();
+    pBuffer->m_pD3DBuffer = pD3DBuffer;
 
     if (desc.DebugName)
     {
-        DXUT_SetDebugName(pBuffer->m_pD3DBuffer, desc.DebugName);
+        DXUT_SetDebugName(pD3DBuffer, desc.DebugName);
     }
 
     return pBuffer;
@@ -261,12 +273,30 @@ Texture2D* GfxDevice::CreateTexture(const wchar_t *filePath)
     return nullptr;
 }
 
+SamplerState* GfxDevice::CreateSamplerState(const SamplerStateDescriptor &desc)
+{
+    HRESULT hr;
+
+    D3D11_SAMPLER_DESC d3dDesc = {};
+    d3dDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    d3dDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    d3dDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    d3dDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+    ID3D11SamplerState *pD3DSamplerState = nullptr;
+    CHECK_HRESULT_PTR(m_pD3DDevice->CreateSamplerState(&d3dDesc, &pD3DSamplerState));
+    SamplerState *pSamplerState = new SamplerState();
+    pSamplerState->m_pSamplerState = pD3DSamplerState;
+
+    return pSamplerState;
+}
+
 Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
 {
     assert(desc.Type == ShaderType::VertexShader || desc.Type == ShaderType::FragmentShader);
 
     HRESULT hr;
-    Shader *pShader = new Shader();;
+    Shader *pShader = new Shader();
 
     ShaderType type = desc.Type;
     const wchar_t *filePath = desc.FilePath;
@@ -278,13 +308,13 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
     dwShaderFlags |= debugFlag;
 
     ID3DBlob* pShaderBuffer = nullptr;
-    CHECK_HRESULT_BOOL(DXUTCompileFromFile(filePath, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer));
+    CHECK_HRESULT_RETURN_VALUE(DXUTCompileFromFile(filePath, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer), pShader);
     pShader->m_pShaderBuffer = pShaderBuffer;
 
     if (type == ShaderType::VertexShader)
     {
         ID3D11VertexShader *pVertexShader;
-        CHECK_HRESULT_BOOL(m_pD3DDevice->CreateVertexShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pVertexShader));
+        CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateVertexShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pVertexShader), pShader);
 
         pShader->m_pVertexShader = pVertexShader;
         pShader->m_Type = ShaderType::VertexShader;
@@ -297,7 +327,7 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
     else if (type == ShaderType::FragmentShader)
     {
         ID3D11PixelShader *pFragmentShader;
-        CHECK_HRESULT_BOOL(m_pD3DDevice->CreatePixelShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pFragmentShader));
+        CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreatePixelShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pFragmentShader), pShader);
 
         pShader->m_pFragmentShader = pFragmentShader;
         pShader->m_Type = ShaderType::FragmentShader;
@@ -370,10 +400,27 @@ InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Sha
     return pInputLayout;
 }
 
+RasterizerState* GfxDevice::CreateRasterizerState(const RasterizerStateDescriptor &desc)
+{
+    HRESULT hr;
+
+    D3D11_RASTERIZER_DESC d3dDesc = {};
+    d3dDesc.FillMode = D3D11_FILL_SOLID;
+    d3dDesc.CullMode = s_CullModes[size_t(desc.CullMode)];
+    d3dDesc.FrontCounterClockwise = desc.Winding == Winding::FrontCounterClockwise;
+    d3dDesc.DepthClipEnable = true;
+
+    ID3D11RasterizerState *pD3DState = nullptr;
+    CHECK_HRESULT_PTR(m_pD3DDevice->CreateRasterizerState(&d3dDesc, &pD3DState));
+    RasterizerState *pState = new RasterizerState();
+    pState->m_pD3DRasterizerState = pD3DState;
+
+    return pState;
+}
+
 DepthStencilState* GfxDevice::CreateDepthStencilState(const DepthStencilStateDescriptor &desc)
 {
     HRESULT hr;
-    DepthStencilState *pDepthStencilState = new DepthStencilState();
 
     D3D11_DEPTH_STENCIL_DESC d3dDesc;
     d3dDesc.DepthEnable = desc.IsDepthTestEnabled;
@@ -393,6 +440,7 @@ DepthStencilState* GfxDevice::CreateDepthStencilState(const DepthStencilStateDes
 
     ID3D11DepthStencilState *pD3DDepthStencilState;
     CHECK_HRESULT_PTR(m_pD3DDevice->CreateDepthStencilState(&d3dDesc, &pD3DDepthStencilState));
+    DepthStencilState *pDepthStencilState = new DepthStencilState();
     pDepthStencilState->m_pDepthStencilState = pD3DDepthStencilState;
 
     return pDepthStencilState;

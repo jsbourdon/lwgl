@@ -1,6 +1,7 @@
 #include "RenderCore.h"
 #include "GfxDevice.h"
 #include "GfxDeviceContext.h"
+#include "Utilities/Camera.h"
 
 using namespace lwgl;
 using namespace core;
@@ -14,6 +15,11 @@ RenderCore::RenderCore(IRenderer *renderer)
 
 RenderCore::~RenderCore()
 {
+    size_t cameraCount = m_Cameras.size();
+    for (int i = 0; i < cameraCount; ++i)
+    {
+        m_Cameras[i]->Release();
+    }
 }
 
 //--------------------------------------------------------------------------------------
@@ -21,6 +27,15 @@ RenderCore::~RenderCore()
 //--------------------------------------------------------------------------------------
 LRESULT CALLBACK RenderCore::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext)
 {
+    RenderCore* core = static_cast<RenderCore*>(pUserContext);
+    std::vector<Camera*> &cameras = core->m_Cameras;
+
+    size_t cameraCount = cameras.size();
+    for (int i = 0; i < cameraCount; ++i)
+    {
+        cameras[i]->HandleMessages(hWnd, uMsg, wParam, lParam);
+    }
+
     switch (uMsg)
     {
     case WM_GETMINMAXINFO:
@@ -58,7 +73,7 @@ HRESULT CALLBACK RenderCore::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const
     core->m_Device = device;
     core->m_DeviceContext = new GfxDeviceContext(d3dContext);
 
-    renderer->Init(device);
+    renderer->Init(core, device);
 
     return S_OK;
 }
@@ -94,8 +109,16 @@ void CALLBACK RenderCore::OnD3D11DestroyDevice(void* pUserContext)
 void CALLBACK RenderCore::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
     RenderCore* core = static_cast<RenderCore*>(pUserContext);
+    std::vector<Camera*> &cameras = core->m_Cameras;
+
+    size_t cameraCount = cameras.size();
+    for (int i = 0; i < cameraCount; ++i)
+    {
+        cameras[i]->FrameMove(fElapsedTime);
+    }
+    
     IRenderer* renderer = core->m_Renderer;
-    renderer->OnUpdate(fTime, fElapsedTime, nullptr);
+    renderer->OnUpdate(core, fTime, fElapsedTime, nullptr);
 }
 
 //--------------------------------------------------------------------------------------
@@ -106,7 +129,7 @@ void CALLBACK RenderCore::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11Dev
 {
     RenderCore* core = static_cast<RenderCore*>(pUserContext);
     IRenderer* renderer = core->m_Renderer;
-    renderer->OnFrameRender(core->m_Device, core->m_DeviceContext, fTime, fElapsedTime, nullptr);
+    renderer->OnFrameRender(core, core->m_Device, core->m_DeviceContext, fTime, fElapsedTime, nullptr);
 }
 
 void RenderCore::Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
@@ -133,4 +156,14 @@ void RenderCore::Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t
 void RenderCore::StartRenderLoop()
 {
     DXUTMainLoop();
+}
+
+Camera* RenderCore::CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane)
+{
+    Camera *pCamera = new Camera();
+    pCamera->AddRef();
+    pCamera->Init(worldPosition, lookAtWorldPosition, fov, aspectRatio, nearPlane, farPlane);
+    m_Cameras.push_back(pCamera);
+
+    return pCamera;
 }

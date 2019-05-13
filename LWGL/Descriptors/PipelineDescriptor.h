@@ -4,6 +4,7 @@
 #include "BlendStateDescriptor.h"
 #include "ShaderDescriptor.h"
 #include "DepthStencilStateDescriptor.h"
+#include "RasterizerStateDescriptor.h"
 #include "PixelFormats.h"
 
 
@@ -20,6 +21,7 @@ namespace lwgl
             ShaderDescriptor            FragmentShader;
             BlendStateDescriptor        BlendState;
             DepthStencilStateDescriptor DepthStencilState;
+            RasterizerStateDescriptor   RasterizerState;
         };
     }
 }
