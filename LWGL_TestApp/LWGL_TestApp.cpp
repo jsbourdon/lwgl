@@ -12,6 +12,7 @@
 #include "Descriptors/PipelineDescriptor.h"
 #include "Descriptors/BufferDescriptor.h"
 #include "Descriptors/SamplerStateDescriptor.h"
+#include "Descriptors/ClearDescriptor.h"
 #include "Utilities/Camera.h"
 
 using namespace lwgl;
@@ -22,6 +23,11 @@ using namespace descriptors;
 class RendererTest : public IRenderer
 {
 public:
+
+    ~RendererTest()
+    {
+
+    }
 
     bool Init(RenderCore *pRenderCore, GfxDevice *pDevice) override
     {
@@ -73,10 +79,15 @@ public:
         
         m_pCamera = pRenderCore->CreateCamera(cameraPositionWS, lookAtPositionWS, lwgl::core::PI_ON_FOUR, 16.0f / 9.0f, 0.1f, 1000.0f);
 
+        m_ClearDesc.ClearColor = true;
+        m_ClearDesc.ColorClearValue = { 0.0f, 0.0f, 0.0f, 0.0f };
+        m_ClearDesc.ClearDepth = true;
+        m_ClearDesc.DepthClearValue = 1.0f;
+
         return true;
     }
 
-    void Destroy(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext) override
+    void Destroy(RenderCore *pRenderCore) override
     {
         SAFE_RELEASE(m_pMesh);
         SAFE_RELEASE(m_pPipeline);
@@ -91,6 +102,8 @@ public:
 
     void OnFrameRender(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext, double fTime, float fElapsedTime, void* pUserContext) override
     {
+        pContext->Clear(m_ClearDesc);
+
         Matrix4x4 viewMatrix = m_pCamera->GetViewMatrix();
         Matrix4x4 projMatrix = m_pCamera->GetProjMatrix();
         Matrix4x4 viewProjection = viewMatrix * projMatrix;
@@ -113,6 +126,7 @@ private:
     Buffer*         m_pVSConstantBuffer = nullptr;
     SamplerState*   m_pSamplerState = nullptr;
     Camera*         m_pCamera = nullptr;
+    ClearDescriptor m_ClearDesc {};
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -123,9 +137,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    RendererTest renderer;
-    RenderCore renderCore(&renderer);
-    renderCore.Init(L"Test", 1280, 720);
+    RenderCore renderCore;
+    renderCore.Init<RendererTest>(L"Test", 1280, 720);
     renderCore.StartRenderLoop();
 
     return 0;

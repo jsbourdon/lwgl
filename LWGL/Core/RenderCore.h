@@ -20,10 +20,12 @@ namespace lwgl
 
         public:
 
-            RenderCore(IRenderer *renderer);
+            RenderCore();
             ~RenderCore();
 
+            template<typename T>
             void        Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+
             Camera*     CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
             void        StartRenderLoop();
 
@@ -41,12 +43,20 @@ namespace lwgl
             static HRESULT CALLBACK OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
                 const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
 
-            IRenderer* m_Renderer;
-            GfxDevice* m_Device;
-            GfxDeviceContext* m_DeviceContext;
+            void InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+
+            IRenderer* m_pRenderer;
+            GfxDevice* m_pDevice;
+            GfxDeviceContext* m_pDeviceContext;
             std::vector<Camera*> m_Cameras;
         };
 
+        template<typename T>
+        void RenderCore::Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
+        {
+            m_pRenderer = new T();
+            InternalInit(windowTitle, windowWidth, windowHeight);
+        }
     }
 }
 

@@ -18,6 +18,8 @@ void Camera::Init(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov,
 {
     m_DXUTCamera.SetViewParams(worldPosition, lookAtWorldPosition);
     m_DXUTCamera.SetProjParams(fov, aspectRatio, nearPlane, farPlane);
+    m_DXUTCamera.SetRotateButtons(false, false, false, true);
+    m_DXUTCamera.SetScalers(0.01f, 50.0f);
 }
 
 Matrix4x4 Camera::GetViewMatrix() const 

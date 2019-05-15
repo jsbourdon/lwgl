@@ -126,6 +126,9 @@
     <ClInclude Include="Resources\RasterizerState.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Descriptors\ClearDescriptor.h">
+      <Filter>Source Files\Descriptors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\RenderCore.cpp">

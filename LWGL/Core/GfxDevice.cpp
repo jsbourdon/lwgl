@@ -279,9 +279,9 @@ SamplerState* GfxDevice::CreateSamplerState(const SamplerStateDescriptor &desc)
 
     D3D11_SAMPLER_DESC d3dDesc = {};
     d3dDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    d3dDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    d3dDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    d3dDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    d3dDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    d3dDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    d3dDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 
     ID3D11SamplerState *pD3DSamplerState = nullptr;
     CHECK_HRESULT_PTR(m_pD3DDevice->CreateSamplerState(&d3dDesc, &pD3DSamplerState));
@@ -359,8 +359,9 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
         rtBlendDesc.SrcBlendAlpha           = s_BlendValues[size_t(desc.SourceAlpha)];
         rtBlendDesc.DestBlendAlpha          = s_BlendValues[size_t(desc.DestinationAlpha)];
         rtBlendDesc.BlendOpAlpha            = s_BlendOperations[size_t(desc.AlphaOperation)];
-        rtBlendDesc.RenderTargetWriteMask   = 255;
     }
+
+    rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
     ID3D11BlendState *pD3DBlendState;
     CHECK_HRESULT_PTR(m_pD3DDevice->CreateBlendState(&d3dDesc, &pD3DBlendState));

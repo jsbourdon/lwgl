@@ -4,6 +4,11 @@
 
 namespace lwgl
 {
+    namespace descriptors
+    {
+        struct ClearDescriptor;
+    }
+
     namespace resources
     {
         class Mesh;
@@ -16,6 +21,7 @@ namespace lwgl
         class GfxPipeline;
     }
 
+    using namespace descriptors;
     using namespace resources;
     using namespace pipeline;
 
@@ -54,6 +60,8 @@ namespace lwgl
             void    BindBuffer(Buffer *pBuffer, Stage stage, uint32_t slot);
 
             void    BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot);
+
+            void    Clear(const ClearDescriptor &desc);
 
         private:
 

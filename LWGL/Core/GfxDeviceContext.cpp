@@ -1,4 +1,5 @@
 #include "GfxDeviceContext.h"
+#include "../Descriptors/ClearDescriptor.h"
 #include "../Resources/Mesh.h"
 #include "../Pipeline/GfxPipeline.h"
 #include "../Resources/InputLayout.h"
@@ -86,5 +87,21 @@ void GfxDeviceContext::BindSampler(SamplerState *pSampler, Stage stage, uint32_t
     case Stage::PS:
         m_pD3DContext->PSSetSamplers(slot, 1, &pSampler->m_pSamplerState);
         break;
+    }
+}
+
+void GfxDeviceContext::Clear(const ClearDescriptor &desc)
+{
+    if (desc.ClearColor)
+    {
+        ID3D11RenderTargetView *pRTV = DXUTGetD3D11RenderTargetView();
+        m_pD3DContext->ClearRenderTargetView(pRTV, desc.ColorClearValue);
+    }
+
+    if (desc.ClearDepth || desc.ClearStencil)
+    {
+        ID3D11DepthStencilView *pDSV = DXUTGetD3D11DepthStencilView();
+        D3D11_CLEAR_FLAG clearFlags = static_cast<D3D11_CLEAR_FLAG>((desc.ClearDepth ? D3D11_CLEAR_DEPTH : 0) | (desc.ClearStencil ? D3D11_CLEAR_STENCIL : 0));
+        m_pD3DContext->ClearDepthStencilView(pDSV, clearFlags, desc.DepthClearValue, desc.StencilClearValue);
     }
 }

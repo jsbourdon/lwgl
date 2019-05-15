@@ -6,10 +6,10 @@
 using namespace lwgl;
 using namespace core;
 
-RenderCore::RenderCore(IRenderer *renderer)
-    : m_Renderer(renderer)
-    , m_Device(nullptr)
-    , m_DeviceContext(nullptr)
+RenderCore::RenderCore()
+    : m_pRenderer(nullptr)
+    , m_pDevice(nullptr)
+    , m_pDeviceContext(nullptr)
 {
 }
 
@@ -20,6 +20,8 @@ RenderCore::~RenderCore()
     {
         m_Cameras[i]->Release();
     }
+
+    delete m_pRenderer;
 }
 
 //--------------------------------------------------------------------------------------
@@ -65,13 +67,13 @@ bool CALLBACK RenderCore::IsD3D11DeviceAcceptable(const CD3D11EnumAdapterInfo* A
 HRESULT CALLBACK RenderCore::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
     RenderCore* core = static_cast<RenderCore*>(pUserContext);
-    IRenderer* renderer = core->m_Renderer;
+    IRenderer* renderer = core->m_pRenderer;
     ID3D11Device *d3dDevice = DXUTGetD3D11Device();
     ID3D11DeviceContext *d3dContext = DXUTGetD3D11DeviceContext();
 
     GfxDevice *device = new GfxDevice(d3dDevice);
-    core->m_Device = device;
-    core->m_DeviceContext = new GfxDeviceContext(d3dContext);
+    core->m_pDevice = device;
+    core->m_pDeviceContext = new GfxDeviceContext(d3dContext);
 
     renderer->Init(core, device);
 
@@ -100,7 +102,9 @@ void CALLBACK RenderCore::OnD3D11ReleasingSwapChain(void* pUserContext)
 //--------------------------------------------------------------------------------------
 void CALLBACK RenderCore::OnD3D11DestroyDevice(void* pUserContext)
 {
-
+    RenderCore* core = static_cast<RenderCore*>(pUserContext);
+    IRenderer* renderer = core->m_pRenderer;
+    renderer->Destroy(core);
 }
 
 //--------------------------------------------------------------------------------------
@@ -117,7 +121,7 @@ void CALLBACK RenderCore::OnFrameMove(double fTime, float fElapsedTime, void* pU
         cameras[i]->FrameMove(fElapsedTime);
     }
     
-    IRenderer* renderer = core->m_Renderer;
+    IRenderer* renderer = core->m_pRenderer;
     renderer->OnUpdate(core, fTime, fElapsedTime, nullptr);
 }
 
@@ -128,11 +132,11 @@ void CALLBACK RenderCore::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11Dev
     float fElapsedTime, void* pUserContext)
 {
     RenderCore* core = static_cast<RenderCore*>(pUserContext);
-    IRenderer* renderer = core->m_Renderer;
-    renderer->OnFrameRender(core, core->m_Device, core->m_DeviceContext, fTime, fElapsedTime, nullptr);
+    IRenderer* renderer = core->m_pRenderer;
+    renderer->OnFrameRender(core, core->m_pDevice, core->m_pDeviceContext, fTime, fElapsedTime, nullptr);
 }
 
-void RenderCore::Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
+void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
 {
     // Set DXUT callbacks
     DXUTSetCallbackMsgProc(MsgProc, this);

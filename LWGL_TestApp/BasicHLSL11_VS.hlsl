@@ -11,8 +11,8 @@
 //--------------------------------------------------------------------------------------
 cbuffer cbPerObject : register( b0 )
 {
-    matrix		g_mWorldViewProjection  : packoffset( c0 );
-    matrix		g_mWorld			    : packoffset( c4 );
+    row_major matrix g_mWorldViewProjection : packoffset( c0 );
+    row_major matrix g_mWorld			    : packoffset( c4 );
 };
 
 //--------------------------------------------------------------------------------------

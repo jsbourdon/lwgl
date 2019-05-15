@@ -169,6 +169,7 @@
     <ClInclude Include="Core\TypeDefs.h" />
     <ClInclude Include="Descriptors\BlendStateDescriptor.h" />
     <ClInclude Include="Descriptors\BufferDescriptor.h" />
+    <ClInclude Include="Descriptors\ClearDescriptor.h" />
     <ClInclude Include="Descriptors\DepthStencilStateDescriptor.h" />
     <ClInclude Include="Descriptors\InputLayoutDescriptor.h" />
     <ClInclude Include="Descriptors\PipelineDescriptor.h" />
