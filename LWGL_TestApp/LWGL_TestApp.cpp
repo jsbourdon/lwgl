@@ -101,12 +101,8 @@ public:
     {
         pContext->Clear(m_ClearDesc);
 
-        Matrix4x4 viewMatrix = m_pCamera->GetViewMatrix();
-        Matrix4x4 projMatrix = m_pCamera->GetProjMatrix();
-        Matrix4x4 viewProjection = viewMatrix * projMatrix;
-
         Matrix4x4 *pConstantBufferData = static_cast<Matrix4x4*>(pContext->MapBuffer(m_pVSConstantBuffer, MapType::WriteDiscard));
-        *pConstantBufferData = viewProjection; // m_pCamera->GetViewMatrix() * m_pCamera->GetProjMatrix();
+        *pConstantBufferData = m_pCamera->GetViewMatrix() * m_pCamera->GetProjMatrix();
         *(pConstantBufferData + 1) = m_pCamera->GetViewMatrix();
         pContext->UnmapBuffer(m_pVSConstantBuffer);
 
