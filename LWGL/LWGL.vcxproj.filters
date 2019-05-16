@@ -39,9 +39,6 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Core\IRenderer.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
@@ -62,9 +59,6 @@
     </ClInclude>
     <ClInclude Include="Descriptors\PipelineDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
-    </ClInclude>
-    <ClInclude Include="Resources\RefCountedResource.h">
-      <Filter>Source Files\Resources</Filter>
     </ClInclude>
     <ClInclude Include="Descriptors\InputLayoutDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
@@ -129,6 +123,12 @@
     <ClInclude Include="Descriptors\ClearDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\RefCountedObject.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\RenderCore.cpp">
@@ -170,6 +170,9 @@
     <ClCompile Include="Resources\RasterizerState.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LWGL.rc">
@@ -185,8 +188,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\RefCountedResource.inl">
-      <Filter>Source Files\Resources</Filter>
+    <None Include="Core\RefCountedObject.inl">
+      <Filter>Source Files\Core</Filter>
     </None>
   </ItemGroup>
 </Project>

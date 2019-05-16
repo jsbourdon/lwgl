@@ -1,13 +1,13 @@
 #pragma once
 
-#include <stdafx.h>
-#include "RefCountedResource.h"
+#include <pch.h>
+#include "../Core/RefCountedObject.h"
 
 namespace lwgl
 {
     namespace resources
     {
-        class InputLayout : public RefCountedResource<InputLayout>
+        class InputLayout : public RefCountedObject<InputLayout>
         {
             friend base;
             friend class GfxDevice;

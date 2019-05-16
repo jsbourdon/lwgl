@@ -1,8 +1,9 @@
 #pragma once
 
-#include <stdafx.h>
+#include <pch.h>
 #include <vector>
 #include "IRenderer.h"
+#include "RefCountedObject.h"
 
 namespace lwgl
 {
@@ -15,13 +16,13 @@ namespace lwgl
 
     namespace core
     {
-        class RenderCore
+        class RenderCore : public RefCountedObject<RenderCore>
         {
+            friend base;
 
         public:
 
-            RenderCore();
-            ~RenderCore();
+            static RenderCore* CreateCore();
 
             template<typename T>
             void        Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
@@ -30,6 +31,9 @@ namespace lwgl
             void        StartRenderLoop();
 
         private:
+
+            RenderCore();
+            ~RenderCore();
 
             static LRESULT CALLBACK MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext);
             static HRESULT CALLBACK OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);

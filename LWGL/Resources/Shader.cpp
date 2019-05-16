@@ -1,4 +1,4 @@
-#include <stdafx.h>
+#include <pch.h>
 #include "Shader.h"
 #include "../3rd/DXUT/Optional/SDKmisc.h"
 

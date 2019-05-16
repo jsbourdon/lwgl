@@ -1,6 +1,6 @@
+#include <pch.h>
+
 #include "GfxDevice.h"
-#include <stdafx.h>
-#include "../3rd/DXUT/Optional/SDKmisc.h"
 
 #include "../Descriptors/ShaderDescriptor.h"
 #include "../Descriptors/BlendStateDescriptor.h"
@@ -218,7 +218,7 @@ GfxDevice::GfxDevice(ID3D11Device* d3dDevice)
 
 GfxDevice::~GfxDevice()
 {
-
+    
 }
 
 GfxPipeline* GfxDevice::CreatePipeline(const PipelineDescriptor &desc)

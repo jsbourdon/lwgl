@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdafx.h>
+#include <pch.h>
 
-#include "../Resources/RefCountedResource.h"
+#include "../Core/RefCountedObject.h"
 #include "../3rd/DXUT/Optional/DXUTCamera.h"
 
 namespace lwgl
@@ -11,7 +11,7 @@ namespace lwgl
 
     namespace utilities
     {
-        class Camera : public RefCountedResource<Camera>
+        class Camera : public RefCountedObject<Camera>
         {
             friend base;
             friend class RenderCore;

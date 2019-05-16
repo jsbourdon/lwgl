@@ -1,3 +1,5 @@
+#include <pch.h>
+
 #include "RenderCore.h"
 #include "GfxDevice.h"
 #include "GfxDeviceContext.h"
@@ -5,6 +7,14 @@
 
 using namespace lwgl;
 using namespace core;
+
+RenderCore* RenderCore::CreateCore()
+{
+    RenderCore *pRenderCore = new RenderCore();
+    pRenderCore->AddRef(); // Final ref is to be held by DXUT
+
+    return pRenderCore;
+}
 
 RenderCore::RenderCore()
     : m_pRenderer(nullptr)
@@ -22,6 +32,8 @@ RenderCore::~RenderCore()
     }
 
     delete m_pRenderer;
+    delete m_pDeviceContext;
+    delete m_pDevice;
 }
 
 //--------------------------------------------------------------------------------------
@@ -102,9 +114,12 @@ void CALLBACK RenderCore::OnD3D11ReleasingSwapChain(void* pUserContext)
 //--------------------------------------------------------------------------------------
 void CALLBACK RenderCore::OnD3D11DestroyDevice(void* pUserContext)
 {
+    DXUTGetGlobalResourceCache().OnDestroyDevice();
     RenderCore* core = static_cast<RenderCore*>(pUserContext);
     IRenderer* renderer = core->m_pRenderer;
     renderer->Destroy(core);
+
+    core->Release();
 }
 
 //--------------------------------------------------------------------------------------

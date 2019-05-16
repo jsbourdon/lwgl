@@ -1,25 +1,25 @@
 #pragma once
 
-#include <stdafx.h>
+#include <pch.h>
 
 namespace lwgl
 {
     namespace resources
     {
         template<typename T>
-        class RefCountedResource
+        class RefCountedObject
         {
         public:
 
-            virtual ~RefCountedResource();
+            virtual ~RefCountedObject();
             uint32_t AddRef();
             uint32_t Release();
 
         protected:
 
-            typedef RefCountedResource<T> base;
+            typedef RefCountedObject<T> base;
 
-            RefCountedResource();
+            RefCountedObject();
             
         private:
 
@@ -28,4 +28,4 @@ namespace lwgl
     }
 }
 
-#include "RefCountedResource.inl"
+#include "RefCountedObject.inl"

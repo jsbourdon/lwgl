@@ -8,6 +8,7 @@
 #include "Resources/Mesh.h"
 #include "Resources/Shader.h"
 #include "Resources/Buffer.h"
+#include "Resources/SamplerState.h"
 #include "Pipeline/GfxPipeline.h"
 #include "Descriptors/PipelineDescriptor.h"
 #include "Descriptors/BufferDescriptor.h"
@@ -23,11 +24,6 @@ using namespace descriptors;
 class RendererTest : public IRenderer
 {
 public:
-
-    ~RendererTest()
-    {
-
-    }
 
     bool Init(RenderCore *pRenderCore, GfxDevice *pDevice) override
     {
@@ -93,6 +89,7 @@ public:
         SAFE_RELEASE(m_pPipeline);
         SAFE_RELEASE(m_pVSConstantBuffer);
         SAFE_RELEASE(m_pCamera);
+        SAFE_RELEASE(m_pSamplerState);
     }
 
     void OnUpdate(RenderCore *pRenderCore, double fTime, float fElapsedTime, void* pUserContext) override
@@ -137,10 +134,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    RenderCore renderCore;
-    renderCore.Init<RendererTest>(L"Test", 1280, 720);
-    renderCore.StartRenderLoop();
+    RenderCore *pRenderCore = RenderCore::CreateCore();
+    pRenderCore->Init<RendererTest>(L"Test", 1280, 720);
+    pRenderCore->StartRenderLoop();
+    pRenderCore->Release();
 
-    return 0;
+    return DXUTGetExitCode();
 }
 

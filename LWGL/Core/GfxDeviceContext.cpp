@@ -1,3 +1,5 @@
+#include <pch.h>
+
 #include "GfxDeviceContext.h"
 #include "../Descriptors/ClearDescriptor.h"
 #include "../Resources/Mesh.h"
@@ -30,7 +32,7 @@ GfxDeviceContext::GfxDeviceContext(ID3D11DeviceContext* d3dContext)
 
 GfxDeviceContext::~GfxDeviceContext()
 {
-
+    
 }
 
 void GfxDeviceContext::SetupPipeline(const GfxPipeline *pPipeline)

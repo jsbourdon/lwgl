@@ -1,12 +1,12 @@
 #pragma once
 
-#include "RefCountedResource.h"
+#include "../Core/RefCountedObject.h"
 
 namespace lwgl
 {
     namespace resources
     {
-        class RasterizerState : public RefCountedResource<RasterizerState>
+        class RasterizerState : public RefCountedObject<RasterizerState>
         {
             friend base;
             friend class GfxDevice;

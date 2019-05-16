@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdafx.h>
+#include <pch.h>
 #include "../3rd/DXUT/Optional/SDKmesh.h"
-#include "RefCountedResource.h"
+#include "../Core/RefCountedObject.h"
 
 namespace lwgl
 {
@@ -16,7 +16,7 @@ namespace lwgl
 
     namespace resources
     {
-        class Mesh : public RefCountedResource<Mesh>
+        class Mesh : public RefCountedObject<Mesh>
         {
         private:
 

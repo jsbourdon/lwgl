@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RefCountedResource.h"
+#include "../Core/RefCountedObject.h"
 #include "../Descriptors/ShaderDescriptor.h"
 
 namespace lwgl
@@ -9,7 +9,7 @@ namespace lwgl
 
     namespace resources
     {
-        class Shader : public RefCountedResource<Shader>
+        class Shader : public RefCountedObject<Shader>
         {
             friend base;
             friend class GfxDevice;

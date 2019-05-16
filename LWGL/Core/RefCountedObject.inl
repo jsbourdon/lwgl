@@ -4,19 +4,19 @@ using namespace lwgl;
 using namespace resources;
 
 template<typename T>
-RefCountedResource<T>::~RefCountedResource()
+RefCountedObject<T>::~RefCountedObject()
 {
     assert(m_RefCount == 0);
 }
 
 template<typename T>
-uint32_t RefCountedResource<T>::AddRef()
+uint32_t RefCountedObject<T>::AddRef()
 {
     return ++m_RefCount;
 }
 
 template<typename T>
-uint32_t RefCountedResource<T>::Release()
+uint32_t RefCountedObject<T>::Release()
 {
     assert(m_RefCount > 0);
     --m_RefCount;
@@ -30,7 +30,7 @@ uint32_t RefCountedResource<T>::Release()
 }
 
 template<typename T>
-RefCountedResource<T>::RefCountedResource()
+RefCountedObject<T>::RefCountedObject()
     : m_RefCount(1)
 {
 

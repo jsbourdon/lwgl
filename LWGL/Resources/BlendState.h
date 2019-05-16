@@ -1,12 +1,12 @@
 #pragma once
 
-#include "RefCountedResource.h"
+#include "../Core/RefCountedObject.h"
 
 namespace lwgl
 {
     namespace resources
     {
-        class BlendState : public RefCountedResource<BlendState>
+        class BlendState : public RefCountedObject<BlendState>
         {
             friend base;
             friend class GfxDevice;

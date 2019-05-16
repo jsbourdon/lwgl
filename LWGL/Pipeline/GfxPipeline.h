@@ -1,7 +1,7 @@
 #pragma once
 
-#include <stdafx.h>
-#include "../Resources/RefCountedResource.h"
+#include <pch.h>
+#include "../Core/RefCountedObject.h"
 #include "../Descriptors/PipelineDescriptor.h"
 
 namespace lwgl
@@ -19,7 +19,7 @@ namespace lwgl
 
     namespace pipeline
     {
-        class GfxPipeline : public RefCountedResource<GfxPipeline>
+        class GfxPipeline : public RefCountedObject<GfxPipeline>
         {
             friend base;
             friend class GfxDevice;

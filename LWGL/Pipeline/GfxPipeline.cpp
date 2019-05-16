@@ -1,3 +1,5 @@
+#include <pch.h>
+
 #include "GfxPipeline.h"
 #include "../Resources/InputLayout.h"
 #include "../Resources/Shader.h"
