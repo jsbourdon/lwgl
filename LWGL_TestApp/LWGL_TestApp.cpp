@@ -73,7 +73,7 @@ public:
         Vector4 cameraPositionWS = { 0.0f, 0.0f, -100.0f, 0.0f };
         Vector4 lookAtPositionWS = { 0.0f, 0.0f, 0.0f, 0.0f };
         
-        m_pCamera = pRenderCore->CreateCamera(cameraPositionWS, lookAtPositionWS, lwgl::core::PI_ON_FOUR, 16.0f / 9.0f, 0.1f, 1000.0f);
+        m_pCamera = pRenderCore->CreateCamera(cameraPositionWS, lookAtPositionWS, lwgl::core::PI_ON_FOUR, 16.0f / 9.0f, 0.1f, 5000.0f);
 
         m_ClearDesc.ClearColor = true;
         m_ClearDesc.ColorClearValue = { 0.0f, 0.0f, 0.0f, 0.0f };

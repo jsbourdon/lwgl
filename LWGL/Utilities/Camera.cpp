@@ -12,7 +12,12 @@ Camera::Camera()
 
 Camera::~Camera() 
 {
-
+    CURSORINFO cinfo = {};
+    cinfo.cbSize = sizeof(CURSORINFO);
+    if (GetCursorInfo(&cinfo) && cinfo.flags == 0)
+    {
+        ShowCursor(true);
+    }
 }
 
 void Camera::Init(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane)
@@ -20,7 +25,9 @@ void Camera::Init(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov,
     m_DXUTCamera.SetViewParams(worldPosition, lookAtWorldPosition);
     m_DXUTCamera.SetProjParams(fov, aspectRatio, nearPlane, farPlane);
     m_DXUTCamera.SetRotateButtons(false, false, false, true);
-    m_DXUTCamera.SetScalers(0.01f, 50.0f);
+    m_DXUTCamera.SetResetCursorAfterMove(true);
+    m_DXUTCamera.SetScalers(0.01f, 500.0f);
+    ShowCursor(false);
 }
 
 Matrix4x4 Camera::GetViewMatrix() const 
