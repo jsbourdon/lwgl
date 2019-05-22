@@ -19,7 +19,8 @@ namespace lwgl
 
         private:
 
-            ID3D11Buffer*   m_pD3DBuffer;
+            ID3D11Buffer*               m_pD3DBuffer;
+            ID3D11ShaderResourceView*   m_pD3DBufferSRV;
         };
     }
 }

@@ -80,14 +80,14 @@ HRESULT CALLBACK RenderCore::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const
 {
     RenderCore* core = static_cast<RenderCore*>(pUserContext);
     IRenderer* renderer = core->m_pRenderer;
-    ID3D11Device *d3dDevice = DXUTGetD3D11Device();
-    ID3D11DeviceContext *d3dContext = DXUTGetD3D11DeviceContext();
+    ID3D11DeviceContext *pd3dContext = DXUTGetD3D11DeviceContext();
 
-    GfxDevice *device = new GfxDevice(d3dDevice);
-    core->m_pDevice = device;
-    core->m_pDeviceContext = new GfxDeviceContext(d3dContext);
+    GfxDevice *pDevice = new GfxDevice(pd3dDevice);
+    GfxDeviceContext *pContext = new GfxDeviceContext(pd3dContext);
+    core->m_pDevice = pDevice;
+    core->m_pDeviceContext = pContext;
 
-    renderer->Init(core, device);
+    renderer->Init(core, pDevice, pContext);
 
     return S_OK;
 }

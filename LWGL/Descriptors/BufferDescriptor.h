@@ -31,7 +31,7 @@ namespace lwgl
             size_t          ByteSize;
             BufferType      Type;
             BufferUsage     Usage;
-            uint32_t        StructureStride;
+            size_t          StructureStride;
         };
     }
 }

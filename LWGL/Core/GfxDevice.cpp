@@ -248,7 +248,7 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
 
     D3D11_BUFFER_DESC d3dDesc = {};
     d3dDesc.ByteWidth = uint32_t(desc.ByteSize);
-    d3dDesc.StructureByteStride = desc.StructureStride;
+    d3dDesc.StructureByteStride = uint32_t(desc.StructureStride);
     d3dDesc.Usage = s_BufferUsages[size_t(desc.Usage)];
     d3dDesc.BindFlags = s_BufferBindFlags[size_t(desc.Type)];
     d3dDesc.CPUAccessFlags = s_BufferCPUAccessFlags[size_t(desc.Usage)];
@@ -262,6 +262,20 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
     if (desc.DebugName)
     {
         DXUT_SetDebugName(pD3DBuffer, desc.DebugName);
+    }
+
+    // Create SRV if necessary
+    if (desc.Type == BufferType::Structured)
+    {
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+        srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        srvDesc.Buffer.FirstElement = 0;
+        srvDesc.Buffer.NumElements = uint32_t(desc.ByteSize / desc.StructureStride);
+
+        ID3D11ShaderResourceView *pSrv = nullptr;
+        CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateShaderResourceView(pD3DBuffer , &srvDesc, &pSrv), pBuffer);
+        pBuffer->m_pD3DBufferSRV = pSrv;
     }
 
     return pBuffer;
