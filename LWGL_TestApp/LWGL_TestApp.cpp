@@ -21,11 +21,19 @@ using namespace core;
 using namespace resources;
 using namespace descriptors;
 
-class RendererTest : public IRenderer
+struct Light
 {
+    Vector3 position;
+    float   radius;
+};
+
+class BaseRenderer : public IRenderer
+{
+    static constexpr size_t MaxLightCount = 10;
+
 public:
 
-    bool Init(RenderCore *pRenderCore, GfxDevice *pDevice) override
+    bool Init(RenderCore *pRenderCore, GfxDevice *pDevice, GfxDeviceContext* pContext) override
     {
         m_pMesh = pDevice->CreateMesh(L"sponza\\sponza.sdkmesh");
 
@@ -67,6 +75,14 @@ public:
 
         m_pVSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
 
+        bufferDesc.ByteSize = sizeof(Light) * MaxLightCount;
+        bufferDesc.DebugName = "Lights_Buffer";
+        bufferDesc.StructureStride = sizeof(Light);
+        bufferDesc.Type = BufferType::Structured;
+        bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
+
+        m_pLightsBuffer = pDevice->CreateBuffer(bufferDesc);
+
         SamplerStateDescriptor samplerDesc;
         m_pSamplerState = pDevice->CreateSamplerState(samplerDesc);
 
@@ -80,6 +96,8 @@ public:
         m_ClearDesc.ClearDepth = true;
         m_ClearDesc.DepthClearValue = 1.0f;
 
+        SetupLights(pContext);
+
         return true;
     }
 
@@ -88,6 +106,7 @@ public:
         SAFE_RELEASE(m_pMesh);
         SAFE_RELEASE(m_pPipeline);
         SAFE_RELEASE(m_pVSConstantBuffer);
+        SAFE_RELEASE(m_pLightsBuffer);
         SAFE_RELEASE(m_pCamera);
         SAFE_RELEASE(m_pSamplerState);
     }
@@ -95,6 +114,28 @@ public:
     void OnUpdate(RenderCore *pRenderCore, double fTime, float fElapsedTime, void* pUserContext) override
     {
         
+    }
+
+    void SetupLights(GfxDeviceContext *pContext)
+    {
+        float posX = static_cast<float>(std::rand() % MaxLightCount);
+        float posY = static_cast<float>(std::rand() % MaxLightCount);
+        float posZ = static_cast<float>(std::rand() % MaxLightCount);
+
+        Light &light = m_Lights[0];
+        light.position = { 0.0f, 0.0f, 0.0f };
+        light.radius = 1000.0f;
+
+        for (uint32_t lightIndex = 1; lightIndex < MaxLightCount; ++lightIndex)
+        {
+            Light &light = m_Lights[lightIndex];
+            light.position = { posX, posY, posZ };
+            light.radius = 100.0f;
+        }
+
+        void *pStructuredBufferPtr = pContext->MapBuffer(m_pLightsBuffer, MapType::WriteDiscard);
+        memcpy(pStructuredBufferPtr, m_Lights, sizeof(m_Lights));
+        pContext->UnmapBuffer(m_pLightsBuffer);
     }
 
     void OnFrameRender(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext, double fTime, float fElapsedTime, void* pUserContext) override
@@ -117,9 +158,11 @@ private:
     Mesh*           m_pMesh = nullptr;
     GfxPipeline*    m_pPipeline = nullptr;
     Buffer*         m_pVSConstantBuffer = nullptr;
+    Buffer*         m_pLightsBuffer = nullptr;
     SamplerState*   m_pSamplerState = nullptr;
     Camera*         m_pCamera = nullptr;
     ClearDescriptor m_ClearDesc {};
+    Light           m_Lights[MaxLightCount];
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -131,7 +174,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
 
     RenderCore *pRenderCore = RenderCore::CreateCore();
-    pRenderCore->Init<RendererTest>(L"Test", 1280, 720);
+    pRenderCore->Init<BaseRenderer>(L"Test", 1280, 720);
     pRenderCore->StartRenderLoop();
     pRenderCore->Release();
 

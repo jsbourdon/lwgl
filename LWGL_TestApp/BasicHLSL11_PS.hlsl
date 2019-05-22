@@ -7,24 +7,23 @@
 //--------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------
-// Globals
+// Constant buffers
 //--------------------------------------------------------------------------------------
-//cbuffer cbPerObject : register( b0 )
-//{
-//	float4		g_vObjectColor			: packoffset( c0 );
-//};
-
-//cbuffer cbPerFrame : register( b1 )
-//{
-//	float3		g_vLightDir				: packoffset( c0 );
-//	float		g_fAmbient				: packoffset( c0.w );
-//};
+cbuffer cbPerFrame : register(b0)
+{
+    int LightCount : packoffset(c0);
+};
 
 //--------------------------------------------------------------------------------------
 // Textures and Samplers
 //--------------------------------------------------------------------------------------
-Texture2D	g_txDiffuse : register( t0 );
-SamplerState g_samLinear : register( s0 );
+Texture2D	g_txDiffuse : register(t0);
+SamplerState g_samLinear : register(s0);
+
+//--------------------------------------------------------------------------------------
+// Data buffers
+//--------------------------------------------------------------------------------------
+StructuredBuffer<float4> g_Lights : register(t1);
 
 //--------------------------------------------------------------------------------------
 // Input / Output structures
