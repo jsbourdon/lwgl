@@ -24,6 +24,7 @@ namespace lwgl
             Matrix4x4   GetViewMatrix() const;
             Matrix4x4   GetProjMatrix() const;
             Vector3     GetWorldPosition() const;
+            Vector3     GetLookAtDirection() const;
 
         private:
 

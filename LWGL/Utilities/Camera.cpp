@@ -47,6 +47,13 @@ Vector3 Camera::GetWorldPosition() const
     return posWS;
 }
 
+Vector3 Camera::GetLookAtDirection() const 
+{
+    Vector3 lookAtWS;
+    DirectX::XMStoreFloat3(&lookAtWS, m_DXUTCamera.GetWorldAhead());
+    return lookAtWS;
+}
+
 void Camera::HandleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     m_DXUTCamera.HandleMessages(hWnd, uMsg, wParam, lParam);
