@@ -179,6 +179,7 @@
     <ClInclude Include="Descriptors\SamplerStateDescriptor.h" />
     <ClInclude Include="Descriptors\ShaderDescriptor.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Inputs\IInputReceiver.h" />
     <ClInclude Include="Pipeline\GfxPipeline.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Resources\BlendState.h" />

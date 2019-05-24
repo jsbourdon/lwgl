@@ -4,6 +4,13 @@
 
 namespace lwgl
 {
+    namespace descriptors
+    {
+        enum class BufferType;
+    }
+
+    using namespace descriptors;
+
     namespace resources
     {
         class Buffer : public RefCountedObject<Buffer>
@@ -21,6 +28,7 @@ namespace lwgl
 
             ID3D11Buffer*               m_pD3DBuffer;
             ID3D11ShaderResourceView*   m_pD3DBufferSRV;
+            BufferType                  m_BufferType;
         };
     }
 }

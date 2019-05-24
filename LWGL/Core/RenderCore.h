@@ -12,7 +12,13 @@ namespace lwgl
         class Camera;
     }
 
+    namespace input
+    {
+        class IInputReceiver;
+    }
+
     using namespace utilities;
+    using namespace input;
 
     namespace core
     {
@@ -26,6 +32,8 @@ namespace lwgl
 
             template<typename T>
             void        Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+
+            void        RegisterInputReceiver(IInputReceiver *pReceiver);
 
             Camera*     CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
             void        StartRenderLoop();
@@ -48,11 +56,13 @@ namespace lwgl
                 const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
 
             void InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+            void OnKeyPressed(uint32_t keyCode, bool keyDown, bool firstDown = false);
 
-            IRenderer* m_pRenderer;
-            GfxDevice* m_pDevice;
-            GfxDeviceContext* m_pDeviceContext;
-            std::vector<Camera*> m_Cameras;
+            IRenderer*              m_pRenderer;
+            GfxDevice*              m_pDevice;
+            GfxDeviceContext*       m_pDeviceContext;
+            IInputReceiver*         m_pReceiver;
+            std::vector<Camera*>    m_Cameras;
         };
 
         template<typename T>

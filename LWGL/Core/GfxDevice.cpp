@@ -252,12 +252,13 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
     d3dDesc.Usage = s_BufferUsages[size_t(desc.Usage)];
     d3dDesc.BindFlags = s_BufferBindFlags[size_t(desc.Type)];
     d3dDesc.CPUAccessFlags = s_BufferCPUAccessFlags[size_t(desc.Usage)];
-    d3dDesc.MiscFlags = 0;
+    d3dDesc.MiscFlags = (desc.Type == BufferType::Structured) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
 
     ID3D11Buffer *pD3DBuffer = nullptr;
     CHECK_HRESULT_PTR(m_pD3DDevice->CreateBuffer(&d3dDesc, nullptr, &pD3DBuffer));
     Buffer *pBuffer = new Buffer();
     pBuffer->m_pD3DBuffer = pD3DBuffer;
+    pBuffer->m_BufferType = desc.Type;
 
     if (desc.DebugName)
     {
@@ -269,7 +270,7 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
     {
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
         srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-        srvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        srvDesc.Format = DXGI_FORMAT_UNKNOWN;
         srvDesc.Buffer.FirstElement = 0;
         srvDesc.Buffer.NumElements = uint32_t(desc.ByteSize / desc.StructureStride);
 

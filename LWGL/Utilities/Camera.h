@@ -21,8 +21,9 @@ namespace lwgl
             Camera();
             void Init(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
 
-            Matrix4x4 GetViewMatrix() const;
-            Matrix4x4 GetProjMatrix() const;
+            Matrix4x4   GetViewMatrix() const;
+            Matrix4x4   GetProjMatrix() const;
+            Vector3     GetWorldPosition() const;
 
         private:
 

@@ -28,6 +28,9 @@
     <Filter Include="Source Files\Utilities">
       <UniqueIdentifier>{df76b526-b4d5-43a8-aa0f-b2ac15a9cf1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Inputs">
+      <UniqueIdentifier>{00370dee-4a84-4b0a-87ee-448780410a2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -128,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="Core\RefCountedObject.h">
       <Filter>Source Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Inputs\IInputReceiver.h">
+      <Filter>Source Files\Inputs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -57,7 +57,7 @@ namespace lwgl
 
             void*   MapBuffer(Buffer *pBuffer, MapType mapType);
             void    UnmapBuffer(Buffer *pBuffer);
-            void    BindBuffer(Buffer *pBuffer, Stage stage, uint32_t slot);
+            void    BindBuffer(const Buffer *pBuffer, Stage stage, uint32_t slot);
 
             void    BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot);
 
@@ -66,6 +66,9 @@ namespace lwgl
         private:
 
             static const D3D11_MAP s_MapTypes[];
+
+            void BindBufferToVSStage(const Buffer *pBuffer, uint32_t slot);
+            void BindBufferToPSStage(const Buffer *pBuffer, uint32_t slot);
 
             ID3D11DeviceContext* m_pD3DContext;
         };

@@ -2,6 +2,7 @@
 
 #include "GfxDeviceContext.h"
 #include "../Descriptors/ClearDescriptor.h"
+#include "../Descriptors/BufferDescriptor.h"
 #include "../Resources/Mesh.h"
 #include "../Pipeline/GfxPipeline.h"
 #include "../Resources/InputLayout.h"
@@ -14,6 +15,7 @@
 
 using namespace lwgl;
 using namespace core;
+using namespace descriptors;
 
 const D3D11_MAP GfxDeviceContext::s_MapTypes[] =
 {
@@ -66,15 +68,15 @@ void GfxDeviceContext::UnmapBuffer(Buffer *pBuffer)
     m_pD3DContext->Unmap(pBuffer->m_pD3DBuffer, 0);
 }
 
-void GfxDeviceContext::BindBuffer(Buffer *pBuffer, Stage stage, uint32_t slot)
+void GfxDeviceContext::BindBuffer(const Buffer *pBuffer, Stage stage, uint32_t slot)
 {
     switch (stage)
     {
     case Stage::VS:
-        m_pD3DContext->VSSetConstantBuffers(slot, 1, &pBuffer->m_pD3DBuffer);
+        BindBufferToVSStage(pBuffer, slot);
         break;
     case Stage::PS:
-        m_pD3DContext->PSSetConstantBuffers(slot, 1, &pBuffer->m_pD3DBuffer);
+        BindBufferToPSStage(pBuffer, slot);
         break;
     }
 }
@@ -105,5 +107,31 @@ void GfxDeviceContext::Clear(const ClearDescriptor &desc)
         ID3D11DepthStencilView *pDSV = DXUTGetD3D11DepthStencilView();
         D3D11_CLEAR_FLAG clearFlags = static_cast<D3D11_CLEAR_FLAG>((desc.ClearDepth ? D3D11_CLEAR_DEPTH : 0) | (desc.ClearStencil ? D3D11_CLEAR_STENCIL : 0));
         m_pD3DContext->ClearDepthStencilView(pDSV, clearFlags, desc.DepthClearValue, desc.StencilClearValue);
+    }
+}
+
+void GfxDeviceContext::BindBufferToVSStage(const Buffer *pBuffer, uint32_t slot)
+{
+    switch (pBuffer->m_BufferType)
+    {
+    case BufferType::Constants:
+        m_pD3DContext->VSSetConstantBuffers(slot, 1, &pBuffer->m_pD3DBuffer);
+        break;
+    case BufferType::Structured:
+        m_pD3DContext->VSSetShaderResources(slot, 1, &pBuffer->m_pD3DBufferSRV);
+        break;
+    }
+}
+
+void GfxDeviceContext::BindBufferToPSStage(const Buffer *pBuffer, uint32_t slot)
+{
+    switch (pBuffer->m_BufferType)
+    {
+    case BufferType::Constants:
+        m_pD3DContext->PSSetConstantBuffers(slot, 1, &pBuffer->m_pD3DBuffer);
+        break;
+    case BufferType::Structured:
+        m_pD3DContext->PSSetShaderResources(slot, 1, &pBuffer->m_pD3DBufferSRV);
+        break;
     }
 }

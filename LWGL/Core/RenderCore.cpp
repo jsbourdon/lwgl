@@ -4,6 +4,7 @@
 #include "GfxDevice.h"
 #include "GfxDeviceContext.h"
 #include "Utilities/Camera.h"
+#include "Inputs/IInputReceiver.h"
 
 using namespace lwgl;
 using namespace core;
@@ -20,6 +21,7 @@ RenderCore::RenderCore()
     : m_pRenderer(nullptr)
     , m_pDevice(nullptr)
     , m_pDeviceContext(nullptr)
+    , m_pReceiver(nullptr)
 {
 }
 
@@ -41,8 +43,8 @@ RenderCore::~RenderCore()
 //--------------------------------------------------------------------------------------
 LRESULT CALLBACK RenderCore::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext)
 {
-    RenderCore* core = static_cast<RenderCore*>(pUserContext);
-    std::vector<Camera*> &cameras = core->m_Cameras;
+    RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+    std::vector<Camera*> &cameras = pCore->m_Cameras;
 
     size_t cameraCount = cameras.size();
     for (int i = 0; i < cameraCount; ++i)
@@ -58,6 +60,16 @@ LRESULT CALLBACK RenderCore::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
         ((MINMAXINFO*)lParam)->ptMinTrackSize.x = 512;
         ((MINMAXINFO*)lParam)->ptMinTrackSize.y = 512;
         *pbNoFurtherProcessing = true;
+        break;
+    case WM_KEYDOWN:
+    {
+        size_t flags = static_cast<size_t>(lParam);
+        bool firstDown = !((flags >> 30) & 0x01);
+        pCore->OnKeyPressed(static_cast<uint32_t>(wParam), true, firstDown);
+        break;
+    }
+    case WM_KEYUP:
+        pCore->OnKeyPressed(static_cast<uint32_t>(wParam), false);
         break;
     }
 
@@ -78,16 +90,16 @@ bool CALLBACK RenderCore::IsD3D11DeviceAcceptable(const CD3D11EnumAdapterInfo* A
 //--------------------------------------------------------------------------------------
 HRESULT CALLBACK RenderCore::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
-    RenderCore* core = static_cast<RenderCore*>(pUserContext);
-    IRenderer* renderer = core->m_pRenderer;
+    RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+    IRenderer* pRenderer = pCore->m_pRenderer;
     ID3D11DeviceContext *pd3dContext = DXUTGetD3D11DeviceContext();
 
     GfxDevice *pDevice = new GfxDevice(pd3dDevice);
     GfxDeviceContext *pContext = new GfxDeviceContext(pd3dContext);
-    core->m_pDevice = pDevice;
-    core->m_pDeviceContext = pContext;
+    pCore->m_pDevice = pDevice;
+    pCore->m_pDeviceContext = pContext;
 
-    renderer->Init(core, pDevice, pContext);
+    pRenderer->Init(pCore, pDevice, pContext);
 
     return S_OK;
 }
@@ -115,11 +127,11 @@ void CALLBACK RenderCore::OnD3D11ReleasingSwapChain(void* pUserContext)
 void CALLBACK RenderCore::OnD3D11DestroyDevice(void* pUserContext)
 {
     DXUTGetGlobalResourceCache().OnDestroyDevice();
-    RenderCore* core = static_cast<RenderCore*>(pUserContext);
-    IRenderer* renderer = core->m_pRenderer;
-    renderer->Destroy(core);
+    RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+    IRenderer* pRenderer = pCore->m_pRenderer;
+    pRenderer->Destroy(pCore);
 
-    core->Release();
+    pCore->Release();
 }
 
 //--------------------------------------------------------------------------------------
@@ -127,17 +139,17 @@ void CALLBACK RenderCore::OnD3D11DestroyDevice(void* pUserContext)
 //--------------------------------------------------------------------------------------
 void CALLBACK RenderCore::OnFrameMove(double fTime, float fElapsedTime, void* pUserContext)
 {
-    RenderCore* core = static_cast<RenderCore*>(pUserContext);
-    std::vector<Camera*> &cameras = core->m_Cameras;
+    RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+    std::vector<Camera*> &cameras = pCore->m_Cameras;
 
     size_t cameraCount = cameras.size();
     for (int i = 0; i < cameraCount; ++i)
     {
         cameras[i]->FrameMove(fElapsedTime);
     }
-    
-    IRenderer* renderer = core->m_pRenderer;
-    renderer->OnUpdate(core, fTime, fElapsedTime, nullptr);
+
+    IRenderer* pRenderer = pCore->m_pRenderer;
+    pRenderer->OnUpdate(pCore, pCore->m_pDeviceContext, fTime, fElapsedTime, nullptr);
 }
 
 //--------------------------------------------------------------------------------------
@@ -146,9 +158,9 @@ void CALLBACK RenderCore::OnFrameMove(double fTime, float fElapsedTime, void* pU
 void CALLBACK RenderCore::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11DeviceContext* pd3dImmediateContext, double fTime,
     float fElapsedTime, void* pUserContext)
 {
-    RenderCore* core = static_cast<RenderCore*>(pUserContext);
-    IRenderer* renderer = core->m_pRenderer;
-    renderer->OnFrameRender(core, core->m_pDevice, core->m_pDeviceContext, fTime, fElapsedTime, nullptr);
+    RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+    IRenderer* pRenderer = pCore->m_pRenderer;
+    pRenderer->OnFrameRender(pCore, pCore->m_pDevice, pCore->m_pDeviceContext, fTime, fElapsedTime, nullptr);
 }
 
 void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
@@ -170,6 +182,26 @@ void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, 
 
     // Require D3D_FEATURE_LEVEL_11_0
     DXUTCreateDevice(D3D_FEATURE_LEVEL_11_0, true, windowWidth, windowHeight);
+}
+
+void RenderCore::RegisterInputReceiver(IInputReceiver *pReceiver)
+{
+    m_pReceiver = pReceiver;
+}
+
+void RenderCore::OnKeyPressed(uint32_t keyCode, bool keyDown, bool firstDown)
+{
+    if (m_pReceiver != nullptr)
+    {
+        if (keyDown)
+        {
+            m_pReceiver->OnKeyDown(keyCode, firstDown);
+        }
+        else
+        {
+            m_pReceiver->OnKeyUp(keyCode);
+        }
+    }
 }
 
 void RenderCore::StartRenderLoop()

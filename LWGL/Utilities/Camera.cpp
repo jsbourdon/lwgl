@@ -40,6 +40,13 @@ Matrix4x4 Camera::GetProjMatrix() const
     return m_DXUTCamera.GetProjMatrix();
 }
 
+Vector3 Camera::GetWorldPosition() const
+{
+    Vector3 posWS;
+    DirectX::XMStoreFloat3(&posWS, m_DXUTCamera.GetEyePt());
+    return posWS;
+}
+
 void Camera::HandleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     m_DXUTCamera.HandleMessages(hWnd, uMsg, wParam, lParam);
