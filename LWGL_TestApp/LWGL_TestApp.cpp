@@ -22,17 +22,27 @@ using namespace core;
 using namespace resources;
 using namespace descriptors;
 
-struct Light
+struct PointLight
 {
-    Vector3 position;
+    Vector3 positionWS;
     float   radius;
+};
+
+struct SpotLight
+{
+    Vector3 positionWS;
+    Vector3 directionWS;
+    float penumbraCosTheta;
+    float umbraCosTheta;
+    float radius;
 };
 
 class BaseRenderer : public IRenderer, public IInputReceiver
 {
 private:
 
-    static constexpr size_t MaxLightCount = 1000;
+    static constexpr size_t MaxPointLightCount = 1000;
+    static constexpr size_t MaxSpotLightCount = 1000;
 
 public:
 
@@ -88,13 +98,21 @@ public:
 
         m_pPSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
 
-        bufferDesc.ByteSize = sizeof(Light) * MaxLightCount;
-        bufferDesc.DebugName = "Lights_Buffer";
-        bufferDesc.StructureStride = sizeof(Light);
+        bufferDesc.ByteSize = sizeof(PointLight) * MaxPointLightCount;
+        bufferDesc.DebugName = "PointLights_Buffer";
+        bufferDesc.StructureStride = sizeof(PointLight);
         bufferDesc.Type = BufferType::Structured;
         bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
 
-        m_pLightsBuffer = pDevice->CreateBuffer(bufferDesc);
+        m_pPointLightsBuffer = pDevice->CreateBuffer(bufferDesc);
+
+        bufferDesc.ByteSize = sizeof(SpotLight) * MaxSpotLightCount;
+        bufferDesc.DebugName = "SpotLights_Buffer";
+        bufferDesc.StructureStride = sizeof(SpotLight);
+        bufferDesc.Type = BufferType::Structured;
+        bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
+
+        m_pSpotLightsBuffer = pDevice->CreateBuffer(bufferDesc);
 
         SamplerStateDescriptor samplerDesc;
         m_pSamplerState = pDevice->CreateSamplerState(samplerDesc);
@@ -118,24 +136,38 @@ public:
         SAFE_RELEASE(m_pPipeline);
         SAFE_RELEASE(m_pVSConstantBuffer);
         SAFE_RELEASE(m_pPSConstantBuffer);
-        SAFE_RELEASE(m_pLightsBuffer);
+        SAFE_RELEASE(m_pPointLightsBuffer);
+        SAFE_RELEASE(m_pSpotLightsBuffer);
         SAFE_RELEASE(m_pCamera);
         SAFE_RELEASE(m_pSamplerState);
     }
 
     void OnUpdate(RenderCore *pRenderCore, GfxDeviceContext* pContext, double fTime, float fElapsedTime, void* pUserContext) override
     {
-        if (m_LightAdded)
+        if (m_PointLightAdded | m_SpotLightAdded)
         {
-            m_LightAdded = false;
-
-            void *pStructuredBufferPtr = pContext->MapBuffer(m_pLightsBuffer, MapType::WriteDiscard);
-            memcpy(pStructuredBufferPtr, m_Lights, sizeof(m_Lights));
-            pContext->UnmapBuffer(m_pLightsBuffer);
-
             uint32_t *pLightCount = static_cast<uint32_t*>(pContext->MapBuffer(m_pPSConstantBuffer, MapType::WriteDiscard));
-            *pLightCount = m_NextLightIndex;
+            *pLightCount = m_NextPointLightIndex;
+            *(pLightCount + 1) = m_NextSpotLightIndex;
             pContext->UnmapBuffer(m_pPSConstantBuffer);
+        }
+
+        if (m_PointLightAdded)
+        {
+            m_PointLightAdded = false;
+
+            void *pPointLightBufferPtr = pContext->MapBuffer(m_pPointLightsBuffer, MapType::WriteDiscard);
+            memcpy(pPointLightBufferPtr, m_PointLights, sizeof(m_PointLights));
+            pContext->UnmapBuffer(m_pPointLightsBuffer);
+        }
+
+        if (m_SpotLightAdded)
+        {
+            m_SpotLightAdded = false;
+
+            void *pSpotLightBufferPtr = pContext->MapBuffer(m_pSpotLightsBuffer, MapType::WriteDiscard);
+            memcpy(pSpotLightBufferPtr, m_SpotLights, sizeof(m_SpotLights));
+            pContext->UnmapBuffer(m_pSpotLightsBuffer);
         }
     }
 
@@ -151,28 +183,54 @@ public:
         pContext->SetupPipeline(m_pPipeline);
         pContext->BindBuffer(m_pVSConstantBuffer, Stage::VS, 0);
         pContext->BindBuffer(m_pPSConstantBuffer, Stage::PS, 0);
-        pContext->BindBuffer(m_pLightsBuffer, Stage::PS, 1);
+        pContext->BindBuffer(m_pPointLightsBuffer, Stage::PS, 1);
+        pContext->BindBuffer(m_pSpotLightsBuffer, Stage::PS, 2);
         pContext->BindSampler(m_pSamplerState, Stage::PS, 0);
         pContext->DrawMesh(m_pMesh);
     }
 
-    void AddLight()
+    void AddPointLight()
     {
-        if (m_NextLightIndex < MaxLightCount)
+        if (m_NextPointLightIndex < MaxPointLightCount)
         {
-            Light &light = m_Lights[m_NextLightIndex++];
-            light.position = m_pCamera->GetWorldPosition();
+            PointLight &light = m_PointLights[m_NextPointLightIndex++];
+            light.positionWS = m_pCamera->GetWorldPosition();
             light.radius = 500.0f;
 
-            m_LightAdded = true;
+            m_PointLightAdded = true;
+        }
+    }
+
+    void AddSpotLight()
+    {
+        if (m_NextSpotLightIndex < MaxSpotLightCount)
+        {
+            SpotLight &light = m_SpotLights[m_NextSpotLightIndex++];
+            light.positionWS = m_pCamera->GetWorldPosition();
+            light.directionWS = m_pCamera->GetLookAtDirection();
+            light.radius = 5000.0f;
+            //light.penumbraCosTheta = 0.8660f;   // cos 30 degrees
+            //light.umbraCosTheta = 0.7071f;      // cos 45 degrees
+            light.penumbraCosTheta = 0.9397f;   // cos 20 degrees
+            light.umbraCosTheta = 0.8660f;      // cos 30 degrees
+
+            m_SpotLightAdded = true;
         }
     }
 
     void OnKeyDown(uint32_t keyCode, bool firstDown) override
     {
-        if (firstDown && keyCode == 0x50)
+        if (firstDown)
         {
-            AddLight();
+            switch (keyCode)
+            {
+            case 0x4F:
+                AddPointLight();
+                break;
+            case 0x50:
+                AddSpotLight();
+                break;
+            }
         }
     }
 
@@ -186,13 +244,18 @@ private:
     GfxPipeline*    m_pPipeline = nullptr;
     Buffer*         m_pVSConstantBuffer = nullptr;
     Buffer*         m_pPSConstantBuffer = nullptr;
-    Buffer*         m_pLightsBuffer = nullptr;
+    Buffer*         m_pPointLightsBuffer = nullptr;
+    Buffer*         m_pSpotLightsBuffer = nullptr;
     SamplerState*   m_pSamplerState = nullptr;
     Camera*         m_pCamera = nullptr;
     ClearDescriptor m_ClearDesc {};
-    Light           m_Lights[MaxLightCount];
-    uint32_t        m_NextLightIndex = 0;
-    bool            m_LightAdded = false;
+
+    PointLight      m_PointLights[MaxPointLightCount];
+    SpotLight       m_SpotLights[MaxSpotLightCount];
+    uint32_t        m_NextPointLightIndex = 0;
+    uint32_t        m_NextSpotLightIndex = 0;
+    bool            m_PointLightAdded = false;
+    bool            m_SpotLightAdded = false;
 };
 
 const Matrix4x4 BaseRenderer::s_IdentityMatrix =
