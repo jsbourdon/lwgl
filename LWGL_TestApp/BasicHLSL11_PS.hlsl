@@ -57,6 +57,12 @@ float ComputeDistanceAttenuation(float lightRadius, float lightDistance)
 {
     // Linear attenuation
     return max(0.0f, lightRadius - lightDistance) / lightRadius;
+
+    // Quadratic attenuation
+    //const float epsilon = 0.0001f;
+    //float attenuation = (lightRadius * lightRadius) / ((lightDistance * lightDistance) + epsilon);
+    //attenuation *= pow(max(0.0f, 1.0f - pow(lightDistance / lightRadius, 4)), 2);
+    //return attenuation;
 }
 
 //--------------------------------------------------------------------------------------
