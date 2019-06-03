@@ -150,6 +150,9 @@
     <ClInclude Include="Descriptors\SurfaceDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Globals.h">
+      <Filter>Source Files\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\RenderCore.cpp">

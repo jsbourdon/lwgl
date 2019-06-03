@@ -75,7 +75,8 @@ namespace lwgl
         template<typename T>
         void RenderCore::Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
         {
-            m_pRenderer = new T();
+            void* alignedMem = AlignedAlloc(sizeof(T), alignof(T));
+            m_pRenderer = new(alignedMem) T();
             InternalInit(windowTitle, windowWidth, windowHeight);
         }
     }

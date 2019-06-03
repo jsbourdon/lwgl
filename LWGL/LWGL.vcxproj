@@ -163,6 +163,7 @@
     <ClInclude Include="Core\Constants.h" />
     <ClInclude Include="Core\GfxDevice.h" />
     <ClInclude Include="Core\GfxDeviceContext.h" />
+    <ClInclude Include="Core\Globals.h" />
     <ClInclude Include="Core\IRenderer.h" />
     <ClInclude Include="Core\Macros.h" />
     <ClInclude Include="Core\RefCountedObject.h" />

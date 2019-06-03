@@ -35,7 +35,8 @@ RenderCore::~RenderCore()
         m_Cameras[i]->Release();
     }
 
-    delete m_pRenderer;
+    m_pRenderer->~IRenderer();
+    FreeAlignedAlloc(m_pRenderer);
     m_pRenderer = nullptr;
 
     SAFE_RELEASE(m_pDebuggingFeatures);
