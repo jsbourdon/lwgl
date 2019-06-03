@@ -30,7 +30,7 @@ RenderCore::RenderCore()
 RenderCore::~RenderCore()
 {
     size_t cameraCount = m_Cameras.size();
-    for (int i = 0; i < cameraCount; ++i)
+    for (size_t i = 0; i < cameraCount; ++i)
     {
         m_Cameras[i]->Release();
     }
@@ -52,7 +52,7 @@ LRESULT CALLBACK RenderCore::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
     std::vector<Camera*> &cameras = pCore->m_Cameras;
 
     size_t cameraCount = cameras.size();
-    for (int i = 0; i < cameraCount; ++i)
+    for (size_t i = 0; i < cameraCount; ++i)
     {
         cameras[i]->HandleMessages(hWnd, uMsg, wParam, lParam);
     }
@@ -160,7 +160,7 @@ void CALLBACK RenderCore::OnFrameMove(double fTime, float fElapsedTime, void* pU
     std::vector<Camera*> &cameras = pCore->m_Cameras;
 
     size_t cameraCount = cameras.size();
-    for (int i = 0; i < cameraCount; ++i)
+    for (size_t i = 0; i < cameraCount; ++i)
     {
         cameras[i]->FrameMove(fElapsedTime);
     }

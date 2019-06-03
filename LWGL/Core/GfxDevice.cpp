@@ -391,7 +391,7 @@ InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Sha
     std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements;
 
     size_t elementCount = desc.Elements.size();
-    for (int i = 0; i < elementCount; ++i)
+    for (size_t i = 0; i < elementCount; ++i)
     {
         const InputLayoutElement &element = desc.Elements[i];
         AddInputLayoutElement(element, inputLayoutElements);
