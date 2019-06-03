@@ -6,7 +6,7 @@ namespace lwgl
 {
     namespace resources
     {
-        class Texture2D;
+        class Texture;
 
         class RenderTarget : public RefCountedObject<RenderTarget>
         {
@@ -21,7 +21,7 @@ namespace lwgl
 
         private:
 
-            Texture2D*              m_pRenderTexture;
+            Texture*              m_pRenderTexture;
             ID3D11RenderTargetView* m_pRenderTargetView;
         };
     }

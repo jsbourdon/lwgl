@@ -179,9 +179,11 @@
     <ClInclude Include="Descriptors\PipelineDescriptor.h" />
     <ClInclude Include="Descriptors\PixelFormats.h" />
     <ClInclude Include="Descriptors\RasterizerStateDescriptor.h" />
+    <ClInclude Include="Descriptors\ResourceUsage.h" />
     <ClInclude Include="Descriptors\SamplerStateDescriptor.h" />
     <ClInclude Include="Descriptors\ShaderDescriptor.h" />
     <ClInclude Include="Descriptors\SurfaceDescriptor.h" />
+    <ClInclude Include="Descriptors\TextureDescriptor.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Inputs\IInputReceiver.h" />
     <ClInclude Include="Pipeline\GfxPipeline.h" />
@@ -195,7 +197,7 @@
     <ClInclude Include="Resources\InputLayout.h" />
     <ClInclude Include="Resources\Mesh.h" />
     <ClInclude Include="Resources\Shader.h" />
-    <ClInclude Include="Resources\Texture2D.h" />
+    <ClInclude Include="Resources\Texture.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utilities\Camera.h" />
@@ -222,6 +224,7 @@
     <ClCompile Include="Resources\RenderTarget.cpp" />
     <ClCompile Include="Resources\SamplerState.cpp" />
     <ClCompile Include="Resources\Shader.cpp" />
+    <ClCompile Include="Resources\Texture.cpp" />
     <ClCompile Include="Utilities\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 #include <pch.h>
 #include "RenderTarget.h"
-#include "Texture2D.h"
+#include "Texture.h"
 
 using namespace lwgl;
 using namespace resources;

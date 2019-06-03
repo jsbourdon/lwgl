@@ -15,5 +15,16 @@ namespace lwgl
         {
             _aligned_free(pAlloc);
         }
+
+        inline void* StackAlloc(size_t size)
+        {
+            return _malloca(size);
+        }
+
+        template<typename Enum>
+        inline Enum CombineFlags(Enum flag0, Enum flag1)
+        {
+            return static_cast<Enum>(size_t(flag0) | size_t(flag1));
+        }
     }
 }

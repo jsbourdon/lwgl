@@ -8,6 +8,7 @@
 #include "../Descriptors/PixelFormats.h"
 #include "../Descriptors/PipelineDescriptor.h"
 #include "../Descriptors/BufferDescriptor.h"
+#include "../Descriptors/TextureDescriptor.h"
 
 #include "../Resources/Mesh.h"
 #include "../Resources/Buffer.h"
@@ -15,7 +16,7 @@
 #include "../Resources/BlendState.h"
 #include "../Resources/InputLayout.h"
 #include "../Resources/DepthStencilState.h"
-#include "../Resources/Texture2D.h"
+#include "../Resources/Texture.h"
 #include "../Resources/SamplerState.h"
 #include "../Resources/RasterizerState.h"
 
@@ -176,7 +177,7 @@ const uint32_t GfxDevice::s_BufferBindFlags[] =
     D3D11_BIND_INDEX_BUFFER
 };
 
-const uint32_t GfxDevice::s_BufferCPUAccessFlags[] =
+const uint32_t GfxDevice::s_CPUAccessFlags[] =
 {
     0,
     0,
@@ -184,7 +185,7 @@ const uint32_t GfxDevice::s_BufferCPUAccessFlags[] =
     D3D11_CPU_ACCESS_READ
 };
 
-const D3D11_USAGE GfxDevice::s_BufferUsages[] =
+const D3D11_USAGE GfxDevice::s_ResourceUsages[] =
 {
     D3D11_USAGE_DEFAULT,
     D3D11_USAGE_IMMUTABLE,
@@ -211,8 +212,8 @@ GfxDevice::GfxDevice(ID3D11Device* d3dDevice)
     static_assert(ARRAYSIZE(s_StencilOps) == size_t(StencilOperation::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_ComparisonFuncs) == size_t(ComparisonFunction::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_BufferBindFlags) == size_t(BufferType::EnumCount), "Array is missing values");
-    static_assert(ARRAYSIZE(s_BufferCPUAccessFlags) == size_t(BufferUsage::EnumCount), "Array is missing values");
-    static_assert(ARRAYSIZE(s_BufferUsages) == size_t(BufferUsage::EnumCount), "Array is missing values");
+    static_assert(ARRAYSIZE(s_CPUAccessFlags) == size_t(ResourceUsage::EnumCount), "Array is missing values");
+    static_assert(ARRAYSIZE(s_ResourceUsages) == size_t(ResourceUsage::EnumCount), "Array is missing values");
     static_assert(ARRAYSIZE(s_CullModes) == size_t(CullMode::EnumCount), "Array is missing values");
 }
 
@@ -252,9 +253,9 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
     D3D11_BUFFER_DESC d3dDesc = {};
     d3dDesc.ByteWidth = uint32_t(desc.ByteSize);
     d3dDesc.StructureByteStride = uint32_t(desc.StructureStride);
-    d3dDesc.Usage = s_BufferUsages[size_t(desc.Usage)];
+    d3dDesc.Usage = s_ResourceUsages[size_t(desc.Usage)];
     d3dDesc.BindFlags = s_BufferBindFlags[size_t(desc.Type)];
-    d3dDesc.CPUAccessFlags = s_BufferCPUAccessFlags[size_t(desc.Usage)];
+    d3dDesc.CPUAccessFlags = s_CPUAccessFlags[size_t(desc.Usage)];
     d3dDesc.MiscFlags = (desc.Type == BufferType::Structured) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
 
     ID3D11Buffer *pD3DBuffer = nullptr;
@@ -285,10 +286,63 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
     return pBuffer;
 }
 
-Texture2D* GfxDevice::CreateTexture(const wchar_t *filePath)
+Texture* GfxDevice::CreateTexture(const TextureDescriptor &desc)
 {
-    //HRESULT WINAPI DXUTCreateShaderResourceViewFromFile(_In_ ID3D11Device * d3dDevice, _In_z_ const wchar_t* szFileName, _Outptr_ ID3D11ShaderResourceView * *textureView);
-    return nullptr;
+    assert(desc.Type == TextureType::Texture2D);        // Only Texture2D supported for now
+    assert(desc.Usage != ResourceUsage::GPU_ReadOnly);  // Immutable textures not supported yet
+
+    uint32_t bindFlags = 0;
+    uint32_t descFlags = uint32_t(desc.BindFlags);
+
+    bindFlags |= !!(descFlags & uint32_t(TextureBindFlags::ShaderResource)) ? D3D11_BIND_SHADER_RESOURCE : 0;
+    bindFlags |= !!(descFlags & uint32_t(TextureBindFlags::RenderTarget)) ? D3D11_BIND_RENDER_TARGET : 0;
+    bindFlags |= !!(descFlags & uint32_t(TextureBindFlags::UnorderedAccessView)) ? D3D11_BIND_UNORDERED_ACCESS : 0;
+
+    D3D11_TEXTURE2D_DESC d3dDesc;
+    d3dDesc.Width = desc.Width;
+    d3dDesc.Height = desc.Height;
+    d3dDesc.MipLevels = desc.MipLevels;
+    d3dDesc.ArraySize = desc.ArraySize;
+    d3dDesc.Format = ConvertToNativePixelFormat(desc.Format);
+    d3dDesc.SampleDesc.Count = desc.SampleCount;
+    d3dDesc.SampleDesc.Quality = 0;
+    d3dDesc.Usage = s_ResourceUsages[size_t(desc.Usage)];
+    d3dDesc.BindFlags = bindFlags;
+    d3dDesc.CPUAccessFlags = s_CPUAccessFlags[size_t(desc.Usage)];
+    d3dDesc.MiscFlags = 0;
+
+    ID3D11Texture2D *pD3DTexture;
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateTexture2D(&d3dDesc, nullptr, &pD3DTexture), nullptr);
+
+    Texture *pTexture = new Texture();
+    pTexture->m_pTexture = pD3DTexture;
+
+    // Create SRV if necessary
+    {
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+        srvDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+        srvDesc.Format = d3dDesc.Format;
+        srvDesc.Texture2D.MipLevels = d3dDesc.MipLevels;
+        srvDesc.Texture2D.MostDetailedMip = 0;
+
+        ID3D11ShaderResourceView *pSrv;
+        CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateShaderResourceView(pD3DTexture, &srvDesc, &pSrv), pTexture);
+        pTexture->m_pSRV = pSrv;
+    }
+
+    // Create RTV if necessary
+    {
+        D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+        rtvDesc.Format = d3dDesc.Format;
+        rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+        rtvDesc.Texture2D.MipSlice = 0;
+
+        ID3D11RenderTargetView *pRtv;
+        CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateRenderTargetView(pD3DTexture, &rtvDesc, &pRtv), pTexture);
+        pTexture->m_pRTV = pRtv;
+    }
+
+    return pTexture;
 }
 
 SamplerState* GfxDevice::CreateSamplerState(const SamplerStateDescriptor &desc)

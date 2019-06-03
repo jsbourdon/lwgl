@@ -96,9 +96,6 @@
     <ClInclude Include="Resources\DepthStencilState.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Texture2D.h">
-      <Filter>Source Files\Resources</Filter>
-    </ClInclude>
     <ClInclude Include="Descriptors\BufferDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
@@ -153,6 +150,15 @@
     <ClInclude Include="Core\Globals.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Descriptors\TextureDescriptor.h">
+      <Filter>Source Files\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Descriptors\ResourceUsage.h">
+      <Filter>Source Files\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources\Texture.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\RenderCore.cpp">
@@ -205,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="Debugging\DebuggingFeatures.cpp">
       <Filter>Source Files\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\Texture.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

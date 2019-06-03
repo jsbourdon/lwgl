@@ -87,7 +87,7 @@ public:
         bufferDesc.DebugName = "VS_ConstantBuffer";
         bufferDesc.StructureStride = 0;
         bufferDesc.Type = BufferType::Constants;
-        bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
+        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
         m_pVSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
 
@@ -95,7 +95,7 @@ public:
         bufferDesc.DebugName = "PS_ConstantBuffer";
         bufferDesc.StructureStride = 0;
         bufferDesc.Type = BufferType::Constants;
-        bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
+        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
         m_pPSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
 
@@ -103,7 +103,7 @@ public:
         bufferDesc.DebugName = "PointLights_Buffer";
         bufferDesc.StructureStride = sizeof(PointLight);
         bufferDesc.Type = BufferType::Structured;
-        bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
+        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
         m_pPointLightsBuffer = pDevice->CreateBuffer(bufferDesc);
 
@@ -111,7 +111,7 @@ public:
         bufferDesc.DebugName = "SpotLights_Buffer";
         bufferDesc.StructureStride = sizeof(SpotLight);
         bufferDesc.Type = BufferType::Structured;
-        bufferDesc.Usage = BufferUsage::GPU_ReadOnly_CPU_WriteOnly;
+        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
         m_pSpotLightsBuffer = pDevice->CreateBuffer(bufferDesc);
 

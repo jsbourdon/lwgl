@@ -15,6 +15,7 @@ namespace lwgl
         class Mesh;
         class Buffer;
         class SamplerState;
+        class Texture;
     }
 
     namespace pipeline
@@ -62,8 +63,9 @@ namespace lwgl
             void*   MapBuffer(Buffer *pBuffer, MapType mapType);
             void    UnmapBuffer(Buffer *pBuffer);
             void    BindBuffer(const Buffer *pBuffer, Stage stage, uint32_t slot);
-
             void    BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot);
+            void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount);
+            void    BindSwapChain();
 
             void    Clear(const ClearDescriptor &desc);
 

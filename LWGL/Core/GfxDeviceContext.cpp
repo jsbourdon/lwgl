@@ -12,6 +12,7 @@
 #include "../Resources/Buffer.h"
 #include "../Resources/SamplerState.h"
 #include "../Resources/RasterizerState.h"
+#include "../Resources/Texture.h"
 
 using namespace lwgl;
 using namespace core;
@@ -104,6 +105,22 @@ void GfxDeviceContext::BindSampler(SamplerState *pSampler, Stage stage, uint32_t
         m_pD3DContext->PSSetSamplers(slot, 1, &pSampler->m_pSamplerState);
         break;
     }
+}
+
+void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount)
+{
+    ID3D11RenderTargetView **pRTVs = static_cast<ID3D11RenderTargetView**>(StackAlloc(sizeof(ID3D11RenderTargetView*)));
+    for (uint32_t i = 0; i < renderTargetCount; ++i)
+    {
+        pRTVs[i] = pRenderTargets[i]->m_pRTV;
+    }
+
+    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, DXUTGetD3D11DepthStencilView());
+}
+
+void GfxDeviceContext::BindSwapChain()
+{
+    DXUTSetupD3D11Views(m_pD3DContext);
 }
 
 void GfxDeviceContext::Clear(const ClearDescriptor &desc)
