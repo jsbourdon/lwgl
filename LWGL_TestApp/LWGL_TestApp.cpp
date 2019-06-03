@@ -16,6 +16,7 @@
 #include "Descriptors/ClearDescriptor.h"
 #include "Utilities/Camera.h"
 #include "Inputs/IInputReceiver.h"
+#include "Debugging/DebuggingFeatures.h"
 
 using namespace lwgl;
 using namespace core;
@@ -127,6 +128,8 @@ public:
         m_ClearDesc.ClearDepth = true;
         m_ClearDesc.DepthClearValue = 1.0f;
 
+        pRenderCore->GetDebuggingFeatures()->ShowFPS(true);
+
         return true;
     }
 
@@ -142,7 +145,7 @@ public:
         SAFE_RELEASE(m_pSamplerState);
     }
 
-    void OnUpdate(RenderCore *pRenderCore, GfxDeviceContext* pContext, double fTime, float fElapsedTime, void* pUserContext) override
+    void OnUpdate(RenderCore *pRenderCore, GfxDeviceContext* pContext, double fTimeSec, float fElapsedTimeSec, void* pUserContext) override
     {
         if (m_PointLightAdded | m_SpotLightAdded)
         {
@@ -171,7 +174,7 @@ public:
         }
     }
 
-    void OnFrameRender(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext, double fTime, float fElapsedTime, void* pUserContext) override
+    void OnFrameRender(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext, double fTimeSec, float fElapsedTimeSec, void* pUserContext) override
     {
         pContext->Clear(m_ClearDesc);
 

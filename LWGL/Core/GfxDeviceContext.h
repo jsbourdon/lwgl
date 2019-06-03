@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pch.h>
+#include "RefCountedObject.h"
 
 namespace lwgl
 {
@@ -45,14 +46,17 @@ namespace lwgl
             WriteNoOverwrite
         };
 
-        class GfxDeviceContext
+        class GfxDeviceContext : public RefCountedObject<GfxDeviceContext>
         {
+            friend base;
+
         public:
 
             GfxDeviceContext(ID3D11DeviceContext* d3dContext);
-            ~GfxDeviceContext();
 
-            void    SetupPipeline(const GfxPipeline *pPipeline);
+            GfxNativeDeviceContext* GetNativeContext();
+
+            void    SetupPipeline(GfxPipeline *pPipeline);
             void    DrawMesh(Mesh *mesh);
 
             void*   MapBuffer(Buffer *pBuffer, MapType mapType);
@@ -65,12 +69,15 @@ namespace lwgl
 
         private:
 
-            static const D3D11_MAP s_MapTypes[];
+            ~GfxDeviceContext();
 
             void BindBufferToVSStage(const Buffer *pBuffer, uint32_t slot);
             void BindBufferToPSStage(const Buffer *pBuffer, uint32_t slot);
 
-            ID3D11DeviceContext* m_pD3DContext;
+            static const D3D11_MAP  s_MapTypes[];
+
+            ID3D11DeviceContext*    m_pD3DContext;
+            GfxPipeline*            m_pCurrentPipeline;
         };
     }
 }

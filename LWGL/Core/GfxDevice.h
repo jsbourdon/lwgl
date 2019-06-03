@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pch.h>
+#include "RefCountedObject.h"
 
 namespace lwgl
 {
@@ -34,6 +35,7 @@ namespace lwgl
         struct SamplerStateDescriptor;
         struct RasterizerStateDescriptor;
         enum class InputLayoutSemantic;
+        enum class PixelFormat;
     }
     
     using namespace resources;
@@ -42,20 +44,27 @@ namespace lwgl
 
     namespace core
     {
-        class GfxDevice
+        class GfxDevice : public RefCountedObject<GfxDevice>
         {
+            friend base;
+
         public:
 
             GfxDevice(ID3D11Device* d3dDevice);
-            ~GfxDevice();
 
-            GfxPipeline*    CreatePipeline(const PipelineDescriptor &desc);
-            Mesh*           CreateMesh(const wchar_t *filePath);
-            Buffer*         CreateBuffer(const BufferDescriptor &desc);
-            Texture2D*      CreateTexture(const wchar_t *filePath);
-            SamplerState*   CreateSamplerState(const SamplerStateDescriptor &desc);
+            GfxNativeDevice*    GetNativeDevice();
+
+            GfxPipeline*        CreatePipeline(const PipelineDescriptor &desc);
+            Mesh*               CreateMesh(const wchar_t *filePath);
+            Buffer*             CreateBuffer(const BufferDescriptor &desc);
+            Texture2D*          CreateTexture(const wchar_t *filePath);
+            SamplerState*       CreateSamplerState(const SamplerStateDescriptor &desc);
+
+            static NativePixelFormat    ConvertToNativePixelFormat(PixelFormat format);
 
         private:
+
+            ~GfxDevice();
 
             Shader*             CreateShader(const ShaderDescriptor &desc);
             BlendState*         CreateBlendState(const BlendStateDescriptor &desc);

@@ -28,17 +28,31 @@ const D3D11_MAP GfxDeviceContext::s_MapTypes[] =
 
 GfxDeviceContext::GfxDeviceContext(ID3D11DeviceContext* d3dContext)
     : m_pD3DContext(d3dContext)
+    , m_pCurrentPipeline(nullptr)
 {
 
 }
 
 GfxDeviceContext::~GfxDeviceContext()
 {
-    
+    SAFE_RELEASE(m_pCurrentPipeline);
 }
 
-void GfxDeviceContext::SetupPipeline(const GfxPipeline *pPipeline)
+GfxNativeDeviceContext* GfxDeviceContext::GetNativeContext()
 {
+    return m_pD3DContext;
+}
+
+void GfxDeviceContext::SetupPipeline(GfxPipeline *pPipeline)
+{
+    if (m_pCurrentPipeline)
+    {
+        m_pCurrentPipeline->Release();
+    }
+
+    pPipeline->AddRef();
+    m_pCurrentPipeline = pPipeline;
+
     m_pD3DContext->IASetInputLayout(pPipeline->m_pInputLayout->m_pLayout);
     m_pD3DContext->VSSetShader(pPipeline->m_pVertexShader->m_pVertexShader, nullptr, 0);
     m_pD3DContext->PSSetShader(pPipeline->m_pFragmentShader->m_pFragmentShader, nullptr, 0);
@@ -54,11 +68,9 @@ void GfxDeviceContext::DrawMesh(Mesh* mesh)
 
 void* GfxDeviceContext::MapBuffer(Buffer *pBuffer, MapType mapType)
 {
-    HRESULT hr;
-
     D3D11_MAP d3dMapType = s_MapTypes[size_t(mapType)];
     D3D11_MAPPED_SUBRESOURCE subRsc;
-    CHECK_HRESULT_PTR(m_pD3DContext->Map(pBuffer->m_pD3DBuffer, 0, d3dMapType, 0, &subRsc));
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DContext->Map(pBuffer->m_pD3DBuffer, 0, d3dMapType, 0, &subRsc), nullptr);
 
     return subRsc.pData;
 }

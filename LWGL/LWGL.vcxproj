@@ -168,6 +168,8 @@
     <ClInclude Include="Core\RefCountedObject.h" />
     <ClInclude Include="Core\RenderCore.h" />
     <ClInclude Include="Core\TypeDefs.h" />
+    <ClInclude Include="Debugging\DebuggingFeatures.h" />
+    <ClInclude Include="Debugging\DebugResourceManager.h" />
     <ClInclude Include="Descriptors\BlendStateDescriptor.h" />
     <ClInclude Include="Descriptors\BufferDescriptor.h" />
     <ClInclude Include="Descriptors\ClearDescriptor.h" />
@@ -178,6 +180,7 @@
     <ClInclude Include="Descriptors\RasterizerStateDescriptor.h" />
     <ClInclude Include="Descriptors\SamplerStateDescriptor.h" />
     <ClInclude Include="Descriptors\ShaderDescriptor.h" />
+    <ClInclude Include="Descriptors\SurfaceDescriptor.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Inputs\IInputReceiver.h" />
     <ClInclude Include="Pipeline\GfxPipeline.h" />
@@ -186,6 +189,7 @@
     <ClInclude Include="Resources\Buffer.h" />
     <ClInclude Include="Resources\DepthStencilState.h" />
     <ClInclude Include="Resources\RasterizerState.h" />
+    <ClInclude Include="Resources\RenderTarget.h" />
     <ClInclude Include="Resources\SamplerState.h" />
     <ClInclude Include="Resources\InputLayout.h" />
     <ClInclude Include="Resources\Mesh.h" />
@@ -199,6 +203,8 @@
     <ClCompile Include="Core\GfxDevice.cpp" />
     <ClCompile Include="Core\GfxDeviceContext.cpp" />
     <ClCompile Include="Core\RenderCore.cpp" />
+    <ClCompile Include="Debugging\DebuggingFeatures.cpp" />
+    <ClCompile Include="Debugging\DebugResourceManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -212,6 +218,7 @@
     <ClCompile Include="Resources\InputLayout.cpp" />
     <ClCompile Include="Resources\Mesh.cpp" />
     <ClCompile Include="Resources\RasterizerState.cpp" />
+    <ClCompile Include="Resources\RenderTarget.cpp" />
     <ClCompile Include="Resources\SamplerState.cpp" />
     <ClCompile Include="Resources\Shader.cpp" />
     <ClCompile Include="Utilities\Camera.cpp" />

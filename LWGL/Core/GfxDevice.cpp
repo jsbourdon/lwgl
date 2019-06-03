@@ -221,6 +221,11 @@ GfxDevice::~GfxDevice()
     
 }
 
+GfxNativeDevice* GfxDevice::GetNativeDevice()
+{
+    return m_pD3DDevice;
+}
+
 GfxPipeline* GfxDevice::CreatePipeline(const PipelineDescriptor &desc)
 {
     GfxPipeline *pPipeline = new GfxPipeline();
@@ -244,8 +249,6 @@ Mesh* GfxDevice::CreateMesh(const wchar_t *filePath)
 
 Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
 {
-    HRESULT hr;
-
     D3D11_BUFFER_DESC d3dDesc = {};
     d3dDesc.ByteWidth = uint32_t(desc.ByteSize);
     d3dDesc.StructureByteStride = uint32_t(desc.StructureStride);
@@ -255,7 +258,7 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
     d3dDesc.MiscFlags = (desc.Type == BufferType::Structured) ? D3D11_RESOURCE_MISC_BUFFER_STRUCTURED : 0;
 
     ID3D11Buffer *pD3DBuffer = nullptr;
-    CHECK_HRESULT_PTR(m_pD3DDevice->CreateBuffer(&d3dDesc, nullptr, &pD3DBuffer));
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateBuffer(&d3dDesc, nullptr, &pD3DBuffer), nullptr);
     Buffer *pBuffer = new Buffer();
     pBuffer->m_pD3DBuffer = pD3DBuffer;
     pBuffer->m_BufferType = desc.Type;
@@ -290,8 +293,6 @@ Texture2D* GfxDevice::CreateTexture(const wchar_t *filePath)
 
 SamplerState* GfxDevice::CreateSamplerState(const SamplerStateDescriptor &desc)
 {
-    HRESULT hr;
-
     D3D11_SAMPLER_DESC d3dDesc = {};
     d3dDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
     d3dDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -299,7 +300,7 @@ SamplerState* GfxDevice::CreateSamplerState(const SamplerStateDescriptor &desc)
     d3dDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 
     ID3D11SamplerState *pD3DSamplerState = nullptr;
-    CHECK_HRESULT_PTR(m_pD3DDevice->CreateSamplerState(&d3dDesc, &pD3DSamplerState));
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateSamplerState(&d3dDesc, &pD3DSamplerState), nullptr);
     SamplerState *pSamplerState = new SamplerState();
     pSamplerState->m_pSamplerState = pD3DSamplerState;
 
@@ -310,7 +311,6 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
 {
     assert(desc.Type == ShaderType::VertexShader || desc.Type == ShaderType::FragmentShader);
 
-    HRESULT hr;
     Shader *pShader = new Shader();
 
     ShaderType type = desc.Type;
@@ -358,7 +358,6 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
 
 BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
 {
-    HRESULT hr;
     BlendState *pBlendState = nullptr;
 
     D3D11_BLEND_DESC d3dDesc = {};
@@ -379,7 +378,7 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
     rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
     ID3D11BlendState *pD3DBlendState;
-    CHECK_HRESULT_PTR(m_pD3DDevice->CreateBlendState(&d3dDesc, &pD3DBlendState));
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateBlendState(&d3dDesc, &pD3DBlendState), nullptr);
 
     pBlendState = new BlendState();
     pBlendState->m_pBlendState = pD3DBlendState;
@@ -389,8 +388,6 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
 
 InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader)
 {
-    HRESULT hr;
-
     std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements;
 
     size_t elementCount = desc.Elements.size();
@@ -403,12 +400,12 @@ InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Sha
     ID3DBlob *pShaderBuffer = pInputSignatureShader->m_pShaderBuffer;
     ID3D11InputLayout *pD3DInputLayout = nullptr;
 
-    CHECK_HRESULT_PTR(m_pD3DDevice->CreateInputLayout(
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateInputLayout(
         inputLayoutElements.data(), 
         uint32_t(inputLayoutElements.size()), 
         pShaderBuffer->GetBufferPointer(), 
         uint32_t(pShaderBuffer->GetBufferSize()), 
-        &pD3DInputLayout));
+        &pD3DInputLayout), nullptr);
 
     InputLayout *pInputLayout = new InputLayout();
     pInputLayout->m_pLayout = pD3DInputLayout;
@@ -418,8 +415,6 @@ InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Sha
 
 RasterizerState* GfxDevice::CreateRasterizerState(const RasterizerStateDescriptor &desc)
 {
-    HRESULT hr;
-
     D3D11_RASTERIZER_DESC d3dDesc = {};
     d3dDesc.FillMode = D3D11_FILL_SOLID;
     d3dDesc.CullMode = s_CullModes[size_t(desc.CullMode)];
@@ -427,7 +422,7 @@ RasterizerState* GfxDevice::CreateRasterizerState(const RasterizerStateDescripto
     d3dDesc.DepthClipEnable = true;
 
     ID3D11RasterizerState *pD3DState = nullptr;
-    CHECK_HRESULT_PTR(m_pD3DDevice->CreateRasterizerState(&d3dDesc, &pD3DState));
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateRasterizerState(&d3dDesc, &pD3DState), nullptr);
     RasterizerState *pState = new RasterizerState();
     pState->m_pD3DRasterizerState = pD3DState;
 
@@ -436,8 +431,6 @@ RasterizerState* GfxDevice::CreateRasterizerState(const RasterizerStateDescripto
 
 DepthStencilState* GfxDevice::CreateDepthStencilState(const DepthStencilStateDescriptor &desc)
 {
-    HRESULT hr;
-
     D3D11_DEPTH_STENCIL_DESC d3dDesc;
     d3dDesc.DepthEnable = desc.IsDepthTestEnabled;
     d3dDesc.DepthFunc = s_ComparisonFuncs[size_t(desc.DepthFunction)];
@@ -455,7 +448,7 @@ DepthStencilState* GfxDevice::CreateDepthStencilState(const DepthStencilStateDes
     d3dDesc.BackFace.StencilFunc = s_ComparisonFuncs[size_t(desc.BackFaceStencil.Function)];
 
     ID3D11DepthStencilState *pD3DDepthStencilState;
-    CHECK_HRESULT_PTR(m_pD3DDevice->CreateDepthStencilState(&d3dDesc, &pD3DDepthStencilState));
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateDepthStencilState(&d3dDesc, &pD3DDepthStencilState), nullptr);
     DepthStencilState *pDepthStencilState = new DepthStencilState();
     pDepthStencilState->m_pDepthStencilState = pD3DDepthStencilState;
 
@@ -514,5 +507,11 @@ uint32_t GfxDevice::GetInputLayoutElementAlignedByteOffset(InputLayoutSemantic e
     }
 
     return offset;
+}
+
+NativePixelFormat GfxDevice::ConvertToNativePixelFormat(PixelFormat format)
+{
+    assert(size_t(format) < ARRAYSIZE(s_PixelFormats));
+    return s_PixelFormats[size_t(format)];
 }
 
