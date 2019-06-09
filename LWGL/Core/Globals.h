@@ -26,5 +26,7 @@ namespace lwgl
         {
             return static_cast<Enum>(size_t(flag0) | size_t(flag1));
         }
+
+        static const Matrix4x4 s_IdentityMatrix;
     }
 }

@@ -205,6 +205,7 @@
   <ItemGroup>
     <ClCompile Include="Core\GfxDevice.cpp" />
     <ClCompile Include="Core\GfxDeviceContext.cpp" />
+    <ClCompile Include="Core\Globals.cpp" />
     <ClCompile Include="Core\RenderCore.cpp" />
     <ClCompile Include="Debugging\DebuggingFeatures.cpp" />
     <ClCompile Include="Debugging\DebugResourceManager.cpp" />
