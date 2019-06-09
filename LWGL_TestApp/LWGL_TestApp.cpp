@@ -3,6 +3,7 @@
 
 #include "LWGL_TestApp.h"
 #include "Core/RenderCore.h"
+#include "Core/IRenderer.h"
 #include "Core/GfxDevice.h"
 #include "Core/GfxDeviceContext.h"
 #include "Resources/Mesh.h"
@@ -128,7 +129,9 @@ public:
         m_ClearDesc.ClearDepth = true;
         m_ClearDesc.DepthClearValue = 1.0f;
 
-        pRenderCore->GetDebuggingFeatures()->ShowFPS(true);
+        DebuggingFeatures *pDebugFeatures = pRenderCore->GetDebuggingFeatures();
+        pDebugFeatures->ShowFPS(true);
+        pDebugFeatures->ShowMainCameraPosition(true);
 
         return true;
     }
@@ -241,8 +244,6 @@ public:
 
 private:
 
-    static const Matrix4x4 s_IdentityMatrix;
-
     Mesh*           m_pMesh = nullptr;
     GfxPipeline*    m_pPipeline = nullptr;
     Buffer*         m_pVSConstantBuffer = nullptr;
@@ -259,14 +260,6 @@ private:
     uint32_t        m_NextSpotLightIndex = 0;
     bool            m_PointLightAdded = false;
     bool            m_SpotLightAdded = false;
-};
-
-const Matrix4x4 BaseRenderer::s_IdentityMatrix =
-{
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,

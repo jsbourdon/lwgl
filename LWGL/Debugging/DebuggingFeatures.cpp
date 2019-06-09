@@ -1,8 +1,10 @@
 #include <pch.h>
 #include "DebuggingFeatures.h"
 #include "DebugResourceManager.h"
+#include "Core/RenderCore.h"
 #include "Core/GfxDevice.h"
 #include "Core/GfxDeviceContext.h"
+#include "Utilities/Camera.h"
 
 using namespace lwgl;
 using namespace debugging;
@@ -16,6 +18,7 @@ DebuggingFeatures::DebuggingFeatures()
     , m_AccumulatedFPSElapsedTimeSec(0.0f)
     , m_AccumulatedFPSFrames(0)
     , m_ShowFPS(false)
+    , m_ShowCameraPos(false)
 #endif
 {
 
@@ -68,7 +71,14 @@ void DebuggingFeatures::ShowFPS(bool show)
 #endif
 }
 
-void DebuggingFeatures::OnUpdate(double fTimeSec, float fElapsedTimeSec)
+void DebuggingFeatures::ShowMainCameraPosition(bool show)
+{
+#ifdef _DEBUG
+    m_ShowCameraPos = show;
+#endif
+}
+
+void DebuggingFeatures::OnUpdate(RenderCore *pCore, double fTimeSec, float fElapsedTimeSec)
 {
 #ifdef _DEBUG
     if (m_ShowFPS)
@@ -78,12 +88,21 @@ void DebuggingFeatures::OnUpdate(double fTimeSec, float fElapsedTimeSec)
 #endif
 }
 
-void DebuggingFeatures::OnFrameRender(double fTimeSec, float fElapsedTimeSec)
+void DebuggingFeatures::OnFrameRender(RenderCore *pCore, double fTimeSec, float fElapsedTimeSec)
 {
 #ifdef _DEBUG
     if (m_ShowFPS)
     {
         RenderFPS();
+    }
+
+    if (m_ShowCameraPos)
+    {
+        const std::vector<Camera*> &cameras = pCore->GetRegisteredCameras();
+        if (cameras.size() > 0)
+        {
+            RenderCameraPosition(cameras[0]);
+        }
     }
 #endif
 }
@@ -108,7 +127,18 @@ void DebuggingFeatures::RenderFPS()
 #ifdef _DEBUG
     static wchar_t s_FPSString[64];
     swprintf_s(s_FPSString, L"Average FPS: %.2f", m_AverageFPS);
-    DrawText(s_FPSString, { 0, 0, 400, 50 }, { 1.0f, 1.0f, 1.0f, 1.0f });
+    DrawText(s_FPSString, { 0, 0, 400, 20 }, { 1.0f, 1.0f, 1.0f, 1.0f });
+#endif
+}
+
+void DebuggingFeatures::RenderCameraPosition(const Camera *pCamera)
+{
+#ifdef _DEBUG
+    static wchar_t s_MainCameraPos[64];
+    Vector3 worldPos = pCamera->GetWorldPosition();
+    swprintf_s(s_MainCameraPos, L"Camera World Position: (%i, %i, %i)", (int32_t)worldPos.x, (int32_t)worldPos.y, (int32_t)worldPos.z);
+    int textPosY = m_ShowFPS ? 20 : 0;
+    DrawText(s_MainCameraPos, {0, textPosY, 400, 20 }, { 1.0f, 1.0f, 1.0f, 1.0f });
 #endif
 }
 

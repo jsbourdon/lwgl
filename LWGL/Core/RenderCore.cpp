@@ -1,6 +1,7 @@
 #include <pch.h>
 
 #include "RenderCore.h"
+#include "IRenderer.h"
 #include "GfxDevice.h"
 #include "GfxDeviceContext.h"
 #include "Utilities/Camera.h"
@@ -168,7 +169,7 @@ void CALLBACK RenderCore::OnFrameMove(double fTime, float fElapsedTime, void* pU
 
     IRenderer* pRenderer = pCore->m_pRenderer;
     pRenderer->OnUpdate(pCore, pCore->m_pDeviceContext, fTime, fElapsedTime, nullptr);
-    pCore->m_pDebuggingFeatures->OnUpdate(fTime, fElapsedTime);
+    pCore->m_pDebuggingFeatures->OnUpdate(pCore, fTime, fElapsedTime);
 }
 
 //--------------------------------------------------------------------------------------
@@ -181,7 +182,7 @@ void CALLBACK RenderCore::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11Dev
 
     IRenderer* pRenderer = pCore->m_pRenderer;
     pRenderer->OnFrameRender(pCore, pCore->m_pDevice, pCore->m_pDeviceContext, fTime, fElapsedTime, nullptr);
-    pCore->m_pDebuggingFeatures->OnFrameRender(fTime, fElapsedTime);
+    pCore->m_pDebuggingFeatures->OnFrameRender(pCore, fTime, fElapsedTime);
 }
 
 void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)

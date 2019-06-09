@@ -2,7 +2,6 @@
 
 #include <pch.h>
 #include <vector>
-#include "IRenderer.h"
 #include "RefCountedObject.h"
 
 namespace lwgl
@@ -28,6 +27,10 @@ namespace lwgl
 
     namespace core
     {
+        class IRenderer;
+        class GfxDevice;
+        class GfxDeviceContext;
+
         class RenderCore : public RefCountedObject<RenderCore>
         {
             friend base;
@@ -37,12 +40,13 @@ namespace lwgl
             static RenderCore* CreateCore();
 
             template<typename T>
-            void                Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+            void                        Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
 
-            void                RegisterInputReceiver(IInputReceiver *pReceiver);
-            Camera*             CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
-            void                StartRenderLoop();
-            DebuggingFeatures*  GetDebuggingFeatures() { return m_pDebuggingFeatures; }
+            void                        RegisterInputReceiver(IInputReceiver *pReceiver);
+            Camera*                     CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
+            void                        StartRenderLoop();
+            const std::vector<Camera*>& GetRegisteredCameras() const { return m_Cameras; }
+            DebuggingFeatures*          GetDebuggingFeatures() { return m_pDebuggingFeatures; }
 
         private:
 

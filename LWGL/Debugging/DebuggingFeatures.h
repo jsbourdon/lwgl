@@ -6,6 +6,7 @@ namespace lwgl
 {
     namespace core
     {
+        class RenderCore;
         class GfxDevice;
         class GfxDeviceContext;
     }
@@ -15,8 +16,14 @@ namespace lwgl
         struct SurfaceDescriptor;
     }
 
+    namespace utilities
+    {
+        class Camera;
+    }
+
     using namespace core;
     using namespace descriptors;
+    using namespace utilities;
 
     namespace debugging
     {
@@ -31,6 +38,7 @@ namespace lwgl
 
             void DrawText(const wchar_t *pText, const RECT &pos, const Vector4 &color);
             void ShowFPS(bool show);
+            void ShowMainCameraPosition(bool show);
 
         private:
 
@@ -40,11 +48,12 @@ namespace lwgl
             bool Init(GfxDevice *pDevice, GfxDeviceContext *pContext);
             bool OnSwapChainResized(GfxDevice *pDevice, const NativeSurfaceDescriptor *pSurfaceDesc);
             void OnSwapChainReleased();
-            void OnUpdate(double fTime, float fElapsedTime);
-            void OnFrameRender(double fTime, float fElapsedTime);
+            void OnUpdate(RenderCore *pCore, double fTime, float fElapsedTime);
+            void OnFrameRender(RenderCore *pCore, double fTime, float fElapsedTime);
 
             void UpdateFPS(float fElapsedTimeSec);
             void RenderFPS();
+            void RenderCameraPosition(const Camera *pCamera);
 
         private:
 
@@ -58,6 +67,7 @@ namespace lwgl
             float                   m_AccumulatedFPSElapsedTimeSec;
             uint32_t                m_AccumulatedFPSFrames;
             bool                    m_ShowFPS;
+            bool                    m_ShowCameraPos;
     #endif
         };
     }
