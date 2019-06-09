@@ -27,6 +27,12 @@ namespace lwgl
             return static_cast<Enum>(size_t(flag0) | size_t(flag1));
         }
 
-        static const Matrix4x4 s_IdentityMatrix;
+        const Matrix4x4 s_IdentityMatrix =
+        {
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
     }
 }

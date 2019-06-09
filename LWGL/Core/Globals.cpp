@@ -4,10 +4,3 @@
 using namespace lwgl;
 using namespace core;
 
-const Matrix4x4 s_IdentityMatrix =
-{
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f
-};
