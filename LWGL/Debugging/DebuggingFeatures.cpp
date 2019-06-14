@@ -144,6 +144,7 @@ void DebuggingFeatures::RenderCameraPosition(const Camera *pCamera)
 
 void DebuggingFeatures::DrawText(const wchar_t *pText, const RECT &pos, const Vector4 &color)
 {
+#ifdef _DEBUG
     uint32_t backBufferWidth, backBufferHeight;
     m_pRscManager->GetBackBufferSize(backBufferWidth, backBufferHeight);
 
@@ -160,4 +161,5 @@ void DebuggingFeatures::DrawText(const wchar_t *pText, const RECT &pos, const Ve
         false);
 
     m_pRscManager->CleanDrawTextResources(m_pDevice->GetNativeDevice(), m_pContext->GetNativeContext());
+#endif
 }
