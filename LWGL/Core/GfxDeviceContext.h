@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pch.h>
+#include "RefCountedObject.h"
 
 namespace lwgl
 {
@@ -14,6 +15,7 @@ namespace lwgl
         class Mesh;
         class Buffer;
         class SamplerState;
+        class Texture;
     }
 
     namespace pipeline
@@ -45,32 +47,43 @@ namespace lwgl
             WriteNoOverwrite
         };
 
-        class GfxDeviceContext
+        class GfxDeviceContext : public RefCountedObject<GfxDeviceContext>
         {
+            friend base;
+
         public:
 
             GfxDeviceContext(ID3D11DeviceContext* d3dContext);
-            ~GfxDeviceContext();
 
-            void    SetupPipeline(const GfxPipeline *pPipeline);
+            GfxNativeDeviceContext* GetNativeContext();
+
+            void    SetupPipeline(GfxPipeline *pPipeline);
             void    DrawMesh(Mesh *mesh);
 
             void*   MapBuffer(Buffer *pBuffer, MapType mapType);
             void    UnmapBuffer(Buffer *pBuffer);
             void    BindBuffer(const Buffer *pBuffer, Stage stage, uint32_t slot);
-
+            void    BindTexture(const Texture *pTexture, Stage stage, uint32_t slot);
             void    BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot);
+            void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount);
+            void    BindSwapChain();
 
             void    Clear(const ClearDescriptor &desc);
 
         private:
 
-            static const D3D11_MAP s_MapTypes[];
+            ~GfxDeviceContext();
 
             void BindBufferToVSStage(const Buffer *pBuffer, uint32_t slot);
             void BindBufferToPSStage(const Buffer *pBuffer, uint32_t slot);
+            void UnbindRenderTargets();
 
-            ID3D11DeviceContext* m_pD3DContext;
+            static const D3D11_MAP  s_MapTypes[];
+
+            ID3D11DeviceContext*    m_pD3DContext;
+            GfxPipeline*            m_pCurrentPipeline;
+            Texture*                m_pRenderTargets[lwgl::core::MAX_RENDERTARGET_COUNT];
+            uint32_t                m_RenderTargetCount;
         };
     }
 }

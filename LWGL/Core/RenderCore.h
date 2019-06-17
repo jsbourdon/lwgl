@@ -2,8 +2,8 @@
 
 #include <pch.h>
 #include <vector>
-#include "IRenderer.h"
 #include "RefCountedObject.h"
+#include "IRenderer.h"
 
 namespace lwgl
 {
@@ -17,11 +17,20 @@ namespace lwgl
         class IInputReceiver;
     }
 
+    namespace debugging
+    {
+        class DebuggingFeatures;
+    }
+
     using namespace utilities;
     using namespace input;
+    using namespace debugging;
 
     namespace core
     {
+        class GfxDevice;
+        class GfxDeviceContext;
+
         class RenderCore : public RefCountedObject<RenderCore>
         {
             friend base;
@@ -31,12 +40,13 @@ namespace lwgl
             static RenderCore* CreateCore();
 
             template<typename T>
-            void        Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+            void                        Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
 
-            void        RegisterInputReceiver(IInputReceiver *pReceiver);
-
-            Camera*     CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
-            void        StartRenderLoop();
+            void                        RegisterInputReceiver(IInputReceiver *pReceiver);
+            Camera*                     CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
+            void                        StartRenderLoop();
+            const std::vector<Camera*>& GetRegisteredCameras() const { return m_Cameras; }
+            DebuggingFeatures*          GetDebuggingFeatures() { return m_pDebuggingFeatures; }
 
         private:
 
@@ -58,17 +68,19 @@ namespace lwgl
             void InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
             void OnKeyPressed(uint32_t keyCode, bool keyDown, bool firstDown = false);
 
-            IRenderer*              m_pRenderer;
-            GfxDevice*              m_pDevice;
-            GfxDeviceContext*       m_pDeviceContext;
-            IInputReceiver*         m_pReceiver;
-            std::vector<Camera*>    m_Cameras;
+            IRenderer*                  m_pRenderer;
+            GfxDevice*                  m_pDevice;
+            GfxDeviceContext*           m_pDeviceContext;
+            IInputReceiver*             m_pReceiver;
+            DebuggingFeatures*          m_pDebuggingFeatures;
+            std::vector<Camera*>        m_Cameras;
         };
 
         template<typename T>
         void RenderCore::Init(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
         {
-            m_pRenderer = new T();
+            void* alignedMem = AlignedAlloc(sizeof(T), alignof(T));
+            m_pRenderer = new(alignedMem) T();
             InternalInit(windowTitle, windowWidth, windowHeight);
         }
     }

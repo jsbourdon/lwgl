@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pch.h>
+#include "RefCountedObject.h"
 
 namespace lwgl
 {
@@ -17,7 +18,7 @@ namespace lwgl
         class BlendState;
         class InputLayout;
         class DepthStencilState;
-        class Texture2D;
+        class Texture;
         class SamplerState;
         class RasterizerState;
     }
@@ -31,9 +32,11 @@ namespace lwgl
         struct InputLayoutDescriptor;
         struct InputLayoutElement;
         struct BufferDescriptor;
+        struct TextureDescriptor;
         struct SamplerStateDescriptor;
         struct RasterizerStateDescriptor;
         enum class InputLayoutSemantic;
+        enum class PixelFormat;
     }
     
     using namespace resources;
@@ -42,20 +45,27 @@ namespace lwgl
 
     namespace core
     {
-        class GfxDevice
+        class GfxDevice : public RefCountedObject<GfxDevice>
         {
+            friend base;
+
         public:
 
             GfxDevice(ID3D11Device* d3dDevice);
-            ~GfxDevice();
 
-            GfxPipeline*    CreatePipeline(const PipelineDescriptor &desc);
-            Mesh*           CreateMesh(const wchar_t *filePath);
-            Buffer*         CreateBuffer(const BufferDescriptor &desc);
-            Texture2D*      CreateTexture(const wchar_t *filePath);
-            SamplerState*   CreateSamplerState(const SamplerStateDescriptor &desc);
+            GfxNativeDevice*    GetNativeDevice();
+
+            GfxPipeline*        CreatePipeline(const PipelineDescriptor &desc);
+            Mesh*               CreateMesh(const wchar_t *filePath);
+            Buffer*             CreateBuffer(const BufferDescriptor &desc);
+            Texture*          CreateTexture(const TextureDescriptor &desc);
+            SamplerState*       CreateSamplerState(const SamplerStateDescriptor &desc);
+
+            static NativePixelFormat    ConvertToNativePixelFormat(PixelFormat format);
 
         private:
+
+            ~GfxDevice();
 
             Shader*             CreateShader(const ShaderDescriptor &desc);
             BlendState*         CreateBlendState(const BlendStateDescriptor &desc);
@@ -78,8 +88,9 @@ namespace lwgl
             static const D3D11_STENCIL_OP       s_StencilOps[];
             static const D3D11_COMPARISON_FUNC  s_ComparisonFuncs[];
             static const uint32_t               s_BufferBindFlags[];
-            static const uint32_t               s_BufferCPUAccessFlags[];
-            static const D3D11_USAGE            s_BufferUsages[];
+            static const uint32_t               s_CPUAccessFlags[];
+            static const D3D11_USAGE            s_ResourceUsages[];
+            static const D3D11_USAGE            s_TextureUsages[];
             static const D3D11_CULL_MODE        s_CullModes[];
 
             ID3D11Device*   m_pD3DDevice;

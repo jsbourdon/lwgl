@@ -1,10 +1,12 @@
 #include <pch.h>
 
 #include "RenderCore.h"
+#include "IRenderer.h"
 #include "GfxDevice.h"
 #include "GfxDeviceContext.h"
 #include "Utilities/Camera.h"
 #include "Inputs/IInputReceiver.h"
+#include "Debugging/DebuggingFeatures.h"
 
 using namespace lwgl;
 using namespace core;
@@ -22,20 +24,25 @@ RenderCore::RenderCore()
     , m_pDevice(nullptr)
     , m_pDeviceContext(nullptr)
     , m_pReceiver(nullptr)
+    , m_pDebuggingFeatures(new DebuggingFeatures())
 {
 }
 
 RenderCore::~RenderCore()
 {
     size_t cameraCount = m_Cameras.size();
-    for (int i = 0; i < cameraCount; ++i)
+    for (size_t i = 0; i < cameraCount; ++i)
     {
         m_Cameras[i]->Release();
     }
 
-    delete m_pRenderer;
-    delete m_pDeviceContext;
-    delete m_pDevice;
+    m_pRenderer->~IRenderer();
+    FreeAlignedAlloc(m_pRenderer);
+    m_pRenderer = nullptr;
+
+    SAFE_RELEASE(m_pDebuggingFeatures);
+    SAFE_RELEASE(m_pDeviceContext);
+    SAFE_RELEASE(m_pDevice);
 }
 
 //--------------------------------------------------------------------------------------
@@ -47,7 +54,7 @@ LRESULT CALLBACK RenderCore::MsgProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
     std::vector<Camera*> &cameras = pCore->m_Cameras;
 
     size_t cameraCount = cameras.size();
-    for (int i = 0; i < cameraCount; ++i)
+    for (size_t i = 0; i < cameraCount; ++i)
     {
         cameras[i]->HandleMessages(hWnd, uMsg, wParam, lParam);
     }
@@ -99,6 +106,11 @@ HRESULT CALLBACK RenderCore::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const
     pCore->m_pDevice = pDevice;
     pCore->m_pDeviceContext = pContext;
 
+    if (!pCore->m_pDebuggingFeatures->Init(pDevice, pContext))
+    {
+        return E_FAIL;
+    }
+
     pRenderer->Init(pCore, pDevice, pContext);
 
     return S_OK;
@@ -110,6 +122,12 @@ HRESULT CALLBACK RenderCore::OnD3D11CreateDevice(ID3D11Device* pd3dDevice, const
 HRESULT CALLBACK RenderCore::OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, IDXGISwapChain* pSwapChain,
     const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext)
 {
+    RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+    if (!pCore->m_pDebuggingFeatures->OnSwapChainResized(pCore->m_pDevice, pBackBufferSurfaceDesc))
+    {
+        return E_FAIL;
+    }
+
     return S_OK;
 }
 
@@ -118,7 +136,8 @@ HRESULT CALLBACK RenderCore::OnD3D11ResizedSwapChain(ID3D11Device* pd3dDevice, I
 //--------------------------------------------------------------------------------------
 void CALLBACK RenderCore::OnD3D11ReleasingSwapChain(void* pUserContext)
 {
-
+    RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+    pCore->m_pDebuggingFeatures->OnSwapChainReleased();
 }
 
 //--------------------------------------------------------------------------------------
@@ -143,13 +162,14 @@ void CALLBACK RenderCore::OnFrameMove(double fTime, float fElapsedTime, void* pU
     std::vector<Camera*> &cameras = pCore->m_Cameras;
 
     size_t cameraCount = cameras.size();
-    for (int i = 0; i < cameraCount; ++i)
+    for (size_t i = 0; i < cameraCount; ++i)
     {
         cameras[i]->FrameMove(fElapsedTime);
     }
 
     IRenderer* pRenderer = pCore->m_pRenderer;
     pRenderer->OnUpdate(pCore, pCore->m_pDeviceContext, fTime, fElapsedTime, nullptr);
+    pCore->m_pDebuggingFeatures->OnUpdate(pCore, fTime, fElapsedTime);
 }
 
 //--------------------------------------------------------------------------------------
@@ -159,8 +179,10 @@ void CALLBACK RenderCore::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11Dev
     float fElapsedTime, void* pUserContext)
 {
     RenderCore* pCore = static_cast<RenderCore*>(pUserContext);
+
     IRenderer* pRenderer = pCore->m_pRenderer;
     pRenderer->OnFrameRender(pCore, pCore->m_pDevice, pCore->m_pDeviceContext, fTime, fElapsedTime, nullptr);
+    pCore->m_pDebuggingFeatures->OnFrameRender(pCore, fTime, fElapsedTime);
 }
 
 void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)

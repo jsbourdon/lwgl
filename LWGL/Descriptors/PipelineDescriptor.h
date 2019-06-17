@@ -16,12 +16,16 @@ namespace lwgl
     {
         struct PipelineDescriptor
         {
+            static constexpr size_t s_OMMaxRenderTargetCount = 8;
+
             InputLayoutDescriptor       InputLayout;
             ShaderDescriptor            VertexShader;
             ShaderDescriptor            FragmentShader;
             BlendStateDescriptor        BlendState;
             DepthStencilStateDescriptor DepthStencilState;
             RasterizerStateDescriptor   RasterizerState;
+            PixelFormat                 RenderTargetFormats[s_OMMaxRenderTargetCount];
+            PixelFormat                 DepthFormat;
         };
     }
 }
