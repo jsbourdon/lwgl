@@ -30,6 +30,8 @@ const D3D11_MAP GfxDeviceContext::s_MapTypes[] =
 GfxDeviceContext::GfxDeviceContext(ID3D11DeviceContext* d3dContext)
     : m_pD3DContext(d3dContext)
     , m_pCurrentPipeline(nullptr)
+    , m_pRenderTargets {}
+    , m_RenderTargetCount(0)
 {
 
 }
@@ -37,6 +39,11 @@ GfxDeviceContext::GfxDeviceContext(ID3D11DeviceContext* d3dContext)
 GfxDeviceContext::~GfxDeviceContext()
 {
     SAFE_RELEASE(m_pCurrentPipeline);
+
+    for (uint32_t rtIndex = 0; rtIndex < m_RenderTargetCount; ++rtIndex)
+    {
+        SAFE_RELEASE(m_pRenderTargets[rtIndex]);
+    }
 }
 
 GfxNativeDeviceContext* GfxDeviceContext::GetNativeContext()
@@ -94,6 +101,19 @@ void GfxDeviceContext::BindBuffer(const Buffer *pBuffer, Stage stage, uint32_t s
     }
 }
 
+void GfxDeviceContext::BindTexture(const Texture *pTexture, Stage stage, uint32_t slot)
+{
+    switch (stage)
+    {
+    case Stage::VS:
+        m_pD3DContext->VSSetShaderResources(slot, 1, &pTexture->m_pSRV);
+        break;
+    case Stage::PS:
+        m_pD3DContext->PSSetShaderResources(slot, 1, &pTexture->m_pSRV);
+        break;
+    }
+}
+
 void GfxDeviceContext::BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot)
 {
     switch (stage)
@@ -109,17 +129,37 @@ void GfxDeviceContext::BindSampler(SamplerState *pSampler, Stage stage, uint32_t
 
 void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount)
 {
+    assert(renderTargetCount <= lwgl::core::MAX_RENDERTARGET_COUNT);
+
+    UnbindRenderTargets();
+
     ID3D11RenderTargetView **pRTVs = static_cast<ID3D11RenderTargetView**>(StackAlloc(sizeof(ID3D11RenderTargetView*)));
     for (uint32_t i = 0; i < renderTargetCount; ++i)
     {
-        pRTVs[i] = pRenderTargets[i]->m_pRTV;
+        Texture *pRenderTarget = pRenderTargets[i];
+        pRenderTarget->AddRef();
+        m_pRenderTargets[i] = pRenderTarget;
+
+        pRTVs[i] = pRenderTarget->m_pRTV;
     }
 
+    m_RenderTargetCount = renderTargetCount;
     m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, DXUTGetD3D11DepthStencilView());
+}
+
+void GfxDeviceContext::UnbindRenderTargets()
+{
+    for (uint32_t rtIndex = 0; rtIndex < m_RenderTargetCount; ++rtIndex)
+    {
+        SAFE_RELEASE(m_pRenderTargets[rtIndex]);
+    }
+
+    m_RenderTargetCount = 0;
 }
 
 void GfxDeviceContext::BindSwapChain()
 {
+    UnbindRenderTargets();
     DXUTSetupD3D11Views(m_pD3DContext);
 }
 
@@ -127,8 +167,20 @@ void GfxDeviceContext::Clear(const ClearDescriptor &desc)
 {
     if (desc.ClearColor)
     {
-        ID3D11RenderTargetView *pRTV = DXUTGetD3D11RenderTargetView();
-        m_pD3DContext->ClearRenderTargetView(pRTV, desc.ColorClearValue);
+        if (m_RenderTargetCount > 0)
+        {
+            for (uint32_t rtIndex = 0; rtIndex < m_RenderTargetCount; ++rtIndex)
+            {
+                Texture *pRenderTarget = m_pRenderTargets[rtIndex];
+                ID3D11RenderTargetView *pRTV = pRenderTarget->m_pRTV;
+                m_pD3DContext->ClearRenderTargetView(pRTV, desc.ColorClearValue);
+            }
+        }
+        else
+        {
+            ID3D11RenderTargetView *pRTV = DXUTGetD3D11RenderTargetView();
+            m_pD3DContext->ClearRenderTargetView(pRTV, desc.ColorClearValue);
+        }
     }
 
     if (desc.ClearDepth || desc.ClearStencil)

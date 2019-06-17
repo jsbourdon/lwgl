@@ -415,21 +415,25 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
     BlendState *pBlendState = nullptr;
 
     D3D11_BLEND_DESC d3dDesc = {};
-    D3D11_RENDER_TARGET_BLEND_DESC &rtBlendDesc = d3dDesc.RenderTarget[0];
     d3dDesc.AlphaToCoverageEnable = false;
     d3dDesc.IndependentBlendEnable = true;
     
-    if (rtBlendDesc.BlendEnable = desc.IsEnabled)
+    uint32_t rtCount = desc.RenderTargetCount;
+    for (uint32_t rtIndex = 0; rtIndex < rtCount; ++rtIndex)
     {
-        rtBlendDesc.SrcBlend                = s_BlendValues[size_t(desc.SourceColor)];
-        rtBlendDesc.DestBlend               = s_BlendValues[size_t(desc.DestinationColor)];
-        rtBlendDesc.BlendOp                 = s_BlendOperations[size_t(desc.ColorOperation)];
-        rtBlendDesc.SrcBlendAlpha           = s_BlendValues[size_t(desc.SourceAlpha)];
-        rtBlendDesc.DestBlendAlpha          = s_BlendValues[size_t(desc.DestinationAlpha)];
-        rtBlendDesc.BlendOpAlpha            = s_BlendOperations[size_t(desc.AlphaOperation)];
-    }
+        D3D11_RENDER_TARGET_BLEND_DESC &rtBlendDesc = d3dDesc.RenderTarget[rtIndex];
+        if (rtBlendDesc.BlendEnable = desc.IsEnabled)
+        {
+            rtBlendDesc.SrcBlend = s_BlendValues[size_t(desc.SourceColor)];
+            rtBlendDesc.DestBlend = s_BlendValues[size_t(desc.DestinationColor)];
+            rtBlendDesc.BlendOp = s_BlendOperations[size_t(desc.ColorOperation)];
+            rtBlendDesc.SrcBlendAlpha = s_BlendValues[size_t(desc.SourceAlpha)];
+            rtBlendDesc.DestBlendAlpha = s_BlendValues[size_t(desc.DestinationAlpha)];
+            rtBlendDesc.BlendOpAlpha = s_BlendOperations[size_t(desc.AlphaOperation)];
+        }
 
-    rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+    }
 
     ID3D11BlendState *pD3DBlendState;
     CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateBlendState(&d3dDesc, &pD3DBlendState), nullptr);

@@ -63,6 +63,7 @@ namespace lwgl
             void*   MapBuffer(Buffer *pBuffer, MapType mapType);
             void    UnmapBuffer(Buffer *pBuffer);
             void    BindBuffer(const Buffer *pBuffer, Stage stage, uint32_t slot);
+            void    BindTexture(const Texture *pTexture, Stage stage, uint32_t slot);
             void    BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot);
             void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount);
             void    BindSwapChain();
@@ -75,11 +76,14 @@ namespace lwgl
 
             void BindBufferToVSStage(const Buffer *pBuffer, uint32_t slot);
             void BindBufferToPSStage(const Buffer *pBuffer, uint32_t slot);
+            void UnbindRenderTargets();
 
             static const D3D11_MAP  s_MapTypes[];
 
             ID3D11DeviceContext*    m_pD3DContext;
             GfxPipeline*            m_pCurrentPipeline;
+            Texture*                m_pRenderTargets[lwgl::core::MAX_RENDERTARGET_COUNT];
+            uint32_t                m_RenderTargetCount;
         };
     }
 }
