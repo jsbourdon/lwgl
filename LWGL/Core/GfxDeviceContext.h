@@ -66,9 +66,14 @@ namespace lwgl
             void    BindTexture(const Texture *pTexture, Stage stage, uint32_t slot);
             void    BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot);
             void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount);
-            void    BindSwapChain();
+            void    BindDepthStencilToStage(Stage stage, uint32_t slot);
+            void    BindSwapChain(bool bindDepthStencil = true);
+            void    Unbind(Stage stage, uint32_t slot);
+            void    UnbindRange(Stage stage, uint32_t slot, uint32_t count);
 
             void    Clear(const ClearDescriptor &desc);
+
+            void    SetSwapChainDepthStencil(Texture *pDepthStencil);
 
         private:
 
@@ -79,10 +84,12 @@ namespace lwgl
             void UnbindRenderTargets();
 
             static const D3D11_MAP  s_MapTypes[];
+            static void*            s_pNullResources[lwgl::core::MAX_SHADERRESOURCE_COUNT];
 
             ID3D11DeviceContext*    m_pD3DContext;
             GfxPipeline*            m_pCurrentPipeline;
             Texture*                m_pRenderTargets[lwgl::core::MAX_RENDERTARGET_COUNT];
+            Texture*                m_pDepthStencil;
             uint32_t                m_RenderTargetCount;
         };
     }

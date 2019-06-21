@@ -39,6 +39,7 @@ namespace lwgl
             R32_UINT,
             R32_SINT,
             D24_UNORM_S8_UINT,
+            R24_UNORM_X8_TYPELESS,
             R8G8_UNORM,
             R8G8_UINT,
             R8G8_SNORM,

@@ -47,6 +47,7 @@ namespace lwgl
             void                        StartRenderLoop();
             const std::vector<Camera*>& GetRegisteredCameras() const { return m_Cameras; }
             DebuggingFeatures*          GetDebuggingFeatures() { return m_pDebuggingFeatures; }
+            void                        GetBackBufferPixelSize(uint32_t &width, uint32_t &height);
 
         private:
 
@@ -66,6 +67,7 @@ namespace lwgl
                 const DXGI_SURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext);
 
             void InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
+            void CreateDepthStencil(uint32_t windowWidth, uint32_t windowHeight);
             void OnKeyPressed(uint32_t keyCode, bool keyDown, bool firstDown = false);
 
             IRenderer*                  m_pRenderer;
@@ -74,6 +76,8 @@ namespace lwgl
             IInputReceiver*             m_pReceiver;
             DebuggingFeatures*          m_pDebuggingFeatures;
             std::vector<Camera*>        m_Cameras;
+            uint32_t                    m_BackBufferWidth;
+            uint32_t                    m_BackBufferHeight;
         };
 
         template<typename T>

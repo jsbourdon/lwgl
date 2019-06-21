@@ -27,18 +27,23 @@ const D3D11_MAP GfxDeviceContext::s_MapTypes[] =
     D3D11_MAP_WRITE_NO_OVERWRITE
 };
 
+void* GfxDeviceContext::s_pNullResources[lwgl::core::MAX_SHADERRESOURCE_COUNT] {};
+
 GfxDeviceContext::GfxDeviceContext(ID3D11DeviceContext* d3dContext)
     : m_pD3DContext(d3dContext)
     , m_pCurrentPipeline(nullptr)
     , m_pRenderTargets {}
+    , m_pDepthStencil(nullptr)
     , m_RenderTargetCount(0)
 {
-
+    static_assert(ARRAYSIZE(s_pNullResources) == lwgl::core::MAX_SHADERRESOURCE_COUNT, "Invalid number of NULL resources");
+    static_assert(lwgl::core::MAX_RENDERTARGET_COUNT <= lwgl::core::MAX_SHADERRESOURCE_COUNT, "MAX_RENDERTARGET_COUNT is greater than MAX_SHADERRESOURCE_COUNT");
 }
 
 GfxDeviceContext::~GfxDeviceContext()
 {
     SAFE_RELEASE(m_pCurrentPipeline);
+    SAFE_RELEASE(m_pDepthStencil);
 
     for (uint32_t rtIndex = 0; rtIndex < m_RenderTargetCount; ++rtIndex)
     {
@@ -144,7 +149,19 @@ void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t ren
     }
 
     m_RenderTargetCount = renderTargetCount;
-    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, DXUTGetD3D11DepthStencilView());
+    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, m_pDepthStencil->m_pDSV);
+}
+
+void GfxDeviceContext::BindDepthStencilToStage(Stage stage, uint32_t slot)
+{
+    if (stage == Stage::VS)
+    {
+        m_pD3DContext->VSSetShaderResources(slot, 1, &m_pDepthStencil->m_pSRV);
+    }
+    else if (stage == Stage::PS)
+    {
+        m_pD3DContext->PSSetShaderResources(slot, 1, &m_pDepthStencil->m_pSRV);
+    }
 }
 
 void GfxDeviceContext::UnbindRenderTargets()
@@ -154,13 +171,56 @@ void GfxDeviceContext::UnbindRenderTargets()
         SAFE_RELEASE(m_pRenderTargets[rtIndex]);
     }
 
+    m_pD3DContext->OMSetRenderTargets(m_RenderTargetCount, reinterpret_cast<ID3D11RenderTargetView**>(s_pNullResources), nullptr);
+
     m_RenderTargetCount = 0;
 }
 
-void GfxDeviceContext::BindSwapChain()
+void GfxDeviceContext::BindSwapChain(bool bindDepthStencil)
 {
     UnbindRenderTargets();
-    DXUTSetupD3D11Views(m_pD3DContext);
+    
+    D3D11_VIEWPORT vp;
+    vp.Width = (FLOAT)DXUTGetDXGIBackBufferSurfaceDesc()->Width;
+    vp.Height = (FLOAT)DXUTGetDXGIBackBufferSurfaceDesc()->Height;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    m_pD3DContext->RSSetViewports(1, &vp);
+
+    ID3D11RenderTargetView *pRTV = DXUTGetD3D11RenderTargetView();
+    ID3D11DepthStencilView *pDSV = bindDepthStencil ? m_pDepthStencil->m_pDSV : nullptr;
+    m_pD3DContext->OMSetRenderTargets(1, &pRTV, pDSV);
+}
+
+void GfxDeviceContext::Unbind(Stage stage, uint32_t slot)
+{
+    if (stage == Stage::VS)
+    {
+        m_pD3DContext->VSSetShaderResources(slot, 1, nullptr);
+    }
+    else if (stage == Stage::PS)
+    {
+        m_pD3DContext->PSSetShaderResources(slot, 1, nullptr);
+    }
+}
+
+void GfxDeviceContext::UnbindRange(Stage stage, uint32_t slot, uint32_t count)
+{
+    if (stage == Stage::VS)
+    {
+        m_pD3DContext->VSSetShaderResources(slot, count, reinterpret_cast<ID3D11ShaderResourceView**>(s_pNullResources));
+    }
+    else if (stage == Stage::PS)
+    {
+        m_pD3DContext->PSSetShaderResources(slot, count, reinterpret_cast<ID3D11ShaderResourceView * *>(s_pNullResources));
+    }
+}
+
+void GfxDeviceContext::SetSwapChainDepthStencil(Texture *pDepthStencil)
+{
+    m_pDepthStencil = pDepthStencil;
 }
 
 void GfxDeviceContext::Clear(const ClearDescriptor &desc)
@@ -185,7 +245,7 @@ void GfxDeviceContext::Clear(const ClearDescriptor &desc)
 
     if (desc.ClearDepth || desc.ClearStencil)
     {
-        ID3D11DepthStencilView *pDSV = DXUTGetD3D11DepthStencilView();
+        ID3D11DepthStencilView *pDSV = m_pDepthStencil->m_pDSV;
         D3D11_CLEAR_FLAG clearFlags = static_cast<D3D11_CLEAR_FLAG>((desc.ClearDepth ? D3D11_CLEAR_DEPTH : 0) | (desc.ClearStencil ? D3D11_CLEAR_STENCIL : 0));
         m_pD3DContext->ClearDepthStencilView(pDSV, clearFlags, desc.DepthClearValue, desc.StencilClearValue);
     }

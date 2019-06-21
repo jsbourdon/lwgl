@@ -7,6 +7,7 @@
 #include "Utilities/Camera.h"
 #include "Inputs/IInputReceiver.h"
 #include "Debugging/DebuggingFeatures.h"
+#include "Descriptors/TextureDescriptor.h"
 
 using namespace lwgl;
 using namespace core;
@@ -187,6 +188,9 @@ void CALLBACK RenderCore::OnD3D11FrameRender(ID3D11Device* pd3dDevice, ID3D11Dev
 
 void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight)
 {
+    m_BackBufferWidth = windowWidth;
+    m_BackBufferHeight = windowHeight;
+
     // Set DXUT callbacks
     DXUTSetCallbackMsgProc(MsgProc, this);
     DXUTSetCallbackD3D11DeviceAcceptable(IsD3D11DeviceAcceptable, this);
@@ -204,6 +208,28 @@ void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, 
 
     // Require D3D_FEATURE_LEVEL_11_0
     DXUTCreateDevice(D3D_FEATURE_LEVEL_11_0, true, windowWidth, windowHeight);
+
+    DXUTDeviceSettings deviceSettings;
+    DXUTApplyDefaultDeviceSettings(&deviceSettings);
+    deviceSettings.d3d11.AutoCreateDepthStencil = false;
+
+    CreateDepthStencil(windowWidth, windowHeight);
+}
+
+void RenderCore::CreateDepthStencil(uint32_t windowWidth, uint32_t windowHeight)
+{
+    TextureDescriptor desc;
+    desc.Type = TextureType::DepthStencil;
+    desc.BindFlags = TextureBindFlags::ShaderResource;
+    desc.Format = PixelFormat::R24_UNORM_X8_TYPELESS;
+    desc.Usage = ResourceUsage::GPU_ReadWrite;
+    desc.Width = windowWidth;
+    desc.Height = windowHeight;
+    desc.ArraySize = 1;
+    desc.MipLevels = 1;
+    desc.SampleCount = 1;
+
+    m_pDeviceContext->SetSwapChainDepthStencil(m_pDevice->CreateTexture(desc));
 }
 
 void RenderCore::RegisterInputReceiver(IInputReceiver *pReceiver)
@@ -239,4 +265,10 @@ Camera* RenderCore::CreateCamera(Vector4 worldPosition, Vector4 lookAtWorldPosit
     m_Cameras.push_back(pCamera);
 
     return pCamera;
+}
+
+void RenderCore::GetBackBufferPixelSize(uint32_t &width, uint32_t &height)
+{
+    width = m_BackBufferWidth;
+    height = m_BackBufferHeight;
 }

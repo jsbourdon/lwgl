@@ -11,6 +11,7 @@ namespace lwgl
         enum class TextureType
         {
             Texture2D,
+            DepthStencil,
             EnumCount
         };
 
