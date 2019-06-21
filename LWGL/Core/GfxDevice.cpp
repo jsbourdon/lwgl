@@ -67,6 +67,7 @@ const DXGI_FORMAT GfxDevice::s_PixelFormats[] =
     DXGI_FORMAT_R32_UINT,
     DXGI_FORMAT_R32_SINT,
     DXGI_FORMAT_D24_UNORM_S8_UINT,
+    DXGI_FORMAT_R24_UNORM_X8_TYPELESS,
     DXGI_FORMAT_R8G8_UNORM,
     DXGI_FORMAT_R8G8_UINT,
     DXGI_FORMAT_R8G8_SNORM,
@@ -288,22 +289,30 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
 
 Texture* GfxDevice::CreateTexture(const TextureDescriptor &desc)
 {
-    assert(desc.Type == TextureType::Texture2D);        // Only Texture2D supported for now
+    assert(desc.Type == TextureType::Texture2D || desc.Type == TextureType::DepthStencil);
     assert(desc.Usage != ResourceUsage::GPU_ReadOnly);  // Immutable textures not supported yet
 
     uint32_t bindFlags = 0;
     uint32_t descFlags = uint32_t(desc.BindFlags);
 
-    bindFlags |= !!(descFlags & uint32_t(TextureBindFlags::ShaderResource)) ? D3D11_BIND_SHADER_RESOURCE : 0;
-    bindFlags |= !!(descFlags & uint32_t(TextureBindFlags::RenderTarget)) ? D3D11_BIND_RENDER_TARGET : 0;
-    bindFlags |= !!(descFlags & uint32_t(TextureBindFlags::UnorderedAccessView)) ? D3D11_BIND_UNORDERED_ACCESS : 0;
+    const bool needsSRV = !!(descFlags & uint32_t(TextureBindFlags::ShaderResource));
+    const bool needsRTV = !!(descFlags & uint32_t(TextureBindFlags::RenderTarget));
+    const bool needsUAV = !!(descFlags & uint32_t(TextureBindFlags::UnorderedAccessView));
+    const bool needsDSV = (desc.Type == TextureType::DepthStencil);
+
+    bindFlags |= needsSRV ? D3D11_BIND_SHADER_RESOURCE : 0;
+    bindFlags |= needsRTV ? D3D11_BIND_RENDER_TARGET : 0;
+    bindFlags |= needsUAV ? D3D11_BIND_UNORDERED_ACCESS : 0;
+    bindFlags |= needsDSV ? D3D11_BIND_DEPTH_STENCIL : 0;
+
+    NativePixelFormat pixelFormat = ConvertToNativePixelFormat(desc.Format);
 
     D3D11_TEXTURE2D_DESC d3dDesc;
     d3dDesc.Width = desc.Width;
     d3dDesc.Height = desc.Height;
     d3dDesc.MipLevels = desc.MipLevels;
     d3dDesc.ArraySize = desc.ArraySize;
-    d3dDesc.Format = ConvertToNativePixelFormat(desc.Format);
+    d3dDesc.Format = needsDSV ? DXGI_FORMAT_R24G8_TYPELESS : pixelFormat;
     d3dDesc.SampleDesc.Count = desc.SampleCount;
     d3dDesc.SampleDesc.Quality = 0;
     d3dDesc.Usage = s_ResourceUsages[size_t(desc.Usage)];
@@ -317,11 +326,11 @@ Texture* GfxDevice::CreateTexture(const TextureDescriptor &desc)
     Texture *pTexture = new Texture();
     pTexture->m_pTexture = pD3DTexture;
 
-    // Create SRV if necessary
+    if (needsSRV)
     {
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
         srvDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Format = d3dDesc.Format;
+        srvDesc.Format = pixelFormat;
         srvDesc.Texture2D.MipLevels = d3dDesc.MipLevels;
         srvDesc.Texture2D.MostDetailedMip = 0;
 
@@ -330,16 +339,33 @@ Texture* GfxDevice::CreateTexture(const TextureDescriptor &desc)
         pTexture->m_pSRV = pSrv;
     }
 
-    // Create RTV if necessary
+    if (needsDSV)
+    {
+        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+        descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        descDSV.Flags = 0;
+        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        descDSV.Texture2D.MipSlice = 0;
+
+        ID3D11DepthStencilView *pDsv;
+        CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateDepthStencilView(pD3DTexture, &descDSV, &pDsv), pTexture);
+        pTexture->m_pDSV = pDsv;
+    }
+    else if (needsRTV)
     {
         D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
-        rtvDesc.Format = d3dDesc.Format;
+        rtvDesc.Format = pixelFormat;
         rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
         rtvDesc.Texture2D.MipSlice = 0;
 
         ID3D11RenderTargetView *pRtv;
         CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateRenderTargetView(pD3DTexture, &rtvDesc, &pRtv), pTexture);
         pTexture->m_pRTV = pRtv;
+    }
+
+    if (needsUAV)
+    {
+        // #todo Implement Texture UAV creation
     }
 
     return pTexture;

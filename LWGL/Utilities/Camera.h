@@ -25,6 +25,8 @@ namespace lwgl
             Matrix4x4   GetProjMatrix() const;
             Vector3     GetWorldPosition() const;
             Vector3     GetLookAtDirection() const;
+            Vector2     GetViewSpaceZParams() const;
+            void        GetClipPlanes(float &near, float &far) const;
 
         private:
 

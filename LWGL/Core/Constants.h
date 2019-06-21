@@ -14,5 +14,6 @@ namespace lwgl
         constexpr float PI_ON_FOUR = DirectX::XM_PIDIV4;
 
         constexpr size_t MAX_RENDERTARGET_COUNT = 8;
+        constexpr size_t MAX_SHADERRESOURCE_COUNT = 32;
     }
 }

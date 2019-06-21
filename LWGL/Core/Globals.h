@@ -1,5 +1,7 @@
 #pragma once
 
+#include "TypeDefs.h"
+
 namespace lwgl
 {
     namespace core
@@ -34,5 +36,13 @@ namespace lwgl
             0.0f, 0.0f, 1.0f, 0.0f,
             0.0f, 0.0f, 0.0f, 1.0f
         };
+    }
+
+    namespace math
+    {
+        inline core::Matrix4x4 InverseMatrix(core::Matrix4x4 &matrix)
+        {
+            return XMMatrixInverse(nullptr, matrix);
+        }
     }
 }

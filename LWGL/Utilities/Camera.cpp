@@ -54,6 +54,22 @@ Vector3 Camera::GetLookAtDirection() const
     return lookAtWS;
 }
 
+Vector2 Camera::GetViewSpaceZParams() const
+{
+    float nearClip, farClip;
+    GetClipPlanes(nearClip, farClip);
+    float rcpNear = 1.0f / nearClip;
+    float rcpFar = 1.0f / farClip;
+
+    return Vector2 { (rcpFar - rcpNear), rcpNear };
+}
+
+void Camera::GetClipPlanes(float &nearClip, float &farClip) const
+{
+    nearClip = m_DXUTCamera.GetNearClip();
+    farClip = m_DXUTCamera.GetFarClip();
+}
+
 void Camera::HandleMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     m_DXUTCamera.HandleMessages(hWnd, uMsg, wParam, lParam);
