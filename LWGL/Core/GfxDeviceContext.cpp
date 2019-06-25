@@ -76,7 +76,7 @@ void GfxDeviceContext::SetupPipeline(GfxPipeline *pPipeline)
 
 void GfxDeviceContext::DrawMesh(Mesh* mesh)
 {
-    mesh->m_DXUTMesh.Render(m_pD3DContext, 0);
+    mesh->m_DXUTMesh.Render(m_pD3DContext, mesh->m_AlbedoSlot);
 }
 
 void* GfxDeviceContext::MapBuffer(Buffer *pBuffer, MapType mapType)
