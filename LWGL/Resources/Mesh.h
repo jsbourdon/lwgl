@@ -24,10 +24,11 @@ namespace lwgl
             friend class GfxDevice;
             friend class GfxDeviceContext;
 
-            Mesh();
+            Mesh() = default;
             ~Mesh();
 
-            CDXUTSDKMesh m_DXUTMesh;
+            CDXUTSDKMesh m_DXUTMesh {};
+            uint32_t m_AlbedoSlot { uint32_t(-1) };
         };
     }
 }

@@ -245,7 +245,12 @@ GfxPipeline* GfxDevice::CreatePipeline(const PipelineDescriptor &desc)
 Mesh* GfxDevice::CreateMesh(const wchar_t *filePath)
 {
     Mesh* mesh = new Mesh();
-    mesh->m_DXUTMesh.Create(m_pD3DDevice, filePath);
+    CDXUTSDKMesh &dxutMesh = mesh->m_DXUTMesh;
+    dxutMesh.Create(m_pD3DDevice, filePath);
+
+    SDKMESH_MATERIAL *pMat = dxutMesh.GetMaterial(0);
+    mesh->m_AlbedoSlot = strlen(pMat->DiffuseTexture) > 0 ? 0 : -1;
+
     return mesh;
 }
 
