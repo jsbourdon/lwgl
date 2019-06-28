@@ -206,14 +206,18 @@ void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, 
     DXUTSetCursorSettings(true, true);
     DXUTCreateWindow(windowTitle);
 
-    // Require D3D_FEATURE_LEVEL_11_0
-    DXUTCreateDevice(D3D_FEATURE_LEVEL_11_0, true, windowWidth, windowHeight);
-
     DXUTDeviceSettings deviceSettings;
     DXUTApplyDefaultDeviceSettings(&deviceSettings);
+    deviceSettings.MinimumFeatureLevel = D3D_FEATURE_LEVEL_11_0;
+    deviceSettings.d3d11.sd.BufferDesc.Height = windowHeight;
+    deviceSettings.d3d11.sd.BufferDesc.Width = windowWidth;
+    deviceSettings.d3d11.sd.Windowed = TRUE;
     deviceSettings.d3d11.AutoCreateDepthStencil = false;
 
+    DXUTCreateDeviceFromSettings(&deviceSettings, true);
     CreateDepthStencil(windowWidth, windowHeight);
+
+    m_pDeviceContext->BindSwapChain(true);
 }
 
 void RenderCore::CreateDepthStencil(uint32_t windowWidth, uint32_t windowHeight)
