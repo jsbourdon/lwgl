@@ -132,7 +132,7 @@ void GfxDeviceContext::BindSampler(SamplerState *pSampler, Stage stage, uint32_t
     }
 }
 
-void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount)
+void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, bool bindDepthStencil)
 {
     assert(renderTargetCount <= lwgl::core::MAX_RENDERTARGET_COUNT);
 
@@ -149,7 +149,8 @@ void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t ren
     }
 
     m_RenderTargetCount = renderTargetCount;
-    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, m_pDepthStencil->m_pDSV);
+    ID3D11DepthStencilView *pDSV = bindDepthStencil ? m_pDepthStencil->m_pDSV : nullptr;
+    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, pDSV);
 }
 
 void GfxDeviceContext::BindDepthStencilToStage(Stage stage, uint32_t slot)
