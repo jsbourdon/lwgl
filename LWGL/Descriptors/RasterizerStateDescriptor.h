@@ -21,8 +21,9 @@ namespace lwgl
 
         struct RasterizerStateDescriptor
         {
-            CullMode    CullMode;
-            Winding     Winding;
+            CullMode    CullMode { CullMode::Back };
+            Winding     Winding { Winding::FrontClockwise };
+            bool        DepthClip { true };
         };
     }
 }

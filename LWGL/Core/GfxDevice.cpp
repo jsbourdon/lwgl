@@ -508,7 +508,7 @@ RasterizerState* GfxDevice::CreateRasterizerState(const RasterizerStateDescripto
     d3dDesc.FillMode = D3D11_FILL_SOLID;
     d3dDesc.CullMode = s_CullModes[size_t(desc.CullMode)];
     d3dDesc.FrontCounterClockwise = desc.Winding == Winding::FrontCounterClockwise;
-    d3dDesc.DepthClipEnable = true;
+    d3dDesc.DepthClipEnable = desc.DepthClip;
 
     ID3D11RasterizerState *pD3DState = nullptr;
     CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateRasterizerState(&d3dDesc, &pD3DState), nullptr);
