@@ -44,14 +44,15 @@ cbuffer cbPerFrame : register(b0)
 //--------------------------------------------------------------------------------------
 // Textures and Samplers
 //--------------------------------------------------------------------------------------
-Texture2D	g_txDiffuse : register(t0);
-SamplerState g_samLinear : register(s0);
+Texture2D	    g_txDiffuse : register(t0);
+Texture2DArray  g_shadowMaps : register(t3);
+SamplerState    g_samLinear : register(s0);
 
 //--------------------------------------------------------------------------------------
 // Data buffers
 //--------------------------------------------------------------------------------------
-StructuredBuffer<PointLight> g_PointLights : register(t1);
-StructuredBuffer<SpotLight> g_SpotLights : register(t2);
+StructuredBuffer<PointLight>    g_PointLights : register(t1);
+StructuredBuffer<SpotLight>     g_SpotLights : register(t2);
 
 float ComputeDistanceAttenuation(float lightRadius, float lightDistance)
 {

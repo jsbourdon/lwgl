@@ -9,13 +9,17 @@
 #include "Resources/Mesh.h"
 #include "Resources/Shader.h"
 #include "Resources/Buffer.h"
+#include "Resources/Texture.h"
+#include "Resources/TextureArray.h"
 #include "Resources/SamplerState.h"
 #include "Pipeline/GfxPipeline.h"
 #include "Descriptors/PipelineDescriptor.h"
 #include "Descriptors/BufferDescriptor.h"
 #include "Descriptors/SamplerStateDescriptor.h"
 #include "Descriptors/ClearDescriptor.h"
+#include "Descriptors/TextureDescriptor.h"
 #include "Utilities/Camera.h"
+#include "Utilities/FixedCamera.h"
 #include "Inputs/IInputReceiver.h"
 #include "Debugging/DebuggingFeatures.h"
 
@@ -43,8 +47,14 @@ class BaseRenderer : public IRenderer, public IInputReceiver
 {
 private:
 
-    static constexpr size_t MaxPointLightCount = 1000;
-    static constexpr size_t MaxSpotLightCount = 1000;
+    static constexpr size_t     MaxPointLightCount = 1000;
+    static constexpr size_t     MaxSpotLightCount = 10;
+    static constexpr uint32_t   ShadowMapSize = 1024;
+
+    static constexpr float      SpotLightAngleRad = 0.5236f; // 30 degrees
+    static constexpr float      SpotLightUmbraAngleCos = 0.8660f; // cos(SpotLightAngleRad)
+    static constexpr float      SpotLightPenumbraAngleCos = 0.9397f; // cos 20 degrees
+    static constexpr float      SpotLightFarPlane = 5000.0f;
 
 public:
 
@@ -54,34 +64,70 @@ public:
 
         m_pMesh = pDevice->CreateMesh(L"sponza\\sponza.sdkmesh");
 
-        PipelineDescriptor pipelineDesc = {};
+        // Forward pipeline
+        {
+            PipelineDescriptor pipelineDesc = {};
 
-        pipelineDesc.BlendState.IsEnabled = false;
+            pipelineDesc.BlendState.IsEnabled = false;
 
-        pipelineDesc.DepthStencilState.IsDepthTestEnabled = true;
-        pipelineDesc.DepthStencilState.IsDepthWriteEnabled = true;
-        pipelineDesc.DepthStencilState.DepthFunction = ComparisonFunction::LESS_EQUAL;
-        pipelineDesc.DepthStencilState.IsStencilEnabled = false;
+            pipelineDesc.DepthStencilState.IsDepthTestEnabled = true;
+            pipelineDesc.DepthStencilState.IsDepthWriteEnabled = true;
+            pipelineDesc.DepthStencilState.DepthFunction = ComparisonFunction::LESS_EQUAL;
+            pipelineDesc.DepthStencilState.IsStencilEnabled = false;
 
-        pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Position, 0 });
-        pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Normal, 0 });
-        pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::UV, 0 });
-        pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Tangent, 0 });
+            pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Position, 0 });
+            pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Normal, 0 });
+            pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::UV, 0 });
+            pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Tangent, 0 });
 
-        pipelineDesc.VertexShader.Type = ShaderType::VertexShader;
-        pipelineDesc.VertexShader.FilePath = L"BasicHLSL11_VS.hlsl";
-        pipelineDesc.VertexShader.EntryPoint = "VSMain";
-        pipelineDesc.VertexShader.DebugName = "BasicHLSL11_VS";
+            pipelineDesc.VertexShader.Type = ShaderType::VertexShader;
+            pipelineDesc.VertexShader.FilePath = L"BasicHLSL11_VS.hlsl";
+            pipelineDesc.VertexShader.EntryPoint = "VSMain";
+            pipelineDesc.VertexShader.DebugName = "BasicHLSL11_VS";
 
-        pipelineDesc.FragmentShader.Type = ShaderType::FragmentShader;
-        pipelineDesc.FragmentShader.FilePath = L"BasicHLSL11_PS.hlsl";
-        pipelineDesc.FragmentShader.EntryPoint = "PSMain";
-        pipelineDesc.FragmentShader.DebugName = "BasicHLSL11_PS";
+            pipelineDesc.FragmentShader.Type = ShaderType::FragmentShader;
+            pipelineDesc.FragmentShader.FilePath = L"BasicHLSL11_PS.hlsl";
+            pipelineDesc.FragmentShader.EntryPoint = "PSMain";
+            pipelineDesc.FragmentShader.DebugName = "BasicHLSL11_PS";
 
-        pipelineDesc.RasterizerState.CullMode = CullMode::Back;
-        pipelineDesc.RasterizerState.Winding = Winding::FrontClockwise;
+            pipelineDesc.RasterizerState.CullMode = CullMode::Back;
+            pipelineDesc.RasterizerState.Winding = Winding::FrontClockwise;
 
-        m_pPipeline = pDevice->CreatePipeline(pipelineDesc);
+            m_pPipeline = pDevice->CreatePipeline(pipelineDesc);
+        }
+
+        // Shadow maps pipeline
+        {
+            PipelineDescriptor pipelineDesc = {};
+
+            pipelineDesc.BlendState.IsEnabled = false;
+            pipelineDesc.BlendState.ColorWrite = false;
+
+            pipelineDesc.DepthStencilState.IsDepthTestEnabled = true;
+            pipelineDesc.DepthStencilState.IsDepthWriteEnabled = true;
+            pipelineDesc.DepthStencilState.DepthFunction = ComparisonFunction::LESS_EQUAL;
+            pipelineDesc.DepthStencilState.IsStencilEnabled = false;
+
+            pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Position, 0 });
+            //pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Normal, 0 });
+            //pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::UV, 0 });
+            //pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Tangent, 0 });
+
+            pipelineDesc.VertexShader.Type = ShaderType::VertexShader;
+            pipelineDesc.VertexShader.FilePath = L"ShadowMap_VS.hlsl";
+            pipelineDesc.VertexShader.EntryPoint = "VSMain";
+            pipelineDesc.VertexShader.DebugName = "ShadowMap_VS";
+
+            pipelineDesc.FragmentShader.Type = ShaderType::FragmentShader;
+            pipelineDesc.FragmentShader.FilePath = L"ShadowMap_PS.hlsl";
+            pipelineDesc.FragmentShader.EntryPoint = "PSMain";
+            pipelineDesc.FragmentShader.DebugName = "ShadowMap_PS";
+
+            pipelineDesc.RasterizerState.CullMode = CullMode::Back;
+            pipelineDesc.RasterizerState.Winding = Winding::FrontClockwise;
+
+            m_pShadowMapPipeline = pDevice->CreatePipeline(pipelineDesc);
+        }
 
         BufferDescriptor bufferDesc;
         bufferDesc.ByteSize = 128;
@@ -91,6 +137,7 @@ public:
         bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
         m_pVSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
+        m_pVSShadowMapConstantBuffer = pDevice->CreateBuffer(bufferDesc);
 
         bufferDesc.ByteSize = 16;
         bufferDesc.DebugName = "PS_ConstantBuffer";
@@ -116,6 +163,23 @@ public:
 
         m_pSpotLightsBuffer = pDevice->CreateBuffer(bufferDesc);
 
+        // Spot light shadow maps
+        {
+            TextureDescriptor desc;
+            desc.Type = TextureType::DepthStencil;
+            desc.BindFlags = TextureBindFlags::ShaderResource;
+            desc.Format = PixelFormat::R24_UNORM_X8_TYPELESS;
+            desc.Usage = ResourceUsage::GPU_ReadWrite;
+            desc.Width = ShadowMapSize;
+            desc.Height = ShadowMapSize;
+            desc.ArraySize = MaxSpotLightCount;
+            desc.MipLevels = 1;
+            desc.SampleCount = 1;
+            desc.DebugName = "ShadowMaps";
+
+            m_pSpotLightShadowMaps = pDevice->CreateTextureArray(desc);
+        }
+
         SamplerStateDescriptor samplerDesc;
         m_pSamplerState = pDevice->CreateSamplerState(samplerDesc);
 
@@ -123,11 +187,15 @@ public:
         Vector4 lookAtPositionWS = { 0.0f, 0.0f, 0.0f, 0.0f };
         
         m_pCamera = pRenderCore->CreateCamera(cameraPositionWS, lookAtPositionWS, lwgl::core::PI_ON_FOUR, 16.0f / 9.0f, 0.1f, 5000.0f);
-
+        
         m_ClearDesc.ClearColor = true;
         m_ClearDesc.ColorClearValue = { 0.0f, 0.0f, 0.0f, 0.0f };
         m_ClearDesc.ClearDepth = true;
         m_ClearDesc.DepthClearValue = 1.0f;
+
+        m_ShadowMapClearDesc.ClearColor = false;
+        m_ShadowMapClearDesc.ClearDepth = true;
+        m_ShadowMapClearDesc.DepthClearValue = 1.0f;
 
         DebuggingFeatures *pDebugFeatures = pRenderCore->GetDebuggingFeatures();
         pDebugFeatures->ShowFPS(true);
@@ -140,12 +208,20 @@ public:
     {
         SAFE_RELEASE(m_pMesh);
         SAFE_RELEASE(m_pPipeline);
+        SAFE_RELEASE(m_pShadowMapPipeline);
         SAFE_RELEASE(m_pVSConstantBuffer);
+        SAFE_RELEASE(m_pVSShadowMapConstantBuffer);
         SAFE_RELEASE(m_pPSConstantBuffer);
         SAFE_RELEASE(m_pPointLightsBuffer);
         SAFE_RELEASE(m_pSpotLightsBuffer);
         SAFE_RELEASE(m_pCamera);
         SAFE_RELEASE(m_pSamplerState);
+        SAFE_RELEASE(m_pSpotLightShadowMaps);
+
+        for (size_t i = 0; i < ARRAYSIZE(m_ShadowMapCameras); ++i)
+        {
+            SAFE_RELEASE(m_ShadowMapCameras[i]);
+        }
     }
 
     void OnUpdate(RenderCore *pRenderCore, GfxDeviceContext* pContext, double fTimeSec, float fElapsedTimeSec, void* pUserContext) override
@@ -174,23 +250,49 @@ public:
             void *pSpotLightBufferPtr = pContext->MapBuffer(m_pSpotLightsBuffer, MapType::WriteDiscard);
             memcpy(pSpotLightBufferPtr, m_SpotLights, sizeof(m_SpotLights));
             pContext->UnmapBuffer(m_pSpotLightsBuffer);
+
+            //RenderNewShadowMap(pContext);
         }
+
+        RenderNewShadowMap(pContext);
+
+        Matrix4x4 *pConstantBufferData = static_cast<Matrix4x4*>(pContext->MapBuffer(m_pVSConstantBuffer, MapType::WriteDiscard));
+        *pConstantBufferData = m_pCamera->GetViewMatrix() * m_pCamera->GetProjMatrix();;
+        *(pConstantBufferData + 1) = s_IdentityMatrix;
+        pContext->UnmapBuffer(m_pVSConstantBuffer);
+    }
+
+    void RenderNewShadowMap(GfxDeviceContext* pContext)
+    {
+        if (m_NextSpotLightIndex == 0) return;
+
+        const uint32_t lastShadowMapIndex = m_NextSpotLightIndex - 1;
+        const FixedCamera *pSpotCamera = m_ShadowMapCameras[lastShadowMapIndex];
+
+        Matrix4x4 *pShadowMapCBData = static_cast<Matrix4x4*>(pContext->MapBuffer(m_pVSShadowMapConstantBuffer, MapType::WriteDiscard));
+        *pShadowMapCBData = pSpotCamera->GetViewMatrix() * pSpotCamera->GetProjMatrix();
+        pContext->UnmapBuffer(m_pVSShadowMapConstantBuffer);
+
+        pContext->UnbindRange(Stage::PS, 0, 4);
+        pContext->BindRenderTargets(nullptr, 0, m_pSpotLightShadowMaps, lastShadowMapIndex);
+        pContext->SetupPipeline(m_pShadowMapPipeline);
+        pContext->BindBuffer(m_pVSShadowMapConstantBuffer, Stage::VS, 0);
+        pContext->Clear(m_ShadowMapClearDesc);
+        pContext->DrawMesh(m_pMesh);
+
+        pContext->BindSwapChain();
     }
 
     void OnFrameRender(RenderCore *pRenderCore, GfxDevice* pDevice, GfxDeviceContext* pContext, double fTimeSec, float fElapsedTimeSec, void* pUserContext) override
     {
         pContext->Clear(m_ClearDesc);
 
-        Matrix4x4 *pConstantBufferData = static_cast<Matrix4x4*>(pContext->MapBuffer(m_pVSConstantBuffer, MapType::WriteDiscard));
-        *pConstantBufferData = m_pCamera->GetViewMatrix() * m_pCamera->GetProjMatrix();
-        *(pConstantBufferData + 1) = s_IdentityMatrix;
-        pContext->UnmapBuffer(m_pVSConstantBuffer);
-
         pContext->SetupPipeline(m_pPipeline);
         pContext->BindBuffer(m_pVSConstantBuffer, Stage::VS, 0);
         pContext->BindBuffer(m_pPSConstantBuffer, Stage::PS, 0);
         pContext->BindBuffer(m_pPointLightsBuffer, Stage::PS, 1);
         pContext->BindBuffer(m_pSpotLightsBuffer, Stage::PS, 2);
+        pContext->BindTexture(m_pSpotLightShadowMaps, Stage::PS, 3);
         pContext->BindSampler(m_pSamplerState, Stage::PS, 0);
         pContext->DrawMesh(m_pMesh);
     }
@@ -211,14 +313,20 @@ public:
     {
         if (m_NextSpotLightIndex < MaxSpotLightCount)
         {
-            SpotLight &light = m_SpotLights[m_NextSpotLightIndex++];
+            const uint32_t currentSpotLightIndex = m_NextSpotLightIndex++;
+
+            SpotLight &light = m_SpotLights[currentSpotLightIndex];
             light.positionWS = m_pCamera->GetWorldPosition();
             light.directionWS = m_pCamera->GetLookAtDirection();
-            light.radius = 5000.0f;
-            //light.penumbraCosTheta = 0.8660f;   // cos 30 degrees
-            //light.umbraCosTheta = 0.7071f;      // cos 45 degrees
-            light.penumbraCosTheta = 0.9397f;   // cos 20 degrees
-            light.umbraCosTheta = 0.8660f;      // cos 30 degrees
+            light.radius = SpotLightFarPlane;
+            light.penumbraCosTheta = SpotLightPenumbraAngleCos;
+            light.umbraCosTheta = SpotLightUmbraAngleCos;
+
+            FixedCamera *shadowCamera = new FixedCamera();
+
+            Vector3 camLookAtPoint = m_pCamera->GetLookAtPoint();
+            shadowCamera->Init(lwgl::math::ConvertVector(light.positionWS), lwgl::math::ConvertVector(camLookAtPoint), SpotLightAngleRad * 2, 1.0f, 0.1f, SpotLightFarPlane);
+            m_ShadowMapCameras[currentSpotLightIndex] = shadowCamera;
 
             m_SpotLightAdded = true;
         }
@@ -244,22 +352,27 @@ public:
 
 private:
 
-    Mesh*           m_pMesh = nullptr;
-    GfxPipeline*    m_pPipeline = nullptr;
-    Buffer*         m_pVSConstantBuffer = nullptr;
-    Buffer*         m_pPSConstantBuffer = nullptr;
-    Buffer*         m_pPointLightsBuffer = nullptr;
-    Buffer*         m_pSpotLightsBuffer = nullptr;
-    SamplerState*   m_pSamplerState = nullptr;
-    Camera*         m_pCamera = nullptr;
-    ClearDescriptor m_ClearDesc {};
+    Mesh*               m_pMesh { nullptr };
+    GfxPipeline*        m_pPipeline { nullptr };
+    GfxPipeline*        m_pShadowMapPipeline { nullptr };
+    Buffer*             m_pVSConstantBuffer { nullptr };
+    Buffer*             m_pVSShadowMapConstantBuffer { nullptr };
+    Buffer*             m_pPSConstantBuffer { nullptr };
+    Buffer*             m_pPointLightsBuffer { nullptr };
+    Buffer*             m_pSpotLightsBuffer { nullptr };
+    SamplerState*       m_pSamplerState { nullptr };
+    Camera*             m_pCamera { nullptr };
+    FixedCamera*        m_ShadowMapCameras[MaxSpotLightCount] { };
+    ClearDescriptor     m_ClearDesc {};
+    ClearDescriptor     m_ShadowMapClearDesc {};
 
-    PointLight      m_PointLights[MaxPointLightCount];
-    SpotLight       m_SpotLights[MaxSpotLightCount];
-    uint32_t        m_NextPointLightIndex = 0;
-    uint32_t        m_NextSpotLightIndex = 0;
-    bool            m_PointLightAdded = false;
-    bool            m_SpotLightAdded = false;
+    PointLight          m_PointLights[MaxPointLightCount] {};
+    SpotLight           m_SpotLights[MaxSpotLightCount] {};
+    TextureArray*       m_pSpotLightShadowMaps { nullptr };
+    uint32_t            m_NextPointLightIndex { 0 };
+    uint32_t            m_NextSpotLightIndex { 0 };
+    bool                m_PointLightAdded { false };
+    bool                m_SpotLightAdded { false };
 };
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
