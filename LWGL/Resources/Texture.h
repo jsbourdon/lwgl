@@ -27,11 +27,13 @@ namespace lwgl
 
             union
             {
-                ID3D11RenderTargetView*     m_pRTV { nullptr };
-                ID3D11DepthStencilView*     m_pDSV;
+                ID3D11RenderTargetView* m_pRTV { nullptr };
+                ID3D11DepthStencilView* m_pDSV;
             };
 
             TextureType                 m_Type { TextureType::Texture2D };
+            uint32_t                    m_Width { 0 };
+            uint32_t                    m_Height { 0 };
         };
     }
 }

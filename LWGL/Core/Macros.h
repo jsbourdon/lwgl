@@ -10,6 +10,8 @@
     #define SAFE_RELEASE(p) { if (p) { (p)->Release(); (p) = nullptr; } }
 #endif
 
+#define SAFE_ADDREF(p) { if (p) { p->AddRef(); } }
+
 #ifdef _DEBUG
     #define CHECK_HRESULT_RETURN_VALUE_INTERNAL(hr, x, v)                                                               \
         {                                                                                                               \

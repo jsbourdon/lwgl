@@ -472,6 +472,8 @@ template<typename T> T* GfxDevice::CreateTextureCore(const TextureDescriptor &de
 
     T *pTexture = new T();
     pTexture->m_pTexture = pD3DTexture;
+    pTexture->m_Width = desc.Width;
+    pTexture->m_Height = desc.Height;
 
     const char *debugName = desc.DebugName;
     if (debugName != nullptr)
@@ -581,7 +583,7 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
             rtBlendDesc.BlendOpAlpha = s_BlendOperations[size_t(desc.AlphaOperation)];
         }
 
-        rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        rtBlendDesc.RenderTargetWriteMask = desc.ColorWrite ? D3D11_COLOR_WRITE_ENABLE_ALL : 0;
     }
 
     ID3D11BlendState *pD3DBlendState;

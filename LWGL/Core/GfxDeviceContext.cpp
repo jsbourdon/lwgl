@@ -32,10 +32,6 @@ void* GfxDeviceContext::s_pNullResources[lwgl::core::MAX_SHADERRESOURCE_COUNT] {
 
 GfxDeviceContext::GfxDeviceContext(ID3D11DeviceContext* d3dContext)
     : m_pD3DContext(d3dContext)
-    , m_pCurrentPipeline(nullptr)
-    , m_pRenderTargets {}
-    , m_pDepthStencil(nullptr)
-    , m_RenderTargetCount(0)
 {
     static_assert(ARRAYSIZE(s_pNullResources) == lwgl::core::MAX_SHADERRESOURCE_COUNT, "Invalid number of NULL resources");
     static_assert(lwgl::core::MAX_RENDERTARGET_COUNT <= lwgl::core::MAX_SHADERRESOURCE_COUNT, "MAX_RENDERTARGET_COUNT is greater than MAX_SHADERRESOURCE_COUNT");
@@ -44,7 +40,8 @@ GfxDeviceContext::GfxDeviceContext(ID3D11DeviceContext* d3dContext)
 GfxDeviceContext::~GfxDeviceContext()
 {
     SAFE_RELEASE(m_pCurrentPipeline);
-    SAFE_RELEASE(m_pDepthStencil);
+    SAFE_RELEASE(m_pSwapChainDepthStencil);
+    SAFE_RELEASE(m_pCurrentDepthStencil);
 
     for (uint32_t rtIndex = 0; rtIndex < m_RenderTargetCount; ++rtIndex)
     {
@@ -133,9 +130,17 @@ void GfxDeviceContext::BindSampler(SamplerState *pSampler, Stage stage, uint32_t
     }
 }
 
+void GfxDeviceContext::SetDepthStencil(Texture *pDepthStencil, uint32_t arrayIndex)
+{
+    SAFE_ADDREF(pDepthStencil);
+    SAFE_RELEASE(m_pCurrentDepthStencil);
+    m_pCurrentDepthStencil = pDepthStencil;
+    m_DepthStencilArrayIndex = arrayIndex;
+}
+
 void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, bool bindDepthStencil)
 {
-    BindRenderTargets(pRenderTargets, renderTargetCount, bindDepthStencil ? m_pDepthStencil : nullptr);
+    BindRenderTargets(pRenderTargets, renderTargetCount, bindDepthStencil ? m_pSwapChainDepthStencil : nullptr);
 }
 
 void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, Texture *pDepthBuffer)
@@ -143,6 +148,8 @@ void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t ren
     assert(renderTargetCount <= lwgl::core::MAX_RENDERTARGET_COUNT);
 
     UnbindRenderTargets();
+    SetDepthStencil(pDepthBuffer);
+    SetViewport((renderTargetCount > 0) ? pRenderTargets[0] : pDepthBuffer);
 
     ID3D11RenderTargetView **pRTVs = (renderTargetCount > 0) ? static_cast<ID3D11RenderTargetView**>(StackAlloc(sizeof(ID3D11RenderTargetView*) * renderTargetCount)) : nullptr;
     for (uint32_t i = 0; i < renderTargetCount; ++i)
@@ -163,6 +170,9 @@ void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t ren
 {
     assert(depthArrayIndex < pDepthBuffer->m_ArraySize);
 
+    SetDepthStencil(pDepthBuffer, depthArrayIndex);
+    SetViewport((renderTargetCount > 0) ? pRenderTargets[0] : pDepthBuffer);
+
     pDepthBuffer->m_pDSV = pDepthBuffer->m_pDSVs[depthArrayIndex];
     BindRenderTargets(pRenderTargets, renderTargetCount, pDepthBuffer);
     pDepthBuffer->m_pDSV = pDepthBuffer->m_pDSVs[0];
@@ -173,18 +183,21 @@ void GfxDeviceContext::BindRenderTargets(TextureArray *pRenderTargets, uint32_t 
     assert(depthArrayIndex < pDepthBuffer->m_ArraySize);
     assert((rtStartIndex + renderTargetCount) <= pRenderTargets->m_ArraySize);
 
+    SetDepthStencil(pDepthBuffer, depthArrayIndex);
+    SetViewport((pRenderTargets != nullptr) ? pRenderTargets : pDepthBuffer);
+
     m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRenderTargets->m_pRTVs + rtStartIndex, pDepthBuffer->m_pDSVs[depthArrayIndex]);;
 }
 
-void GfxDeviceContext::BindDepthStencilToStage(Stage stage, uint32_t slot)
+void GfxDeviceContext::BindSwapChainDepthStencilToStage(Stage stage, uint32_t slot)
 {
     if (stage == Stage::VS)
     {
-        m_pD3DContext->VSSetShaderResources(slot, 1, &m_pDepthStencil->m_pSRV);
+        m_pD3DContext->VSSetShaderResources(slot, 1, &m_pSwapChainDepthStencil->m_pSRV);
     }
     else if (stage == Stage::PS)
     {
-        m_pD3DContext->PSSetShaderResources(slot, 1, &m_pDepthStencil->m_pSRV);
+        m_pD3DContext->PSSetShaderResources(slot, 1, &m_pSwapChainDepthStencil->m_pSRV);
     }
 }
 
@@ -200,21 +213,36 @@ void GfxDeviceContext::UnbindRenderTargets()
     m_RenderTargetCount = 0;
 }
 
-void GfxDeviceContext::BindSwapChain(bool bindDepthStencil)
+void GfxDeviceContext::SetViewport(float width, float height)
 {
-    UnbindRenderTargets();
-    
     D3D11_VIEWPORT vp;
-    vp.Width = (FLOAT)DXUTGetDXGIBackBufferSurfaceDesc()->Width;
-    vp.Height = (FLOAT)DXUTGetDXGIBackBufferSurfaceDesc()->Height;
+    vp.Width = width;
+    vp.Height = height;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;
     vp.TopLeftY = 0;
     m_pD3DContext->RSSetViewports(1, &vp);
+}
+
+void GfxDeviceContext::SetViewport(Texture *pTexture)
+{
+    if (pTexture != nullptr)
+    {
+        SetViewport(float(pTexture->m_Width), float(pTexture->m_Height));
+    }
+}
+
+void GfxDeviceContext::BindSwapChain(bool bindDepthStencil)
+{
+    UnbindRenderTargets();
+
+    const DXGI_SURFACE_DESC *pSurfaceDesc = DXUTGetDXGIBackBufferSurfaceDesc();
+    SetViewport(float(pSurfaceDesc->Width), float(pSurfaceDesc->Height));
+    SetDepthStencil(bindDepthStencil ? m_pSwapChainDepthStencil : nullptr);
 
     ID3D11RenderTargetView *pRTV = DXUTGetD3D11RenderTargetView();
-    ID3D11DepthStencilView *pDSV = bindDepthStencil ? m_pDepthStencil->m_pDSV : nullptr;
+    ID3D11DepthStencilView *pDSV = bindDepthStencil ? m_pSwapChainDepthStencil->m_pDSV : nullptr;
     m_pD3DContext->OMSetRenderTargets(1, &pRTV, pDSV);
 }
 
@@ -244,7 +272,8 @@ void GfxDeviceContext::UnbindRange(Stage stage, uint32_t slot, uint32_t count)
 
 void GfxDeviceContext::SetSwapChainDepthStencil(Texture *pDepthStencil)
 {
-    m_pDepthStencil = pDepthStencil;
+    SAFE_RELEASE(m_pSwapChainDepthStencil);
+    m_pSwapChainDepthStencil = pDepthStencil;
 }
 
 void GfxDeviceContext::Clear(const ClearDescriptor &desc)
@@ -267,9 +296,11 @@ void GfxDeviceContext::Clear(const ClearDescriptor &desc)
         }
     }
 
-    if (desc.ClearDepth || desc.ClearStencil)
+    if ((desc.ClearDepth || desc.ClearStencil) && m_pCurrentDepthStencil != nullptr)
     {
-        ID3D11DepthStencilView *pDSV = m_pDepthStencil->m_pDSV;
+        assert((m_DepthStencilArrayIndex == 0) || m_DepthStencilArrayIndex < static_cast<TextureArray*>(m_pCurrentDepthStencil)->m_ArraySize);
+
+        ID3D11DepthStencilView *pDSV = (m_DepthStencilArrayIndex > 0) ? static_cast<TextureArray*>(m_pCurrentDepthStencil)->m_pDSVs[m_DepthStencilArrayIndex] : m_pCurrentDepthStencil->m_pDSV;
         D3D11_CLEAR_FLAG clearFlags = static_cast<D3D11_CLEAR_FLAG>((desc.ClearDepth ? D3D11_CLEAR_DEPTH : 0) | (desc.ClearStencil ? D3D11_CLEAR_STENCIL : 0));
         m_pD3DContext->ClearDepthStencilView(pDSV, clearFlags, desc.DepthClearValue, desc.StencilClearValue);
     }

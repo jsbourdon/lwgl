@@ -31,14 +31,15 @@ namespace lwgl
 
         struct BlendStateDescriptor
         {
-            BlendValue SourceColor;
-            BlendValue DestinationColor;
-            BlendOperation ColorOperation;
-            BlendValue SourceAlpha;
-            BlendValue DestinationAlpha;
-            BlendOperation AlphaOperation;
+            BlendValue SourceColor {};
+            BlendValue DestinationColor {};
+            BlendOperation ColorOperation {};
+            BlendValue SourceAlpha {};
+            BlendValue DestinationAlpha {};
+            BlendOperation AlphaOperation {};
             uint32_t RenderTargetCount { 1 };
-            bool IsEnabled;
+            bool IsEnabled { true };
+            bool ColorWrite { true };
         };
     }
 }
