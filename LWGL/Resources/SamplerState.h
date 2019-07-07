@@ -6,7 +6,7 @@ namespace lwgl
 {
     namespace resources
     {
-        class SamplerState : public RefCountedObject<SamplerState>
+        class SamplerState final : public RefCountedObject<SamplerState>
         {
             friend base;
             friend class GfxDevice;

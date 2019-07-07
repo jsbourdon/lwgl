@@ -199,6 +199,7 @@
     <ClInclude Include="Resources\Shader.h" />
     <ClInclude Include="Resources\Texture.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Resources\TextureArray.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utilities\Camera.h" />
   </ItemGroup>
@@ -226,6 +227,7 @@
     <ClCompile Include="Resources\SamplerState.cpp" />
     <ClCompile Include="Resources\Shader.cpp" />
     <ClCompile Include="Resources\Texture.cpp" />
+    <ClCompile Include="Resources\TextureArray.cpp" />
     <ClCompile Include="Utilities\Camera.cpp" />
   </ItemGroup>
   <ItemGroup>

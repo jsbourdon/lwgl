@@ -6,7 +6,7 @@ namespace lwgl
 {
     namespace resources
     {
-        class DepthStencilState : public RefCountedObject<DepthStencilState>
+        class DepthStencilState final : public RefCountedObject<DepthStencilState>
         {
             friend base;
             friend class GfxDevice;

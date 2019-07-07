@@ -13,7 +13,7 @@ namespace lwgl
 
     namespace resources
     {
-        class Buffer : public RefCountedObject<Buffer>
+        class Buffer final : public RefCountedObject<Buffer>
         {
             friend base;
             friend class GfxDevice;

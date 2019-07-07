@@ -13,6 +13,7 @@
 #include "../Resources/SamplerState.h"
 #include "../Resources/RasterizerState.h"
 #include "../Resources/Texture.h"
+#include "../Resources/TextureArray.h"
 
 using namespace lwgl;
 using namespace core;
@@ -134,11 +135,16 @@ void GfxDeviceContext::BindSampler(SamplerState *pSampler, Stage stage, uint32_t
 
 void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, bool bindDepthStencil)
 {
+    BindRenderTargets(pRenderTargets, renderTargetCount, bindDepthStencil ? m_pDepthStencil : nullptr);
+}
+
+void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, Texture *pDepthBuffer)
+{
     assert(renderTargetCount <= lwgl::core::MAX_RENDERTARGET_COUNT);
 
     UnbindRenderTargets();
 
-    ID3D11RenderTargetView **pRTVs = static_cast<ID3D11RenderTargetView**>(StackAlloc(sizeof(ID3D11RenderTargetView*)));
+    ID3D11RenderTargetView **pRTVs = (renderTargetCount > 0) ? static_cast<ID3D11RenderTargetView**>(StackAlloc(sizeof(ID3D11RenderTargetView*) * renderTargetCount)) : nullptr;
     for (uint32_t i = 0; i < renderTargetCount; ++i)
     {
         Texture *pRenderTarget = pRenderTargets[i];
@@ -149,8 +155,25 @@ void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t ren
     }
 
     m_RenderTargetCount = renderTargetCount;
-    ID3D11DepthStencilView *pDSV = bindDepthStencil ? m_pDepthStencil->m_pDSV : nullptr;
+    ID3D11DepthStencilView *pDSV = pDepthBuffer != nullptr ? pDepthBuffer->m_pDSV : nullptr;
     m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, pDSV);
+}
+
+void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex)
+{
+    assert(depthArrayIndex < pDepthBuffer->m_ArraySize);
+
+    pDepthBuffer->m_pDSV = pDepthBuffer->m_pDSVs[depthArrayIndex];
+    BindRenderTargets(pRenderTargets, renderTargetCount, pDepthBuffer);
+    pDepthBuffer->m_pDSV = pDepthBuffer->m_pDSVs[0];
+}
+
+void GfxDeviceContext::BindRenderTargets(TextureArray *pRenderTargets, uint32_t rtStartIndex, uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex)
+{
+    assert(depthArrayIndex < pDepthBuffer->m_ArraySize);
+    assert((rtStartIndex + renderTargetCount) <= pRenderTargets->m_ArraySize);
+
+    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRenderTargets->m_pRTVs + rtStartIndex, pDepthBuffer->m_pDSVs[depthArrayIndex]);;
 }
 
 void GfxDeviceContext::BindDepthStencilToStage(Stage stage, uint32_t slot)

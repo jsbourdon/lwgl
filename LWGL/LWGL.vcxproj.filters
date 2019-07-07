@@ -159,6 +159,9 @@
     <ClInclude Include="Resources\Texture.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Resources\TextureArray.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\RenderCore.cpp">
@@ -217,6 +220,9 @@
     </ClCompile>
     <ClCompile Include="Core\Globals.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources\TextureArray.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@ namespace lwgl
 
     namespace resources
     {
-        class Shader : public RefCountedObject<Shader>
+        class Shader final : public RefCountedObject<Shader>
         {
             friend base;
             friend class GfxDevice;

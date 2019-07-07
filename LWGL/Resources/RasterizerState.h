@@ -6,7 +6,7 @@ namespace lwgl
 {
     namespace resources
     {
-        class RasterizerState : public RefCountedObject<RasterizerState>
+        class RasterizerState final : public RefCountedObject<RasterizerState>
         {
             friend base;
             friend class GfxDevice;

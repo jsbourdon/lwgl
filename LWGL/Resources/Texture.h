@@ -15,12 +15,12 @@ namespace lwgl
             friend class GfxDevice;
             friend class GfxDeviceContext;
 
-        private:
+        protected:
 
             Texture() = default;
-            ~Texture();
+            virtual ~Texture();
 
-        private:
+        protected:
 
             ID3D11Texture2D*            m_pTexture { nullptr };
             ID3D11ShaderResourceView*   m_pSRV { nullptr };

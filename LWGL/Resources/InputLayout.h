@@ -7,7 +7,7 @@ namespace lwgl
 {
     namespace resources
     {
-        class InputLayout : public RefCountedObject<InputLayout>
+        class InputLayout final : public RefCountedObject<InputLayout>
         {
             friend base;
             friend class GfxDevice;

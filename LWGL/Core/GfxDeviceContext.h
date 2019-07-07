@@ -16,6 +16,7 @@ namespace lwgl
         class Buffer;
         class SamplerState;
         class Texture;
+        class TextureArray;
     }
 
     namespace pipeline
@@ -62,14 +63,19 @@ namespace lwgl
 
             void*   MapBuffer(Buffer *pBuffer, MapType mapType);
             void    UnmapBuffer(Buffer *pBuffer);
+
             void    BindBuffer(const Buffer *pBuffer, Stage stage, uint32_t slot);
             void    BindTexture(const Texture *pTexture, Stage stage, uint32_t slot);
             void    BindSampler(SamplerState *pSampler, Stage stage, uint32_t slot);
-            void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, bool bindDepthStencil = true);
             void    BindDepthStencilToStage(Stage stage, uint32_t slot);
             void    BindSwapChain(bool bindDepthStencil = true);
             void    Unbind(Stage stage, uint32_t slot);
             void    UnbindRange(Stage stage, uint32_t slot, uint32_t count);
+
+            void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, bool bindDepthStencil = true);
+            void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, Texture *pDepthBuffer);
+            void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex);
+            void    BindRenderTargets(TextureArray *pRenderTargets, uint32_t rtStartIndex, uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex);
 
             void    Clear(const ClearDescriptor &desc);
 

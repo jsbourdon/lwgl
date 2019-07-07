@@ -24,15 +24,16 @@ namespace lwgl
 
         struct TextureDescriptor
         {
-            TextureType Type;
-            PixelFormat Format;
-            ResourceUsage Usage;
-            TextureBindFlags BindFlags;
-            uint32_t Width;
-            uint32_t Height;
-            uint32_t MipLevels;
-            uint32_t ArraySize;
-            uint32_t SampleCount;
+            const char* DebugName { nullptr };
+            TextureType Type {};
+            PixelFormat Format {};
+            ResourceUsage Usage {};
+            TextureBindFlags BindFlags {};
+            uint32_t Width { 0 };
+            uint32_t Height { 0 };
+            uint32_t MipLevels { 0 };
+            uint32_t ArraySize { 0 };
+            uint32_t SampleCount { 0 };
         };
     }
 }
