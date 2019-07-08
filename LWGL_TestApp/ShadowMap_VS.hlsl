@@ -3,7 +3,8 @@
 //--------------------------------------------------------------------------------------
 cbuffer cbPerObject : register(b0)
 {
-    row_major matrix g_mWorldViewProjection : packoffset( c0 );
+    row_major matrix g_mWorldView : packoffset( c0 );
+    row_major matrix g_mProjection : packoffset(c4);
 };
 
 //--------------------------------------------------------------------------------------
@@ -12,8 +13,6 @@ cbuffer cbPerObject : register(b0)
 struct VS_INPUT
 {
 	float4 vPosition	: POSITION;
-	//float3 vNormal		: NORMAL;
-	//float2 vTexcoord	: TEXCOORD0;
 };
 
 struct VS_OUTPUT
@@ -24,10 +23,14 @@ struct VS_OUTPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-VS_OUTPUT VSMain( VS_INPUT Input )
+VS_OUTPUT VSMain(VS_INPUT Input)
 {
 	VS_OUTPUT Output;
-	Output.vPosition = mul(Input.vPosition, g_mWorldViewProjection);
+
+    float4 posVS = mul(Input.vPosition, g_mWorldView);
+    posVS += normalize(posVS) * 0.01f; // Depth bias
+
+    Output.vPosition = mul(posVS, g_mProjection);
 	
 	return Output;
 }

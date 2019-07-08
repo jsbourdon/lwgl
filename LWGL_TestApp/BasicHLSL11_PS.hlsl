@@ -25,11 +25,13 @@ struct PointLight
 
 struct SpotLight
 {
+    row_major matrix shadowViewProjection;
     float3 posWS;
     float3 directionWS;
     float penumbraCosTheta;
     float umbraCosTheta;
     float radius;
+    float3 alignmentPadding;
 };
 
 //--------------------------------------------------------------------------------------
@@ -64,6 +66,20 @@ float ComputeDistanceAttenuation(float lightRadius, float lightDistance)
     //float attenuation = (lightRadius * lightRadius) / ((lightDistance * lightDistance) + epsilon);
     //attenuation *= pow(max(0.0f, 1.0f - pow(lightDistance / lightRadius, 4)), 2);
     //return attenuation;
+}
+
+float GetSpotShadowAttenuation(float4 posWS, SpotLight spot, int spotIndex)
+{
+    float4 posCS = mul(posWS, spot.shadowViewProjection);
+    float4 posNDC = posCS / posCS.w;
+
+    float2 shadowUV = posNDC.xy * 0.5f + 0.5f;
+    shadowUV.y = 1.0f - shadowUV.y;
+    float3 shadowUVW = { shadowUV, spotIndex };
+
+    float shadowDepth = g_shadowMaps.Sample(g_samLinear, shadowUVW).x;
+
+    return (shadowDepth > posNDC.z) ? 1.0f : 0.0f;
 }
 
 //--------------------------------------------------------------------------------------
@@ -102,9 +118,10 @@ float4 PSMain( PS_INPUT Input ) : SV_TARGET
         float directionIntensity = saturate(dot(normalizedLightDir, normalize(Input.vNormal)));
         float distanceAttenuation = ComputeDistanceAttenuation(lightRadius, lightDist);
         float angleAttenuation = saturate((dot(-normalizedLightDir, spotLight.directionWS) - spotLight.umbraCosTheta) / (spotLight.penumbraCosTheta - spotLight.umbraCosTheta));
+        float shadowAttenuation = GetSpotShadowAttenuation(Input.vPosWS, spotLight, spotLightIndex);
         angleAttenuation *= angleAttenuation;
 
-        lightIntensity += directionIntensity * distanceAttenuation * angleAttenuation;
+        lightIntensity += directionIntensity * distanceAttenuation * angleAttenuation * shadowAttenuation;
     }
 	
     return vDiffuse * lightIntensity;

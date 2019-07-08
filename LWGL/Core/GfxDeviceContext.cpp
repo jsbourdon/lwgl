@@ -147,11 +147,22 @@ void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t ren
 {
     assert(renderTargetCount <= lwgl::core::MAX_RENDERTARGET_COUNT);
 
+    ID3D11DepthStencilView *pDSV = pDepthBuffer != nullptr ? pDepthBuffer->m_pDSV : nullptr;
+
     UnbindRenderTargets();
     SetDepthStencil(pDepthBuffer);
     SetViewport((renderTargetCount > 0) ? pRenderTargets[0] : pDepthBuffer);
+    BindRenderTargets(pRenderTargets, renderTargetCount, pDSV);
+}
 
-    ID3D11RenderTargetView **pRTVs = (renderTargetCount > 0) ? static_cast<ID3D11RenderTargetView**>(StackAlloc(sizeof(ID3D11RenderTargetView*) * renderTargetCount)) : nullptr;
+void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, ID3D11DepthStencilView *pDepthBufferView)
+{
+    assert(renderTargetCount <= lwgl::core::MAX_RENDERTARGET_COUNT);
+
+    m_RenderTargetCount = renderTargetCount;
+
+    ID3D11RenderTargetView **pRTVs = (renderTargetCount > 0) ? static_cast<ID3D11RenderTargetView * *>(StackAlloc(sizeof(ID3D11RenderTargetView*) * renderTargetCount)) : nullptr;
+
     for (uint32_t i = 0; i < renderTargetCount; ++i)
     {
         Texture *pRenderTarget = pRenderTargets[i];
@@ -161,30 +172,31 @@ void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t ren
         pRTVs[i] = pRenderTarget->m_pRTV;
     }
 
-    m_RenderTargetCount = renderTargetCount;
-    ID3D11DepthStencilView *pDSV = pDepthBuffer != nullptr ? pDepthBuffer->m_pDSV : nullptr;
-    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, pDSV);
+    m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRTVs, pDepthBufferView);
 }
 
 void GfxDeviceContext::BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex)
 {
     assert(depthArrayIndex < pDepthBuffer->m_ArraySize);
 
+    ID3D11DepthStencilView *pDSV = pDepthBuffer->m_pDSVs[depthArrayIndex];
+
+    UnbindRenderTargets();
     SetDepthStencil(pDepthBuffer, depthArrayIndex);
     SetViewport((renderTargetCount > 0) ? pRenderTargets[0] : pDepthBuffer);
-
-    pDepthBuffer->m_pDSV = pDepthBuffer->m_pDSVs[depthArrayIndex];
-    BindRenderTargets(pRenderTargets, renderTargetCount, pDepthBuffer);
-    pDepthBuffer->m_pDSV = pDepthBuffer->m_pDSVs[0];
+    BindRenderTargets(pRenderTargets, renderTargetCount, pDSV);
 }
 
 void GfxDeviceContext::BindRenderTargets(TextureArray *pRenderTargets, uint32_t rtStartIndex, uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex)
 {
+    assert(pRenderTargets != nullptr);
+    assert(pDepthBuffer != nullptr);
     assert(depthArrayIndex < pDepthBuffer->m_ArraySize);
-    assert((rtStartIndex + renderTargetCount) <= pRenderTargets->m_ArraySize);
+    assert((rtStartIndex + renderTargetCount) <= uint32_t(pRenderTargets->m_ArraySize));
 
+    UnbindRenderTargets();
     SetDepthStencil(pDepthBuffer, depthArrayIndex);
-    SetViewport((pRenderTargets != nullptr) ? pRenderTargets : pDepthBuffer);
+    SetViewport(pRenderTargets);
 
     m_pD3DContext->OMSetRenderTargets(renderTargetCount, pRenderTargets->m_pRTVs + rtStartIndex, pDepthBuffer->m_pDSVs[depthArrayIndex]);;
 }

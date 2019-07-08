@@ -36,6 +36,7 @@ struct PointLight
 
 struct SpotLight
 {
+    Matrix4x4 viewProjection; // aligned on 16 bytes
     Vector3 positionWS;
     Vector3 directionWS;
     float penumbraCosTheta;
@@ -130,38 +131,61 @@ public:
         }
 
         BufferDescriptor bufferDesc;
-        bufferDesc.ByteSize = 128;
-        bufferDesc.DebugName = "VS_ConstantBuffer";
-        bufferDesc.StructureStride = 0;
-        bufferDesc.Type = BufferType::Constants;
-        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
-        m_pVSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
-        m_pVSShadowMapConstantBuffer = pDevice->CreateBuffer(bufferDesc);
+        // Forward VS constant buffer
+        {
+            bufferDesc.ByteSize = 128;
+            bufferDesc.DebugName = "VS_ConstantBuffer";
+            bufferDesc.StructureStride = 0;
+            bufferDesc.Type = BufferType::Constants;
+            bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
-        bufferDesc.ByteSize = 16;
-        bufferDesc.DebugName = "PS_ConstantBuffer";
-        bufferDesc.StructureStride = 0;
-        bufferDesc.Type = BufferType::Constants;
-        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
+            m_pVSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
+        }
 
-        m_pPSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
+        // Shadow map VS constant buffer
+        {
+            bufferDesc.ByteSize = 128;
+            bufferDesc.DebugName = "VS_ShadowMapCB";
+            bufferDesc.StructureStride = 0;
+            bufferDesc.Type = BufferType::Constants;
+            bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
-        bufferDesc.ByteSize = sizeof(PointLight) * MaxPointLightCount;
-        bufferDesc.DebugName = "PointLights_Buffer";
-        bufferDesc.StructureStride = sizeof(PointLight);
-        bufferDesc.Type = BufferType::Structured;
-        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
+            m_pVSShadowMapConstantBuffer = pDevice->CreateBuffer(bufferDesc);
+        }
 
-        m_pPointLightsBuffer = pDevice->CreateBuffer(bufferDesc);
+        // Forward PS constant buffer
+        {
+            bufferDesc.ByteSize = 16;
+            bufferDesc.DebugName = "PS_ConstantBuffer";
+            bufferDesc.StructureStride = 0;
+            bufferDesc.Type = BufferType::Constants;
+            bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
 
-        bufferDesc.ByteSize = sizeof(SpotLight) * MaxSpotLightCount;
-        bufferDesc.DebugName = "SpotLights_Buffer";
-        bufferDesc.StructureStride = sizeof(SpotLight);
-        bufferDesc.Type = BufferType::Structured;
-        bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
+            m_pPSConstantBuffer = pDevice->CreateBuffer(bufferDesc);
+        }
 
-        m_pSpotLightsBuffer = pDevice->CreateBuffer(bufferDesc);
+        // Point lights structured buffer
+        {
+            bufferDesc.ByteSize = sizeof(PointLight) * MaxPointLightCount;
+            bufferDesc.DebugName = "PointLights_Buffer";
+            bufferDesc.StructureStride = sizeof(PointLight);
+            bufferDesc.Type = BufferType::Structured;
+            bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
+
+            m_pPointLightsBuffer = pDevice->CreateBuffer(bufferDesc);
+        }
+
+        // Spot lights structured buffer
+        {
+            bufferDesc.ByteSize = sizeof(SpotLight) * MaxSpotLightCount;
+            bufferDesc.DebugName = "SpotLights_Buffer";
+            bufferDesc.StructureStride = sizeof(SpotLight);
+            bufferDesc.Type = BufferType::Structured;
+            bufferDesc.Usage = ResourceUsage::GPU_ReadOnly_CPU_WriteOnly;
+
+            m_pSpotLightsBuffer = pDevice->CreateBuffer(bufferDesc);
+        }
 
         // Spot light shadow maps
         {
@@ -246,10 +270,8 @@ public:
             memcpy(pSpotLightBufferPtr, m_SpotLights, sizeof(m_SpotLights));
             pContext->UnmapBuffer(m_pSpotLightsBuffer);
 
-            //RenderNewShadowMap(pContext);
+            RenderNewShadowMap(pContext);
         }
-
-        RenderNewShadowMap(pContext);
 
         Matrix4x4 *pConstantBufferData = static_cast<Matrix4x4*>(pContext->MapBuffer(m_pVSConstantBuffer, MapType::WriteDiscard));
         *pConstantBufferData = m_pCamera->GetViewMatrix() * m_pCamera->GetProjMatrix();;
@@ -259,13 +281,13 @@ public:
 
     void RenderNewShadowMap(GfxDeviceContext* pContext)
     {
-        if (m_NextSpotLightIndex == 0) return;
-
         const uint32_t lastShadowMapIndex = m_NextSpotLightIndex - 1;
-        const FixedCamera *pSpotCamera = m_ShadowMapCameras[lastShadowMapIndex];
+        const SpotLight &spotLight = m_SpotLights[lastShadowMapIndex];
+        FixedCamera &shadowCamera = m_SpotShadowMapCameras[lastShadowMapIndex];
 
         Matrix4x4 *pShadowMapCBData = static_cast<Matrix4x4*>(pContext->MapBuffer(m_pVSShadowMapConstantBuffer, MapType::WriteDiscard));
-        *pShadowMapCBData = pSpotCamera->GetViewMatrix() * pSpotCamera->GetProjMatrix();
+        *pShadowMapCBData = shadowCamera.GetViewMatrix();
+        *(pShadowMapCBData + 1) = shadowCamera.GetProjMatrix();
         pContext->UnmapBuffer(m_pVSShadowMapConstantBuffer);
 
         pContext->UnbindRange(Stage::PS, 0, 4);
@@ -310,18 +332,17 @@ public:
         {
             const uint32_t currentSpotLightIndex = m_NextSpotLightIndex++;
 
+            Vector3 camLookAtPoint = m_pCamera->GetLookAtPoint();
+            FixedCamera &shadowCamera = m_SpotShadowMapCameras[currentSpotLightIndex];
+            shadowCamera.Init(lwgl::math::ConvertVector(m_pCamera->GetWorldPosition()), lwgl::math::ConvertVector(camLookAtPoint), SpotLightAngleRad * 2, 1.0f, 0.1f, SpotLightFarPlane);
+
             SpotLight &light = m_SpotLights[currentSpotLightIndex];
+            light.viewProjection = shadowCamera.GetViewMatrix() * shadowCamera.GetProjMatrix();
             light.positionWS = m_pCamera->GetWorldPosition();
             light.directionWS = m_pCamera->GetLookAtDirection();
             light.radius = SpotLightFarPlane;
             light.penumbraCosTheta = SpotLightPenumbraAngleCos;
             light.umbraCosTheta = SpotLightUmbraAngleCos;
-
-            FixedCamera *shadowCamera = new FixedCamera();
-
-            Vector3 camLookAtPoint = m_pCamera->GetLookAtPoint();
-            shadowCamera->Init(lwgl::math::ConvertVector(light.positionWS), lwgl::math::ConvertVector(camLookAtPoint), SpotLightAngleRad * 2, 1.0f, 0.1f, SpotLightFarPlane);
-            m_ShadowMapCameras[currentSpotLightIndex] = shadowCamera;
 
             m_SpotLightAdded = true;
         }
@@ -357,12 +378,12 @@ private:
     Buffer*             m_pSpotLightsBuffer { nullptr };
     SamplerState*       m_pSamplerState { nullptr };
     Camera*             m_pCamera { nullptr };
-    FixedCamera*        m_ShadowMapCameras[MaxSpotLightCount] { };
     ClearDescriptor     m_ClearDesc {};
     ClearDescriptor     m_ShadowMapClearDesc {};
 
     PointLight          m_PointLights[MaxPointLightCount] {};
     SpotLight           m_SpotLights[MaxSpotLightCount] {};
+    FixedCamera         m_SpotShadowMapCameras[MaxSpotLightCount] {};
     TextureArray*       m_pSpotLightShadowMaps { nullptr };
     uint32_t            m_NextPointLightIndex { 0 };
     uint32_t            m_NextSpotLightIndex { 0 };

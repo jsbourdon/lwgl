@@ -76,6 +76,7 @@ namespace lwgl
             void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, Texture *pDepthBuffer);
             void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex);
             void    BindRenderTargets(TextureArray *pRenderTargets, uint32_t rtStartIndex, uint32_t renderTargetCount, TextureArray *pDepthBuffer, uint32_t depthArrayIndex);
+            void    BindRenderTargets(Texture *pRenderTargets[], uint32_t renderTargetCount, ID3D11DepthStencilView *pDepthBuffer);
 
             void    SetViewport(float width, float height);
             void    Clear(const ClearDescriptor &desc);
