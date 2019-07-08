@@ -110,9 +110,6 @@ public:
             pipelineDesc.DepthStencilState.IsStencilEnabled = false;
 
             pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Position, 0 });
-            //pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Normal, 0 });
-            //pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::UV, 0 });
-            //pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Tangent, 0 });
 
             pipelineDesc.VertexShader.Type = ShaderType::VertexShader;
             pipelineDesc.VertexShader.FilePath = L"ShadowMap_VS.hlsl";
@@ -120,9 +117,7 @@ public:
             pipelineDesc.VertexShader.DebugName = "ShadowMap_VS";
 
             pipelineDesc.FragmentShader.Type = ShaderType::FragmentShader;
-            pipelineDesc.FragmentShader.FilePath = L"ShadowMap_PS.hlsl";
-            pipelineDesc.FragmentShader.EntryPoint = "PSMain";
-            pipelineDesc.FragmentShader.DebugName = "ShadowMap_PS";
+            pipelineDesc.FragmentShader.FilePath = nullptr;
 
             pipelineDesc.RasterizerState.CullMode = CullMode::Back;
             pipelineDesc.RasterizerState.Winding = Winding::FrontClockwise;

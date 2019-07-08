@@ -523,6 +523,14 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
     const char *entryPoint = desc.EntryPoint;
     const char *debugName = desc.DebugName;
 
+    pShader->m_Type = type;
+
+    // NULL shader
+    if (filePath == nullptr)
+    {
+        return pShader;
+    }
+
     DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
     DWORD debugFlag = debugName != nullptr ? D3DCOMPILE_SKIP_OPTIMIZATION : 0;
     dwShaderFlags |= debugFlag;
@@ -537,7 +545,6 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
         CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateVertexShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pVertexShader), pShader);
 
         pShader->m_pVertexShader = pVertexShader;
-        pShader->m_Type = ShaderType::VertexShader;
 
         if (debugName != nullptr)
         {
@@ -550,7 +557,6 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
         CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreatePixelShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pFragmentShader), pShader);
 
         pShader->m_pFragmentShader = pFragmentShader;
-        pShader->m_Type = ShaderType::FragmentShader;
 
         if (debugName != nullptr)
         {

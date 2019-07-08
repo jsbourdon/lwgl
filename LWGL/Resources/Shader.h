@@ -24,12 +24,12 @@ namespace lwgl
 
             union
             {
-                ID3D11VertexShader* m_pVertexShader;
+                ID3D11VertexShader* m_pVertexShader { nullptr };
                 ID3D11PixelShader*  m_pFragmentShader;
             };
 
-            ID3DBlob*   m_pShaderBuffer;
-            ShaderType  m_Type;
+            ID3DBlob*   m_pShaderBuffer { nullptr };
+            ShaderType  m_Type {};
         };
     }
 }
