@@ -11,13 +11,13 @@ namespace lwgl
 
     namespace utilities
     {
-        class FixedCamera : public RefCountedObject<FixedCamera>
+        class FixedCamera
         {
-            friend base;
-
         public:
 
             FixedCamera() = default;
+            ~FixedCamera() = default;
+
             void Init(const Vector4 &worldPosition, const Vector4 &lookAtWorldPosition, float fov, float aspectRatio, float nearPlane, float farPlane);
 
             Matrix4x4   GetViewMatrix() const { return m_ViewMatrix; }
@@ -25,10 +25,6 @@ namespace lwgl
             Vector3     GetWorldPosition() const { return m_WorldPosition; }
             Vector2     GetViewSpaceZParams() const { return m_ViewSpaceZParams; }
             void        GetClipPlanes(float &nearClip, float &farClip) const { nearClip = m_NearPlane; farClip = m_FarPlane; }
-
-        private:
-
-            ~FixedCamera() = default;
 
         private:
 
