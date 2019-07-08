@@ -55,7 +55,7 @@ private:
     static constexpr float      SpotLightAngleRad = 0.5236f; // 30 degrees
     static constexpr float      SpotLightUmbraAngleCos = 0.8660f; // cos(SpotLightAngleRad)
     static constexpr float      SpotLightPenumbraAngleCos = 0.9397f; // cos 20 degrees
-    static constexpr float      SpotLightFarPlane = 5000.0f;
+    static constexpr float      SpotLightFarPlane = 2000.0f;
 
 public:
 

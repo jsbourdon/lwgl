@@ -28,7 +28,7 @@ VS_OUTPUT VSMain(VS_INPUT Input)
 	VS_OUTPUT Output;
 
     float4 posVS = mul(Input.vPosition, g_mWorldView);
-    posVS += normalize(posVS) * 0.01f; // Depth bias
+    posVS.xyz += normalize(posVS.xyz) * 10.0f; // Depth bias
 
     Output.vPosition = mul(posVS, g_mProjection);
 	
