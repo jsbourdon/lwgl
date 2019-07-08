@@ -217,11 +217,6 @@ public:
         SAFE_RELEASE(m_pCamera);
         SAFE_RELEASE(m_pSamplerState);
         SAFE_RELEASE(m_pSpotLightShadowMaps);
-
-        for (size_t i = 0; i < ARRAYSIZE(m_ShadowMapCameras); ++i)
-        {
-            SAFE_RELEASE(m_ShadowMapCameras[i]);
-        }
     }
 
     void OnUpdate(RenderCore *pRenderCore, GfxDeviceContext* pContext, double fTimeSec, float fElapsedTimeSec, void* pUserContext) override
