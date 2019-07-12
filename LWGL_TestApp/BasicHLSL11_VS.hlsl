@@ -30,6 +30,7 @@ struct VS_OUTPUT
 	float3 vNormal		: NORMAL;
 	float2 vTexcoord	: TEXCOORD0;
 	float4 vPosition	: SV_POSITION;
+    float4 vPosWS       : TEXCOORD1;
 };
 
 //--------------------------------------------------------------------------------------
@@ -39,6 +40,7 @@ VS_OUTPUT VSMain( VS_INPUT Input )
 {
 	VS_OUTPUT Output;
 	
+    Output.vPosWS = mul(Input.vPosition, g_mWorld);
 	Output.vPosition = mul(Input.vPosition, g_mWorldViewProjection);
 	Output.vNormal = mul(Input.vNormal, (float3x3)g_mWorld);
 	Output.vTexcoord = Input.vTexcoord;
