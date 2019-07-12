@@ -7,7 +7,7 @@ namespace lwgl
 {
     namespace resources
     {
-        class InputLayout : public RefCountedObject<InputLayout>
+        class InputLayout final : public RefCountedObject<InputLayout>
         {
             friend base;
             friend class GfxDevice;
@@ -15,12 +15,12 @@ namespace lwgl
 
         private:
 
-            InputLayout();
+            InputLayout() = default;
             ~InputLayout();
 
         private:
 
-            ID3D11InputLayout*  m_pLayout;
+            ID3D11InputLayout*  m_pLayout { nullptr };
         };
     }
 }

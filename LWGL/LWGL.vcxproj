@@ -199,8 +199,10 @@
     <ClInclude Include="Resources\Shader.h" />
     <ClInclude Include="Resources\Texture.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Resources\TextureArray.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Utilities\Camera.h" />
+    <ClInclude Include="Utilities\FixedCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\GfxDevice.cpp" />
@@ -226,7 +228,9 @@
     <ClCompile Include="Resources\SamplerState.cpp" />
     <ClCompile Include="Resources\Shader.cpp" />
     <ClCompile Include="Resources\Texture.cpp" />
+    <ClCompile Include="Resources\TextureArray.cpp" />
     <ClCompile Include="Utilities\Camera.cpp" />
+    <ClCompile Include="Utilities\FixedCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LWGL.rc" />
@@ -245,6 +249,29 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Core\RefCountedObject.inl" />
+    <None Include="InlinedShaders\FullScreenTriangleVS.hlsli">
+      <FileType>Document</FileType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ObjectFileOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

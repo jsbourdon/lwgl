@@ -54,14 +54,18 @@ Vector3 Camera::GetLookAtDirection() const
     return lookAtWS;
 }
 
+Vector3 Camera::GetLookAtPoint() const
+{
+    Vector3 lookAtWS;
+    DirectX::XMStoreFloat3(&lookAtWS, m_DXUTCamera.GetLookAtPt());
+    return lookAtWS;
+}
+
 Vector2 Camera::GetViewSpaceZParams() const
 {
     float nearClip, farClip;
     GetClipPlanes(nearClip, farClip);
-    float rcpNear = 1.0f / nearClip;
-    float rcpFar = 1.0f / farClip;
-
-    return Vector2 { (rcpFar - rcpNear), rcpNear };
+    return lwgl::math::GetViewSpaceZParams(nearClip, farClip);
 }
 
 void Camera::GetClipPlanes(float &nearClip, float &farClip) const

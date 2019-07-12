@@ -10,6 +10,8 @@
     #define SAFE_RELEASE(p) { if (p) { (p)->Release(); (p) = nullptr; } }
 #endif
 
+#define SAFE_ADDREF(p) { if (p) { p->AddRef(); } }
+
 #ifdef _DEBUG
     #define CHECK_HRESULT_RETURN_VALUE_INTERNAL(hr, x, v)                                                               \
         {                                                                                                               \
@@ -36,3 +38,6 @@
 
 #define CHECK_HRESULT(x) CHECK_HRESULT_RETURN_VALUE_INTERNAL(hr_##__FILE__##__LINE__, x, hr_##__FILE__##__LINE__)
 #define CHECK_HRESULT_RETURN_VALUE(x, v) CHECK_HRESULT_RETURN_VALUE_INTERNAL(hr_##__FILE__##__LINE__, x, v)
+
+#define RAW_STRING_START() R"( 
+#define str)";

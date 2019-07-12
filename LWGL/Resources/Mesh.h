@@ -16,7 +16,7 @@ namespace lwgl
 
     namespace resources
     {
-        class Mesh : public RefCountedObject<Mesh>
+        class Mesh final : public RefCountedObject<Mesh>
         {
         private:
 

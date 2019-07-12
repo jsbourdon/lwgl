@@ -2,6 +2,7 @@
 //
 
 #include "LWGL_TestApp.h"
+#include "Core/IRenderer.h"
 #include "Core/RenderCore.h"
 #include "Core/GfxDevice.h"
 #include "Core/GfxDeviceContext.h"

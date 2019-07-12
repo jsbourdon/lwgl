@@ -19,6 +19,7 @@ namespace lwgl
         class InputLayout;
         class DepthStencilState;
         class Texture;
+        class TextureArray;
         class SamplerState;
         class RasterizerState;
     }
@@ -58,8 +59,11 @@ namespace lwgl
             GfxPipeline*        CreatePipeline(const PipelineDescriptor &desc);
             Mesh*               CreateMesh(const wchar_t *filePath);
             Buffer*             CreateBuffer(const BufferDescriptor &desc);
-            Texture*          CreateTexture(const TextureDescriptor &desc);
+            Texture*            CreateTexture(const TextureDescriptor &desc);
+            TextureArray*       CreateTextureArray(const TextureDescriptor &desc);
             SamplerState*       CreateSamplerState(const SamplerStateDescriptor &desc);
+            Shader*             CreateShader(const ShaderDescriptor &desc);
+            InputLayout*        CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader);
 
             static NativePixelFormat    ConvertToNativePixelFormat(PixelFormat format);
 
@@ -67,11 +71,13 @@ namespace lwgl
 
             ~GfxDevice();
 
-            Shader*             CreateShader(const ShaderDescriptor &desc);
             BlendState*         CreateBlendState(const BlendStateDescriptor &desc);
-            InputLayout*        CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader);
             DepthStencilState*  CreateDepthStencilState(const DepthStencilStateDescriptor &desc);
             RasterizerState*    CreateRasterizerState(const RasterizerStateDescriptor &desc);
+
+            template<typename T> T* CreateTextureCore(const TextureDescriptor &desc);
+            Texture*                CreateTextureViews(Texture *pTexture, const TextureDescriptor &desc);
+            TextureArray*           CreateTextureViews(TextureArray *pTexture, const TextureDescriptor &desc);
 
             static void         AddInputLayoutElement(const InputLayoutElement &element, std::vector<D3D11_INPUT_ELEMENT_DESC> &elements);
             static uint32_t     GetInputLayoutSemanticIndex(InputLayoutSemantic elementSemantic, const std::vector<D3D11_INPUT_ELEMENT_DESC> &elements);

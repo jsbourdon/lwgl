@@ -17,6 +17,7 @@
 #include "../Resources/InputLayout.h"
 #include "../Resources/DepthStencilState.h"
 #include "../Resources/Texture.h"
+#include "../Resources/TextureArray.h"
 #include "../Resources/SamplerState.h"
 #include "../Resources/RasterizerState.h"
 
@@ -292,51 +293,24 @@ Buffer* GfxDevice::CreateBuffer(const BufferDescriptor &desc)
     return pBuffer;
 }
 
-Texture* GfxDevice::CreateTexture(const TextureDescriptor &desc)
+Texture* GfxDevice::CreateTextureViews(Texture *pTexture, const TextureDescriptor &desc)
 {
-    assert(desc.Type == TextureType::Texture2D || desc.Type == TextureType::DepthStencil);
-    assert(desc.Usage != ResourceUsage::GPU_ReadOnly);  // Immutable textures not supported yet
-
-    uint32_t bindFlags = 0;
-    uint32_t descFlags = uint32_t(desc.BindFlags);
+    ID3D11Texture2D *pD3DTexture = pTexture->m_pTexture;
+    const uint32_t descFlags = uint32_t(desc.BindFlags);
 
     const bool needsSRV = !!(descFlags & uint32_t(TextureBindFlags::ShaderResource));
     const bool needsRTV = !!(descFlags & uint32_t(TextureBindFlags::RenderTarget));
     const bool needsUAV = !!(descFlags & uint32_t(TextureBindFlags::UnorderedAccessView));
     const bool needsDSV = (desc.Type == TextureType::DepthStencil);
 
-    bindFlags |= needsSRV ? D3D11_BIND_SHADER_RESOURCE : 0;
-    bindFlags |= needsRTV ? D3D11_BIND_RENDER_TARGET : 0;
-    bindFlags |= needsUAV ? D3D11_BIND_UNORDERED_ACCESS : 0;
-    bindFlags |= needsDSV ? D3D11_BIND_DEPTH_STENCIL : 0;
-
-    NativePixelFormat pixelFormat = ConvertToNativePixelFormat(desc.Format);
-
-    D3D11_TEXTURE2D_DESC d3dDesc;
-    d3dDesc.Width = desc.Width;
-    d3dDesc.Height = desc.Height;
-    d3dDesc.MipLevels = desc.MipLevels;
-    d3dDesc.ArraySize = desc.ArraySize;
-    d3dDesc.Format = needsDSV ? DXGI_FORMAT_R24G8_TYPELESS : pixelFormat;
-    d3dDesc.SampleDesc.Count = desc.SampleCount;
-    d3dDesc.SampleDesc.Quality = 0;
-    d3dDesc.Usage = s_ResourceUsages[size_t(desc.Usage)];
-    d3dDesc.BindFlags = bindFlags;
-    d3dDesc.CPUAccessFlags = s_CPUAccessFlags[size_t(desc.Usage)];
-    d3dDesc.MiscFlags = 0;
-
-    ID3D11Texture2D *pD3DTexture;
-    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateTexture2D(&d3dDesc, nullptr, &pD3DTexture), nullptr);
-
-    Texture *pTexture = new Texture();
-    pTexture->m_pTexture = pD3DTexture;
+    const NativePixelFormat pixelFormat = ConvertToNativePixelFormat(desc.Format);
 
     if (needsSRV)
     {
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
         srvDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Format = pixelFormat;
-        srvDesc.Texture2D.MipLevels = d3dDesc.MipLevels;
+        srvDesc.Texture2D.MipLevels = desc.MipLevels;
         srvDesc.Texture2D.MostDetailedMip = 0;
 
         ID3D11ShaderResourceView *pSrv;
@@ -376,6 +350,152 @@ Texture* GfxDevice::CreateTexture(const TextureDescriptor &desc)
     return pTexture;
 }
 
+TextureArray* GfxDevice::CreateTextureViews(TextureArray *pTexture, const TextureDescriptor &desc)
+{
+    assert(desc.ArraySize > 1);
+
+    ID3D11Texture2D *pD3DTexture = pTexture->m_pTexture;
+    const uint32_t arraySize = desc.ArraySize;
+    const uint32_t descFlags = uint32_t(desc.BindFlags);
+
+    const bool needsSRV = !!(descFlags & uint32_t(TextureBindFlags::ShaderResource));
+    const bool needsRTV = !!(descFlags & uint32_t(TextureBindFlags::RenderTarget));
+    const bool needsUAV = !!(descFlags & uint32_t(TextureBindFlags::UnorderedAccessView));
+    const bool needsDSV = (desc.Type == TextureType::DepthStencil);
+
+    const NativePixelFormat pixelFormat = ConvertToNativePixelFormat(desc.Format);
+
+    pTexture->m_ArraySize = arraySize;
+
+    if (needsSRV)
+    {
+        D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+        srvDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2DARRAY;
+        srvDesc.Format = pixelFormat;
+        srvDesc.Texture2DArray.ArraySize = arraySize;
+        srvDesc.Texture2DArray.FirstArraySlice = 0;
+        srvDesc.Texture2DArray.MipLevels = desc.MipLevels;
+        srvDesc.Texture2DArray.MostDetailedMip = 0;
+
+        ID3D11ShaderResourceView *pSrv;
+        CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateShaderResourceView(pD3DTexture, &srvDesc, &pSrv), pTexture);
+        pTexture->m_pSRV = pSrv;
+    }
+
+    if (needsDSV)
+    {
+        pTexture->m_pDSVs = new ID3D11DepthStencilView*[arraySize];
+
+        D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+        descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        descDSV.Flags = 0;
+        descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+        descDSV.Texture2DArray.ArraySize = 1;
+        descDSV.Texture2DArray.MipSlice = 0;
+
+        for (uint32_t i = 0; i < arraySize; ++i)
+        {
+            descDSV.Texture2DArray.FirstArraySlice = i;
+
+            ID3D11DepthStencilView *pDsv;
+            CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateDepthStencilView(pD3DTexture, &descDSV, &pDsv), pTexture);
+            pTexture->m_pDSVs[i] = pDsv;
+        }
+
+        pTexture->m_pDSV = pTexture->m_pDSVs[0];
+    }
+    else if (needsRTV)
+    {
+        pTexture->m_pRTVs = new ID3D11RenderTargetView*[arraySize];
+
+        D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+        rtvDesc.Format = pixelFormat;
+        rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+        rtvDesc.Texture2DArray.ArraySize = 1;
+        rtvDesc.Texture2DArray.MipSlice = 0;
+
+        for (uint32_t i = 0; i < arraySize; ++i)
+        {
+            rtvDesc.Texture2DArray.FirstArraySlice = i;
+
+            ID3D11RenderTargetView *pRtv;
+            CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateRenderTargetView(pD3DTexture, &rtvDesc, &pRtv), pTexture);
+            pTexture->m_pRTVs[i] = pRtv;
+        }
+
+        pTexture->m_pRTV = pTexture->m_pRTVs[0];
+    }
+
+    if (needsUAV)
+    {
+        // #todo Implement Texture UAV creation
+    }
+
+    return pTexture;
+}
+
+template<typename T> T* GfxDevice::CreateTextureCore(const TextureDescriptor &desc)
+{
+    assert(desc.Type == TextureType::Texture2D || desc.Type == TextureType::DepthStencil);
+    assert(desc.Usage != ResourceUsage::GPU_ReadOnly);  // Immutable textures not supported yet
+
+    uint32_t bindFlags = 0;
+    uint32_t descFlags = uint32_t(desc.BindFlags);
+
+    const bool needsSRV = !!(descFlags & uint32_t(TextureBindFlags::ShaderResource));
+    const bool needsRTV = !!(descFlags & uint32_t(TextureBindFlags::RenderTarget));
+    const bool needsUAV = !!(descFlags & uint32_t(TextureBindFlags::UnorderedAccessView));
+    const bool needsDSV = (desc.Type == TextureType::DepthStencil);
+
+    bindFlags |= needsSRV ? D3D11_BIND_SHADER_RESOURCE : 0;
+    bindFlags |= needsRTV ? D3D11_BIND_RENDER_TARGET : 0;
+    bindFlags |= needsUAV ? D3D11_BIND_UNORDERED_ACCESS : 0;
+    bindFlags |= needsDSV ? D3D11_BIND_DEPTH_STENCIL : 0;
+
+    const NativePixelFormat pixelFormat = needsDSV ? DXGI_FORMAT_R24G8_TYPELESS : ConvertToNativePixelFormat(desc.Format);
+
+    D3D11_TEXTURE2D_DESC d3dDesc;
+    d3dDesc.Width = desc.Width;
+    d3dDesc.Height = desc.Height;
+    d3dDesc.MipLevels = desc.MipLevels;
+    d3dDesc.ArraySize = desc.ArraySize;
+    d3dDesc.Format = pixelFormat;
+    d3dDesc.SampleDesc.Count = desc.SampleCount;
+    d3dDesc.SampleDesc.Quality = 0;
+    d3dDesc.Usage = s_ResourceUsages[size_t(desc.Usage)];
+    d3dDesc.BindFlags = bindFlags;
+    d3dDesc.CPUAccessFlags = s_CPUAccessFlags[size_t(desc.Usage)];
+    d3dDesc.MiscFlags = 0;
+
+    ID3D11Texture2D *pD3DTexture;
+    CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateTexture2D(&d3dDesc, nullptr, &pD3DTexture), nullptr);
+
+    T *pTexture = new T();
+    pTexture->m_pTexture = pD3DTexture;
+    pTexture->m_Width = desc.Width;
+    pTexture->m_Height = desc.Height;
+
+    const char *debugName = desc.DebugName;
+    if (debugName != nullptr)
+    {
+        DXUT_SetDebugName(pD3DTexture, debugName);
+    }
+
+    return pTexture;
+}
+
+Texture* GfxDevice::CreateTexture(const TextureDescriptor &desc)
+{
+    Texture *pTexture = CreateTextureCore<Texture>(desc);
+    return CreateTextureViews(pTexture, desc);
+}
+
+TextureArray* GfxDevice::CreateTextureArray(const TextureDescriptor &desc)
+{
+    TextureArray *pTexture = CreateTextureCore<TextureArray>(desc);
+    return CreateTextureViews(pTexture, desc);
+}
+
 SamplerState* GfxDevice::CreateSamplerState(const SamplerStateDescriptor &desc)
 {
     D3D11_SAMPLER_DESC d3dDesc = {};
@@ -400,15 +520,34 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
 
     ShaderType type = desc.Type;
     const wchar_t *filePath = desc.FilePath;
+    const char *code = desc.Code;
     const char *entryPoint = desc.EntryPoint;
     const char *debugName = desc.DebugName;
+
+    pShader->m_Type = type;
+
+    // NULL shader
+    if (filePath == nullptr && code == nullptr)
+    {
+        return pShader;
+    }
 
     DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
     DWORD debugFlag = debugName != nullptr ? D3DCOMPILE_SKIP_OPTIMIZATION : 0;
     dwShaderFlags |= debugFlag;
 
     ID3DBlob* pShaderBuffer = nullptr;
-    CHECK_HRESULT_RETURN_VALUE(DXUTCompileFromFile(filePath, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer), pShader);
+    if (code != nullptr)
+    {
+        ID3DBlob* pErrorBuffer = nullptr;
+        CHECK_HRESULT_RETURN_VALUE(D3DCompile(code, strlen(code), nullptr, nullptr, nullptr, entryPoint, 
+            s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer, &pErrorBuffer), pShader);
+    }
+    else
+    {
+        CHECK_HRESULT_RETURN_VALUE(DXUTCompileFromFile(filePath, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer), pShader);
+    }
+
     pShader->m_pShaderBuffer = pShaderBuffer;
 
     if (type == ShaderType::VertexShader)
@@ -417,7 +556,6 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
         CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateVertexShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pVertexShader), pShader);
 
         pShader->m_pVertexShader = pVertexShader;
-        pShader->m_Type = ShaderType::VertexShader;
 
         if (debugName != nullptr)
         {
@@ -430,7 +568,6 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
         CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreatePixelShader(pShaderBuffer->GetBufferPointer(), pShaderBuffer->GetBufferSize(), nullptr, &pFragmentShader), pShader);
 
         pShader->m_pFragmentShader = pFragmentShader;
-        pShader->m_Type = ShaderType::FragmentShader;
 
         if (debugName != nullptr)
         {
@@ -463,7 +600,7 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
             rtBlendDesc.BlendOpAlpha = s_BlendOperations[size_t(desc.AlphaOperation)];
         }
 
-        rtBlendDesc.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        rtBlendDesc.RenderTargetWriteMask = desc.ColorWrite ? D3D11_COLOR_WRITE_ENABLE_ALL : 0;
     }
 
     ID3D11BlendState *pD3DBlendState;
@@ -478,15 +615,22 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
 InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader)
 {
     std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements;
+    InputLayout *pInputLayout = new InputLayout();
 
+    ID3DBlob *pShaderBuffer = pInputSignatureShader->m_pShaderBuffer;
     size_t elementCount = desc.Elements.size();
+
+    if (elementCount == 0 || pShaderBuffer == nullptr)
+    {
+        return pInputLayout;
+    }
+
     for (size_t i = 0; i < elementCount; ++i)
     {
         const InputLayoutElement &element = desc.Elements[i];
         AddInputLayoutElement(element, inputLayoutElements);
     }
 
-    ID3DBlob *pShaderBuffer = pInputSignatureShader->m_pShaderBuffer;
     ID3D11InputLayout *pD3DInputLayout = nullptr;
 
     CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateInputLayout(
@@ -494,9 +638,8 @@ InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Sha
         uint32_t(inputLayoutElements.size()), 
         pShaderBuffer->GetBufferPointer(), 
         uint32_t(pShaderBuffer->GetBufferSize()), 
-        &pD3DInputLayout), nullptr);
+        &pD3DInputLayout), pInputLayout);
 
-    InputLayout *pInputLayout = new InputLayout();
     pInputLayout->m_pLayout = pD3DInputLayout;
 
     return pInputLayout;

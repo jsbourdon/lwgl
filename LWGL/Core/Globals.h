@@ -44,5 +44,31 @@ namespace lwgl
         {
             return XMMatrixInverse(nullptr, matrix);
         }
+
+        inline core::Vector3 ConvertVector(const core::Vector4 &vec4)
+        {
+            core::Vector3 vec3;
+            XMStoreFloat3(&vec3, vec4);
+            return vec3;
+        }
+
+        inline core::Vector4 ConvertVector(const core::Vector3 &vec3)
+        {
+            DirectX::XMVECTOR xmVector = DirectX::XMLoadFloat3(&vec3);
+            return *reinterpret_cast<core::Vector4*>(&xmVector);
+        }
+
+        inline core::Vector4 GetMatrixRow(core::Matrix4x4 &matrix, uint32_t rowIndex)
+        {
+            assert(rowIndex < 4);
+            return *reinterpret_cast<core::Vector4*>(&matrix.r[rowIndex]);
+        }
+
+        inline core::Vector2 GetViewSpaceZParams(float nearClip, float farClip)
+        {
+            float rcpNear = 1.0f / nearClip;
+            float rcpFar = 1.0f / farClip;
+            return core::Vector2 { (rcpFar - rcpNear), rcpNear };
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace lwgl
     {
         class Texture;
 
-        class RenderTarget : public RefCountedObject<RenderTarget>
+        class RenderTarget final : public RefCountedObject<RenderTarget>
         {
             friend base;
             friend class GfxDevice;

@@ -3,7 +3,6 @@
 #include <pch.h>
 #include <vector>
 #include "RefCountedObject.h"
-#include "IRenderer.h"
 
 namespace lwgl
 {
@@ -28,6 +27,7 @@ namespace lwgl
 
     namespace core
     {
+        class IRenderer;
         class GfxDevice;
         class GfxDeviceContext;
 
@@ -68,6 +68,7 @@ namespace lwgl
 
             void InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, uint32_t windowHeight);
             void CreateDepthStencil(uint32_t windowWidth, uint32_t windowHeight);
+            void CreateFullScreenTriangleResources();
             void OnKeyPressed(uint32_t keyCode, bool keyDown, bool firstDown = false);
 
             IRenderer*                  m_pRenderer;

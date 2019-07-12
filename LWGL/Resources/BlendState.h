@@ -6,7 +6,7 @@ namespace lwgl
 {
     namespace resources
     {
-        class BlendState : public RefCountedObject<BlendState>
+        class BlendState final : public RefCountedObject<BlendState>
         {
             friend base;
             friend class GfxDevice;

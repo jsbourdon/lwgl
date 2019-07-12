@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <malloc.h>
 #include <assert.h>
+#include <d3dcompiler.h>
 #include "../3rd/DXUT/Core/DXUT.h"
 #include "../3rd/DXUT/Optional/SDKmisc.h"
 #include "../3rd/DXUT/Optional/DXUTgui.h"
