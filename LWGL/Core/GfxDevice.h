@@ -62,6 +62,8 @@ namespace lwgl
             Texture*            CreateTexture(const TextureDescriptor &desc);
             TextureArray*       CreateTextureArray(const TextureDescriptor &desc);
             SamplerState*       CreateSamplerState(const SamplerStateDescriptor &desc);
+            Shader*             CreateShader(const ShaderDescriptor &desc);
+            InputLayout*        CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader);
 
             static NativePixelFormat    ConvertToNativePixelFormat(PixelFormat format);
 
@@ -69,9 +71,7 @@ namespace lwgl
 
             ~GfxDevice();
 
-            Shader*             CreateShader(const ShaderDescriptor &desc);
             BlendState*         CreateBlendState(const BlendStateDescriptor &desc);
-            InputLayout*        CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader);
             DepthStencilState*  CreateDepthStencilState(const DepthStencilStateDescriptor &desc);
             RasterizerState*    CreateRasterizerState(const RasterizerStateDescriptor &desc);
 

@@ -42,6 +42,8 @@ GfxDeviceContext::~GfxDeviceContext()
     SAFE_RELEASE(m_pCurrentPipeline);
     SAFE_RELEASE(m_pSwapChainDepthStencil);
     SAFE_RELEASE(m_pCurrentDepthStencil);
+    SAFE_RELEASE(m_pFullScreenTriangleVS);
+    SAFE_RELEASE(m_pFullScreenTiangleInputLayout);
 
     for (uint32_t rtIndex = 0; rtIndex < m_RenderTargetCount; ++rtIndex)
     {
@@ -75,6 +77,16 @@ void GfxDeviceContext::SetupPipeline(GfxPipeline *pPipeline)
 void GfxDeviceContext::DrawMesh(Mesh* mesh)
 {
     mesh->m_DXUTMesh.Render(m_pD3DContext, mesh->m_AlbedoSlot);
+}
+
+void GfxDeviceContext::DrawFullScreenTriangle()
+{
+    assert(m_pFullScreenTriangleVS != nullptr);
+    assert(m_pFullScreenTiangleInputLayout != nullptr);
+
+    m_pD3DContext->IASetInputLayout(m_pFullScreenTiangleInputLayout->m_pLayout);
+    m_pD3DContext->VSSetShader(m_pFullScreenTriangleVS->m_pVertexShader, nullptr, 0);
+    m_pD3DContext->Draw(3, 0);
 }
 
 void* GfxDeviceContext::MapBuffer(Buffer *pBuffer, MapType mapType)
@@ -286,6 +298,15 @@ void GfxDeviceContext::SetSwapChainDepthStencil(Texture *pDepthStencil)
 {
     SAFE_RELEASE(m_pSwapChainDepthStencil);
     m_pSwapChainDepthStencil = pDepthStencil;
+}
+
+void GfxDeviceContext::SetFullScreenTriangleResources(Shader *pShader, InputLayout *pLayout)
+{
+    SAFE_RELEASE(m_pFullScreenTriangleVS);
+    SAFE_RELEASE(m_pFullScreenTiangleInputLayout);
+
+    m_pFullScreenTriangleVS = pShader;
+    m_pFullScreenTiangleInputLayout = pLayout;
 }
 
 void GfxDeviceContext::Clear(const ClearDescriptor &desc)

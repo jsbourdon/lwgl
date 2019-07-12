@@ -15,12 +15,12 @@ namespace lwgl
 
         private:
 
-            InputLayout();
+            InputLayout() = default;
             ~InputLayout();
 
         private:
 
-            ID3D11InputLayout*  m_pLayout;
+            ID3D11InputLayout*  m_pLayout { nullptr };
         };
     }
 }

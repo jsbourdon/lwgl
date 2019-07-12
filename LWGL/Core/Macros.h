@@ -38,3 +38,6 @@
 
 #define CHECK_HRESULT(x) CHECK_HRESULT_RETURN_VALUE_INTERNAL(hr_##__FILE__##__LINE__, x, hr_##__FILE__##__LINE__)
 #define CHECK_HRESULT_RETURN_VALUE(x, v) CHECK_HRESULT_RETURN_VALUE_INTERNAL(hr_##__FILE__##__LINE__, x, v)
+
+#define RAW_STRING_START() R"( 
+#define str)";

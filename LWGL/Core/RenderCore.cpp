@@ -8,9 +8,18 @@
 #include "Inputs/IInputReceiver.h"
 #include "Debugging/DebuggingFeatures.h"
 #include "Descriptors/TextureDescriptor.h"
+#include "Descriptors/ShaderDescriptor.h"
+#include "Descriptors/InputLayoutDescriptor.h"
+
+#include <string>
 
 using namespace lwgl;
 using namespace core;
+
+static const char* s_FullScreenTriangleVSCode 
+{
+    #include "InlinedShaders/FullScreenTriangleVS.hlsli"
+};
 
 RenderCore* RenderCore::CreateCore()
 {
@@ -27,6 +36,7 @@ RenderCore::RenderCore()
     , m_pReceiver(nullptr)
     , m_pDebuggingFeatures(new DebuggingFeatures())
 {
+    
 }
 
 RenderCore::~RenderCore()
@@ -216,6 +226,7 @@ void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, 
 
     DXUTCreateDeviceFromSettings(&deviceSettings, true);
     CreateDepthStencil(windowWidth, windowHeight);
+    CreateFullScreenTriangleResources();
 
     m_pDeviceContext->BindSwapChain(true);
 }
@@ -234,6 +245,26 @@ void RenderCore::CreateDepthStencil(uint32_t windowWidth, uint32_t windowHeight)
     desc.SampleCount = 1;
 
     m_pDeviceContext->SetSwapChainDepthStencil(m_pDevice->CreateTexture(desc));
+}
+
+void RenderCore::CreateFullScreenTriangleResources()
+{
+    ShaderDescriptor desc;
+    desc.DebugName = "FullScreenTriangleVS";
+    desc.EntryPoint = "VSMain";
+    desc.Code = s_FullScreenTriangleVSCode;
+    desc.Type = ShaderType::VertexShader;
+
+    Shader *pShader = m_pDevice->CreateShader(desc);
+    assert(pShader != nullptr);
+
+    InputLayoutDescriptor inputDesc;
+    inputDesc.Elements.push_back({ InputLayoutSemantic::Position, 0 });
+    inputDesc.Elements.push_back({ InputLayoutSemantic::UV, 0 });
+    InputLayout *pLayout = m_pDevice->CreateInputLayout(inputDesc, pShader);
+    assert(pLayout != nullptr);
+
+    m_pDeviceContext->SetFullScreenTriangleResources(pShader, pLayout);
 }
 
 void RenderCore::RegisterInputReceiver(IInputReceiver *pReceiver)

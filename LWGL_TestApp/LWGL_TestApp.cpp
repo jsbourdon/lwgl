@@ -125,6 +125,30 @@ public:
             m_pShadowMapPipeline = pDevice->CreatePipeline(pipelineDesc);
         }
 
+        // Full screen test pipeline
+        {
+            PipelineDescriptor pipelineDesc = {};
+
+            pipelineDesc.BlendState.IsEnabled = false;
+
+            pipelineDesc.DepthStencilState.IsDepthTestEnabled = false;
+            pipelineDesc.DepthStencilState.IsDepthWriteEnabled = false;
+            pipelineDesc.DepthStencilState.IsStencilEnabled = false;
+
+            pipelineDesc.VertexShader.Type = ShaderType::VertexShader;
+            pipelineDesc.VertexShader.FilePath = nullptr;
+
+            pipelineDesc.FragmentShader.Type = ShaderType::FragmentShader;
+            pipelineDesc.FragmentShader.FilePath = L"Test.hlsl";
+            pipelineDesc.FragmentShader.EntryPoint = "PSMain";
+            pipelineDesc.FragmentShader.DebugName = "Test";
+
+            pipelineDesc.RasterizerState.CullMode = CullMode::Back;
+            pipelineDesc.RasterizerState.Winding = Winding::FrontClockwise;
+
+            m_pFullScreenPipeline = pDevice->CreatePipeline(pipelineDesc);
+        }
+
         BufferDescriptor bufferDesc;
 
         // Forward VS constant buffer
@@ -228,6 +252,7 @@ public:
         SAFE_RELEASE(m_pMesh);
         SAFE_RELEASE(m_pPipeline);
         SAFE_RELEASE(m_pShadowMapPipeline);
+        SAFE_RELEASE(m_pFullScreenPipeline);
         SAFE_RELEASE(m_pVSConstantBuffer);
         SAFE_RELEASE(m_pVSShadowMapConstantBuffer);
         SAFE_RELEASE(m_pPSConstantBuffer);
@@ -307,6 +332,9 @@ public:
         pContext->BindTexture(m_pSpotLightShadowMaps, Stage::PS, 3);
         pContext->BindSampler(m_pSamplerState, Stage::PS, 0);
         pContext->DrawMesh(m_pMesh);
+
+        pContext->SetupPipeline(m_pFullScreenPipeline);
+        pContext->DrawFullScreenTriangle();
     }
 
     void AddPointLight()
@@ -366,6 +394,7 @@ private:
     Mesh*               m_pMesh { nullptr };
     GfxPipeline*        m_pPipeline { nullptr };
     GfxPipeline*        m_pShadowMapPipeline { nullptr };
+    GfxPipeline*        m_pFullScreenPipeline { nullptr };
     Buffer*             m_pVSConstantBuffer { nullptr };
     Buffer*             m_pVSShadowMapConstantBuffer { nullptr };
     Buffer*             m_pPSConstantBuffer { nullptr };

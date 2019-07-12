@@ -17,6 +17,8 @@ namespace lwgl
         class SamplerState;
         class Texture;
         class TextureArray;
+        class Shader;
+        class InputLayout;
     }
 
     namespace pipeline
@@ -60,6 +62,7 @@ namespace lwgl
 
             void    SetupPipeline(GfxPipeline *pPipeline);
             void    DrawMesh(Mesh *mesh);
+            void    DrawFullScreenTriangle();
 
             void*   MapBuffer(Buffer *pBuffer, MapType mapType);
             void    UnmapBuffer(Buffer *pBuffer);
@@ -82,6 +85,7 @@ namespace lwgl
             void    Clear(const ClearDescriptor &desc);
 
             void    SetSwapChainDepthStencil(Texture *pDepthStencil);
+            void    SetFullScreenTriangleResources(Shader *pShader, InputLayout *pLayout);
 
         private:
 
@@ -101,6 +105,8 @@ namespace lwgl
             Texture*                m_pRenderTargets[lwgl::core::MAX_RENDERTARGET_COUNT] {};
             Texture*                m_pSwapChainDepthStencil { nullptr };
             Texture*                m_pCurrentDepthStencil { nullptr };
+            Shader*                 m_pFullScreenTriangleVS { nullptr };
+            InputLayout*            m_pFullScreenTiangleInputLayout { nullptr };
             uint32_t                m_RenderTargetCount { 0 };
             uint32_t                m_DepthStencilArrayIndex { 0 };
         };

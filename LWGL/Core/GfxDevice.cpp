@@ -520,13 +520,14 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
 
     ShaderType type = desc.Type;
     const wchar_t *filePath = desc.FilePath;
+    const char *code = desc.Code;
     const char *entryPoint = desc.EntryPoint;
     const char *debugName = desc.DebugName;
 
     pShader->m_Type = type;
 
     // NULL shader
-    if (filePath == nullptr)
+    if (filePath == nullptr && code == nullptr)
     {
         return pShader;
     }
@@ -536,7 +537,17 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
     dwShaderFlags |= debugFlag;
 
     ID3DBlob* pShaderBuffer = nullptr;
-    CHECK_HRESULT_RETURN_VALUE(DXUTCompileFromFile(filePath, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer), pShader);
+    if (code != nullptr)
+    {
+        ID3DBlob* pErrorBuffer = nullptr;
+        CHECK_HRESULT_RETURN_VALUE(D3DCompile(code, strlen(code), nullptr, nullptr, nullptr, entryPoint, 
+            s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer, &pErrorBuffer), pShader);
+    }
+    else
+    {
+        CHECK_HRESULT_RETURN_VALUE(DXUTCompileFromFile(filePath, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer), pShader);
+    }
+
     pShader->m_pShaderBuffer = pShaderBuffer;
 
     if (type == ShaderType::VertexShader)
@@ -604,15 +615,22 @@ BlendState* GfxDevice::CreateBlendState(const BlendStateDescriptor &desc)
 InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Shader *pInputSignatureShader)
 {
     std::vector<D3D11_INPUT_ELEMENT_DESC> inputLayoutElements;
+    InputLayout *pInputLayout = new InputLayout();
 
+    ID3DBlob *pShaderBuffer = pInputSignatureShader->m_pShaderBuffer;
     size_t elementCount = desc.Elements.size();
+
+    if (elementCount == 0 || pShaderBuffer == nullptr)
+    {
+        return pInputLayout;
+    }
+
     for (size_t i = 0; i < elementCount; ++i)
     {
         const InputLayoutElement &element = desc.Elements[i];
         AddInputLayoutElement(element, inputLayoutElements);
     }
 
-    ID3DBlob *pShaderBuffer = pInputSignatureShader->m_pShaderBuffer;
     ID3D11InputLayout *pD3DInputLayout = nullptr;
 
     CHECK_HRESULT_RETURN_VALUE(m_pD3DDevice->CreateInputLayout(
@@ -620,9 +638,8 @@ InputLayout* GfxDevice::CreateInputLayout(const InputLayoutDescriptor &desc, Sha
         uint32_t(inputLayoutElements.size()), 
         pShaderBuffer->GetBufferPointer(), 
         uint32_t(pShaderBuffer->GetBufferSize()), 
-        &pD3DInputLayout), nullptr);
+        &pD3DInputLayout), pInputLayout);
 
-    InputLayout *pInputLayout = new InputLayout();
     pInputLayout->m_pLayout = pD3DInputLayout;
 
     return pInputLayout;
