@@ -333,8 +333,8 @@ public:
         pContext->BindSampler(m_pSamplerState, Stage::PS, 0);
         pContext->DrawMesh(m_pMesh);
 
-        pContext->SetupPipeline(m_pFullScreenPipeline);
-        pContext->DrawFullScreenTriangle();
+//         pContext->SetupPipeline(m_pFullScreenPipeline);
+//         pContext->DrawFullScreenTriangle();
     }
 
     void AddPointLight()
