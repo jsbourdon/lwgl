@@ -18,14 +18,14 @@ namespace lwgl
         {
             static constexpr size_t s_OMMaxRenderTargetCount = 8;
 
-            InputLayoutDescriptor       InputLayout;
-            ShaderDescriptor            VertexShader;
-            ShaderDescriptor            FragmentShader;
-            BlendStateDescriptor        BlendState;
-            DepthStencilStateDescriptor DepthStencilState;
-            RasterizerStateDescriptor   RasterizerState;
-            PixelFormat                 RenderTargetFormats[s_OMMaxRenderTargetCount];
-            PixelFormat                 DepthFormat;
+            InputLayoutDescriptor       InputLayout {};
+            ShaderDescriptor            VertexShader { nullptr, nullptr, nullptr, nullptr, ShaderType::VertexShader };
+            ShaderDescriptor            FragmentShader { nullptr, nullptr, nullptr, nullptr, ShaderType::FragmentShader };
+            BlendStateDescriptor        BlendState {};
+            DepthStencilStateDescriptor DepthStencilState {};
+            RasterizerStateDescriptor   RasterizerState {};
+            PixelFormat                 RenderTargetFormats[s_OMMaxRenderTargetCount] {};
+            PixelFormat                 DepthFormat {};
         };
     }
 }
