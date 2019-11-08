@@ -1,8 +1,31 @@
 #include <pch.h>
 #include "IndexFreeList.h"
+#include <assert.h>
 
 using namespace lwgl;
 using namespace lwgl::data;
+
+IndexFreeList::IndexFreeList(IndexFreeList&& other) noexcept
+{
+    m_Items = other.m_Items;
+    m_Capacity = other.m_Capacity;
+    m_Count = other.m_Count;
+    m_FreeListIndex = other.m_FreeListIndex;
+
+    other.m_Items = nullptr;
+}
+
+IndexFreeList& IndexFreeList::operator=(IndexFreeList &&other) noexcept
+{
+    m_Items = other.m_Items;
+    m_Capacity = other.m_Capacity;
+    m_Count = other.m_Count;
+    m_FreeListIndex = other.m_FreeListIndex;
+
+    other.m_Items = nullptr;
+
+    return *this;
+}
 
 void IndexFreeList::Init(uint32_t capacity)
 {
@@ -44,6 +67,8 @@ Handle IndexFreeList::Add(uint32_t index)
 uint32_t IndexFreeList::Remove(const Handle &handle)
 {
     assert(ValidateHandle(handle));
+
+    --m_Count;
 
     Item &item = m_Items[handle.m_Value];
     item.m_Next = m_FreeListIndex;

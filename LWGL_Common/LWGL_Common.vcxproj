@@ -177,6 +177,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resources\ResourceHandles.h" />
+    <ClInclude Include="Threading\WorkerThread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStructures\IndexFreeList.cpp" />

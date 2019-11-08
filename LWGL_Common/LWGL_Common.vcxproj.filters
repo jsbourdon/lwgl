@@ -28,6 +28,9 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{4ecda35b-d5a3-477c-83ed-cace5521a7d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Threading">
+      <UniqueIdentifier>{77aded16-eb80-4063-b69d-397726ca46b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -89,6 +92,9 @@
     </ClInclude>
     <ClInclude Include="DataStructures\IndexFreeList.h">
       <Filter>Source Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Threading\WorkerThread.h">
+      <Filter>Source Files\Threading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
