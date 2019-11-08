@@ -10,4 +10,13 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 
+#include <cstdint>
+#include <stdlib.h>
+#include <malloc.h>
+#include <type_traits>
+#include <assert.h>
+
+#include "Resources/ResourceHandles.h"
+#include "Core/Globals.h"
+
 #endif //PCH_H

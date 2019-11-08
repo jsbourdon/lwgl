@@ -35,6 +35,8 @@ RenderCore::RenderCore()
     , m_pDeviceContext(nullptr)
     , m_pReceiver(nullptr)
     , m_pDebuggingFeatures(new DebuggingFeatures())
+    , m_BackBufferWidth(0)
+    , m_BackBufferHeight(0)
 {
     
 }
