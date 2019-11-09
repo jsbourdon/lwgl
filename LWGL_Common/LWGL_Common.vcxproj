@@ -177,6 +177,7 @@
     <ClInclude Include="Descriptors\SurfaceDescriptor.h" />
     <ClInclude Include="Descriptors\TextureDescriptor.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Math\Math.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resources\ResourceHandles.h" />
     <ClInclude Include="Threading\WorkerThread.h" />

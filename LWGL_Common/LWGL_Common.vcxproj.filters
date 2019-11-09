@@ -31,6 +31,9 @@
     <Filter Include="Source Files\Threading">
       <UniqueIdentifier>{77aded16-eb80-4063-b69d-397726ca46b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{93482598-3393-4e4d-b3ce-b4653ba08f4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -95,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="Threading\WorkerThread.h">
       <Filter>Source Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Math.h">
+      <Filter>Source Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
