@@ -34,6 +34,12 @@
     <Filter Include="Source Files\Math">
       <UniqueIdentifier>{93482598-3393-4e4d-b3ce-b4653ba08f4f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Memory">
+      <UniqueIdentifier>{ca484395-e3d1-49cb-91e5-8505365b7112}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SystemInfo">
+      <UniqueIdentifier>{2463273c-671f-4acf-9f93-404072fff56d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -101,6 +107,9 @@
     </ClInclude>
     <ClInclude Include="Math\Math.h">
       <Filter>Source Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemInfo\SystemInfo.h">
+      <Filter>Source Files\SystemInfo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -18,5 +18,6 @@
 
 #include "Resources/ResourceHandles.h"
 #include "Core/Globals.h"
+#include "Math/Math.h"
 
 #endif //PCH_H

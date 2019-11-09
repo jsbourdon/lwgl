@@ -180,6 +180,7 @@
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resources\ResourceHandles.h" />
+    <ClInclude Include="SystemInfo\SystemInfo.h" />
     <ClInclude Include="Threading\WorkerThread.h" />
   </ItemGroup>
   <ItemGroup>

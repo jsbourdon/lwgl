@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../3rd/DirectXMath/Inc/DirectXMath.h"
+#include "../3rd/DXUT/Core/DXUT.h"
 
 namespace lwgl
 {
