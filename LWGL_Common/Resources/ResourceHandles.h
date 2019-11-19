@@ -1,7 +1,5 @@
 #pragma once
 
-#include <pch.h>
-
 #define VALIDATE_HANDLES _DEBUG
 
 namespace lwgl
@@ -41,4 +39,8 @@ namespace lwgl
     typedef Handle RenderPassHandle;
     typedef Handle GfxPipelineHandle;
     typedef Handle FrameBufferHandle;
+
+    typedef uintptr_t WindowHandle;
+    typedef uintptr_t AppHandle;
+    typedef uintptr_t LibraryHandle;
 }

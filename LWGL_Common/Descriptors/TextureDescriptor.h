@@ -1,6 +1,5 @@
 #pragma once
 
-#include <pch.h>
 #include "PixelFormats.h"
 #include "ResourceUsage.h"
 

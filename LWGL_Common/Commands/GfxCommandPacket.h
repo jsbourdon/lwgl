@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Resources/ResourceHandles.h"
+#include "LWGL_Common/Resources/ResourceHandles.h"
 
 namespace lwgl
 {

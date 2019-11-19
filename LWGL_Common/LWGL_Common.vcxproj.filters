@@ -40,6 +40,9 @@
     <Filter Include="Source Files\SystemInfo">
       <UniqueIdentifier>{2463273c-671f-4acf-9f93-404072fff56d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ExternalFunctions">
+      <UniqueIdentifier>{248d732d-a5cf-451b-9966-54e95db202a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -110,6 +113,15 @@
     </ClInclude>
     <ClInclude Include="SystemInfo\SystemInfo.h">
       <Filter>Source Files\SystemInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\Memory.h">
+      <Filter>Source Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalFunctions\ExternalFunctions.h">
+      <Filter>Source Files\ExternalFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Defines.h">
+      <Filter>Source Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Commands">
+      <UniqueIdentifier>{c2f9d016-f531-40db-8e1f-a1251d90b6c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Device">
+      <UniqueIdentifier>{06b382c4-6640-4d85-80bd-789842898ea6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Library">
+      <UniqueIdentifier>{f826e48a-66ea-4875-8459-3dc40da55264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Library\Implementations">
+      <UniqueIdentifier>{999b7d93-1a78-400a-9d13-733f01b33aea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Library\Implementations\Windows">
+      <UniqueIdentifier>{e3d41773-1ba0-4cce-bea6-a479da423125}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -21,28 +36,39 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GfxCommandQueue.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Commands\GfxCommandBuffer.h">
+      <Filter>Source Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="src\GfxCommandBuffer.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Commands\GfxCommandQueue.h">
+      <Filter>Source Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="src\Device.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Device\Device.h">
+      <Filter>Source Files\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\LibraryLoader.h">
+      <Filter>Source Files\Library</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\GfxCommandQueue.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Commands\GfxCommandBuffer.cpp">
+      <Filter>Source Files\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="src\GfxCommandBuffer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Commands\GfxCommandQueue.cpp">
+      <Filter>Source Files\Commands</Filter>
     </ClCompile>
-    <ClCompile Include="src\Device.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Device\Device.cpp">
+      <Filter>Source Files\Device</Filter>
     </ClCompile>
+    <ClCompile Include="Library\LibraryLoader.cpp">
+      <Filter>Source Files\Library</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Library\Implementations\Windows\LibraryLoader.inl">
+      <Filter>Source Files\Library\Implementations\Windows</Filter>
+    </None>
   </ItemGroup>
 </Project>

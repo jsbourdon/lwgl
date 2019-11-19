@@ -30,7 +30,7 @@ IndexFreeList& IndexFreeList::operator=(IndexFreeList &&other) noexcept
 void IndexFreeList::Init(uint32_t capacity)
 {
     m_Capacity = capacity;
-    m_Items = static_cast<Item*>(lwgl::core::AlignedAlloc(capacity, alignof(Item)));
+    m_Items = static_cast<Item*>(lwgl::memory::AlignedAlloc(capacity, alignof(Item)));
 
     for (uint32_t i = 0; i < m_Capacity; ++i)
     {
@@ -42,7 +42,7 @@ IndexFreeList::~IndexFreeList()
 {
     if (m_Items)
     {
-        lwgl::core::FreeAlignedAlloc(m_Items);
+        lwgl::memory::FreeAlignedAlloc(m_Items);
     }
 }
 

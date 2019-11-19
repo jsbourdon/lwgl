@@ -1,7 +1,7 @@
 #pragma once
 
-#include <pch.h>
-#include "../Resources/ResourceHandles.h"
+#include <cstdint>
+#include "LWGL_Common/Resources/ResourceHandles.h"
 
 namespace lwgl
 {

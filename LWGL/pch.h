@@ -10,4 +10,8 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 
+#include <cstdint>
+#include "LWGL_Common/Resources/ResourceHandles.h"
+#include "LWGL_Common/Core/Defines.h"
+
 #endif //PCH_H

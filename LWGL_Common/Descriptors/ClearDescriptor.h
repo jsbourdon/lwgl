@@ -1,10 +1,10 @@
 #pragma once
 
-#include <pch.h>
+#include "LWGL_Common/Math/Math.h"
 
 namespace lwgl
 {
-    using namespace core;
+    using namespace math;
 
     namespace descriptors
     {

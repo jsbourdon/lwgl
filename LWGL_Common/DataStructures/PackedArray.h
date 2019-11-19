@@ -1,6 +1,6 @@
 #pragma once
 
-#include <pch.h>
+#include <cstdint>
 #include "IndexFreeList.h"
 
 namespace lwgl

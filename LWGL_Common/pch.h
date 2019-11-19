@@ -19,5 +19,6 @@
 #include "Resources/ResourceHandles.h"
 #include "Core/Globals.h"
 #include "Math/Math.h"
+#include "Memory/Memory.h"
 
 #endif //PCH_H

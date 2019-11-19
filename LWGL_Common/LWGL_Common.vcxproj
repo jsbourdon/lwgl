@@ -93,8 +93,9 @@
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,6 +112,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,6 +131,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -150,6 +153,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(ProjectDir)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Commands\GfxCommandPacket.h" />
+    <ClInclude Include="Core\Defines.h" />
     <ClInclude Include="Core\Globals.h" />
     <ClInclude Include="DataStructures\IndexFreeList.h" />
     <ClInclude Include="DataStructures\PackedArray.h" />
@@ -176,8 +181,10 @@
     <ClInclude Include="Descriptors\ShaderDescriptor.h" />
     <ClInclude Include="Descriptors\SurfaceDescriptor.h" />
     <ClInclude Include="Descriptors\TextureDescriptor.h" />
+    <ClInclude Include="ExternalFunctions\ExternalFunctions.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Math\Math.h" />
+    <ClInclude Include="Memory\Memory.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resources\ResourceHandles.h" />
     <ClInclude Include="SystemInfo\SystemInfo.h" />
