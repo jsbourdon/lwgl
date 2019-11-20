@@ -28,6 +28,24 @@
     <Filter Include="Source Files\Library\Implementations\Windows">
       <UniqueIdentifier>{e3d41773-1ba0-4cce-bea6-a479da423125}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\WindowFactory">
+      <UniqueIdentifier>{b9680549-2d4a-4731-a04f-7e770d926edf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WindowFactory\Implementations">
+      <UniqueIdentifier>{d90884a5-dbe8-43f5-986d-d94f80399e84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\WindowFactory\Implementations\Windows">
+      <UniqueIdentifier>{6cdaca76-2930-4932-b5dc-43b0aa8ef61a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{65b1e64f-3e65-4e6d-8943-474c7799680b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Events\Implementations">
+      <UniqueIdentifier>{7aee61b6-9b7c-4fb2-9cc0-0508a4cea906}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Events\Implementations\Windows">
+      <UniqueIdentifier>{0740ab6b-756c-4498-8816-f117dff56072}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -48,6 +66,15 @@
     <ClInclude Include="Library\LibraryLoader.h">
       <Filter>Source Files\Library</Filter>
     </ClInclude>
+    <ClInclude Include="WindowFactory\WindowFactory.h">
+      <Filter>Source Files\WindowFactory</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\MessagePump.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\Implementations\Windows\MessagePump.inl">
+      <Filter>Source Files\Events\Implementations\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -65,10 +92,19 @@
     <ClCompile Include="Library\LibraryLoader.cpp">
       <Filter>Source Files\Library</Filter>
     </ClCompile>
+    <ClCompile Include="WindowFactory\WindowFactory.cpp">
+      <Filter>Source Files\WindowFactory</Filter>
+    </ClCompile>
+    <ClCompile Include="Events\MessagePump.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Library\Implementations\Windows\LibraryLoader.inl">
       <Filter>Source Files\Library\Implementations\Windows</Filter>
+    </None>
+    <None Include="WindowFactory\Implementations\Windows\WindowFactory.inl">
+      <Filter>Source Files\WindowFactory\Implementations\Windows</Filter>
     </None>
   </ItemGroup>
 </Project>

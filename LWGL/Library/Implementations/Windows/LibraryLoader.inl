@@ -7,7 +7,7 @@
 using namespace lwgl;
 using namespace lwgl::external;
 
-void LibraryLoader::LoadDynamicLibrary(const wchar_t *name)
+LibraryHandle LibraryLoader::LoadDynamicLibrary(const wchar_t *name)
 {
     const size_t strLength = wcslen(name);
     const size_t bufferSize = (strLength + 5) * sizeof(wchar_t);
@@ -15,7 +15,7 @@ void LibraryLoader::LoadDynamicLibrary(const wchar_t *name)
     wchar_t * const tmpStr = reinterpret_cast<wchar_t*>(memory::StackAlloc(bufferSize));
     swprintf_s(tmpStr, bufferSize, L"%s.dll", name);
 
-    g_LoadedLibrary = reinterpret_cast<LibraryHandle>(LoadLibraryW(tmpStr));
+    return reinterpret_cast<LibraryHandle>(LoadLibraryW(tmpStr));
 }
 
 void* LibraryLoader::GetFunctionAddress(LibraryHandle lib, const char *functionName)

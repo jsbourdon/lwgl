@@ -6,9 +6,9 @@ using namespace lwgl;
 using namespace lwgl::external;
 
 ExternalFunctions   LibraryLoader::g_Functions {};
-LibraryHandle       LibraryLoader::g_LoadedLibrary { NULL };
+LibraryHandle       LibraryLoader::g_LoadedGfxLibrary { NULL };
 
-const wchar_t* LibraryLoader::g_PlatformLibNames[] =
+const wchar_t* LibraryLoader::g_GfxPlatformLibNames[] =
 {
     L"LWGL_DX11",
     L"LWGL_DX12",
@@ -21,32 +21,23 @@ const wchar_t* LibraryLoader::g_PlatformLibNames[] =
     L"LWGL_Scarlett",
 };
 
-WindowHandle ExternalFunctions::CreateNewWindow(AppHandle owner, uint32_t width, uint32_t height)
+ExternalFunctions LibraryLoader::LoadExternalFunctions(GfxPlatform gfx)
 {
-    return m_CreateWindowFnctPtr(owner, width, height);
-}
+    static_assert(std::extent_v<decltype(LibraryLoader::g_GfxPlatformLibNames)> == size_t(GfxPlatform::Count));
 
-ExternalFunctions LibraryLoader::LoadExternalFunctions(Platform platform)
-{
-    static_assert(std::extent_v<decltype(LibraryLoader::g_PlatformLibNames)> == size_t(Platform::Count));
-
-    if (!g_LoadedLibrary)
+    if (!g_LoadedGfxLibrary)
     {
-        LoadDynamicLibrary(g_PlatformLibNames[size_t(platform)]);
-        GetExternalFunctions();
+        g_LoadedGfxLibrary = LoadDynamicLibrary(g_GfxPlatformLibNames[size_t(gfx)]);
+        LoadGfxFunctions(g_Functions);
     }
 
     return g_Functions;
 }
 
-void LibraryLoader::GetExternalFunctions()
+void LibraryLoader::LoadGfxFunctions(ExternalFunctions &functions)
 {
-    LoadCreateNewWindowFnct(g_Functions);
-}
-
-void LibraryLoader::LoadCreateNewWindowFnct(ExternalFunctions &functions)
-{
-    functions.m_CreateWindowFnctPtr = reinterpret_cast<CreateWindowFnctPtr>(GetFunctionAddress(g_LoadedLibrary, "CreateNewWindow"));
+    //functions.m_CreateWindowFnctPtr = reinterpret_cast<CreateWindowFnctPtr>(GetFunctionAddress(g_LoadedGfxLibrary, "CreateNewWindow"));
+    //functions.m_ProcessWSEventsFnctPtr = reinterpret_cast<ProcessWindowSystemEventsFnctPtr>(GetFunctionAddress(g_LoadedOSLibrary, "CreateNewWindow"));
 }
 
 #include INCLUDE_IMPLEMENTATION(LibraryLoader)

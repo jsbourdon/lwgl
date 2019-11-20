@@ -10,12 +10,14 @@ namespace lwgl
 
         struct ExternalFunctions
         {
-            CreateWindowFnctPtr m_CreateWindowFnctPtr { nullptr };
-
-            WindowHandle CreateNewWindow(AppHandle owner, uint32_t width, uint32_t height);
+            //CreateWindowFnctPtr                 m_CreateWindowFnctPtr { nullptr };
+            //ProcessWindowSystemEventsFnctPtr    m_ProcessWSEventsFnctPtr { nullptr };
+            //
+            //WindowHandle    CreateNewWindow(AppHandle owner, uint32_t width, uint32_t height);
+            //void            ProcessWindowSystemEvents();
         };
 
-        enum class Platform
+        enum class GfxPlatform
         {
             Unknown = -1,
             D3D11,
@@ -34,21 +36,20 @@ namespace lwgl
         {
         public:
 
-            static ExternalFunctions LoadExternalFunctions(Platform platform);
+            static ExternalFunctions LoadExternalFunctions(GfxPlatform gfx);
 
         private:
 
-            static void GetExternalFunctions();
-            static void LoadCreateNewWindowFnct(ExternalFunctions &functions);
+            static void LoadGfxFunctions(ExternalFunctions &functions);
 
             // Platform-dependent implementations required.
             // Look into `Library/Implementations/<platform>.inl`
-            static void LoadDynamicLibrary(const wchar_t *name);
+            static LibraryHandle LoadDynamicLibrary(const wchar_t *name);
             static void* GetFunctionAddress(LibraryHandle lib, const char *functionName);
 
             static ExternalFunctions    g_Functions;
-            static LibraryHandle        g_LoadedLibrary;
-            static const wchar_t*       g_PlatformLibNames[];
+            static LibraryHandle        g_LoadedGfxLibrary;
+            static const wchar_t*       g_GfxPlatformLibNames[];
 
             LibraryLoader() = delete;
             ~LibraryLoader() = delete;
