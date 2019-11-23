@@ -16,9 +16,6 @@
     <Filter Include="Source Files\Commands">
       <UniqueIdentifier>{c2f9d016-f531-40db-8e1f-a1251d90b6c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Device">
-      <UniqueIdentifier>{06b382c4-6640-4d85-80bd-789842898ea6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Library">
       <UniqueIdentifier>{f826e48a-66ea-4875-8459-3dc40da55264}</UniqueIdentifier>
     </Filter>
@@ -46,6 +43,9 @@
     <Filter Include="Source Files\Events\Implementations\Windows">
       <UniqueIdentifier>{0740ab6b-756c-4498-8816-f117dff56072}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Device">
+      <UniqueIdentifier>{9f06b52e-13e2-43c5-854b-a82ba1bd38c5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -56,12 +56,6 @@
     </ClInclude>
     <ClInclude Include="Commands\GfxCommandBuffer.h">
       <Filter>Source Files\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Commands\GfxCommandQueue.h">
-      <Filter>Source Files\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Device\Device.h">
-      <Filter>Source Files\Device</Filter>
     </ClInclude>
     <ClInclude Include="Library\LibraryLoader.h">
       <Filter>Source Files\Library</Filter>
@@ -75,6 +69,12 @@
     <ClInclude Include="Events\Implementations\Windows\MessagePump.inl">
       <Filter>Source Files\Events\Implementations\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="Device\GpuDevice.h">
+      <Filter>Source Files\Device</Filter>
+    </ClInclude>
+    <ClInclude Include="Device\GfxPlatform.h">
+      <Filter>Source Files\Device</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -82,12 +82,6 @@
     </ClCompile>
     <ClCompile Include="Commands\GfxCommandBuffer.cpp">
       <Filter>Source Files\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Commands\GfxCommandQueue.cpp">
-      <Filter>Source Files\Commands</Filter>
-    </ClCompile>
-    <ClCompile Include="Device\Device.cpp">
-      <Filter>Source Files\Device</Filter>
     </ClCompile>
     <ClCompile Include="Library\LibraryLoader.cpp">
       <Filter>Source Files\Library</Filter>
@@ -97,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="Events\MessagePump.cpp">
       <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="Device\GpuDevice.cpp">
+      <Filter>Source Files\Device</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

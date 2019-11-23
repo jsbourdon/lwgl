@@ -94,6 +94,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -111,6 +112,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,6 +132,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -152,6 +155,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,8 +166,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Commands\GfxCommandBuffer.h" />
-    <ClInclude Include="Commands\GfxCommandQueue.h" />
-    <ClInclude Include="Device\Device.h" />
+    <ClInclude Include="Device\GfxPlatform.h" />
+    <ClInclude Include="Device\GpuDevice.h" />
     <ClInclude Include="Events\Implementations\Windows\MessagePump.inl" />
     <ClInclude Include="Events\MessagePump.h" />
     <ClInclude Include="framework.h" />
@@ -173,8 +177,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Commands\GfxCommandBuffer.cpp" />
-    <ClCompile Include="Commands\GfxCommandQueue.cpp" />
-    <ClCompile Include="Device\Device.cpp" />
+    <ClCompile Include="Device\GpuDevice.cpp" />
     <ClCompile Include="Events\MessagePump.cpp" />
     <ClCompile Include="Library\LibraryLoader.cpp" />
     <ClCompile Include="pch.cpp">
@@ -188,6 +191,14 @@
   <ItemGroup>
     <None Include="Library\Implementations\Windows\LibraryLoader.inl" />
     <None Include="WindowFactory\Implementations\Windows\WindowFactory.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LWGL_Common\LWGL_Common.vcxproj">
+      <Project>{1db6ef38-2d86-47f7-b98e-ebd98cd586aa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\LWGL_DX11\LWGL_DX11.vcxproj">
+      <Project>{c4dad8ee-d600-4c48-906d-9f0b445cf317}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

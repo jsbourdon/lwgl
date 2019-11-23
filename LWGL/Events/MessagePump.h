@@ -4,6 +4,6 @@ namespace lwgl
 {
     namespace events
     {
-        int PumpMessages();
+        bool PumpMessages();
     }
 }

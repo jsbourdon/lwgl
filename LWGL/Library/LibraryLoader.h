@@ -1,35 +1,29 @@
 #pragma once
 
+#include "LWGL/Device/GfxPlatform.h"
 #include "LWGL_Common/ExternalFunctions/ExternalFunctions.h"
 
 namespace lwgl
 {
     namespace external
     {
+        using namespace gfx;
+        using namespace resources;
+
         using LibraryHandle = lwgl::LibraryHandle;
 
         struct ExternalFunctions
         {
-            //CreateWindowFnctPtr                 m_CreateWindowFnctPtr { nullptr };
-            //ProcessWindowSystemEventsFnctPtr    m_ProcessWSEventsFnctPtr { nullptr };
-            //
-            //WindowHandle    CreateNewWindow(AppHandle owner, uint32_t width, uint32_t height);
-            //void            ProcessWindowSystemEvents();
-        };
+            LibraryHandle m_LibHandle { 0 };
+            CreateGfxDeviceFnctPtr m_CreateGfxDeviceFnctPtr { nullptr };
+            DestroyGfxDeviceFnctPtr m_DestroyGfxDeviceFnctPtr { nullptr };
+            CreateCommandQueueFnctPtr m_CreateCmdQueueFnctPtr { nullptr };
+            DestroyCommandQueueFnctPtr m_DestroyCmdQueueFnctPtr { nullptr };
 
-        enum class GfxPlatform
-        {
-            Unknown = -1,
-            D3D11,
-            D3D12,
-            Vulkan,
-            MoltenVK,
-            NX,
-            Neo,
-            Scorpio,
-            Prospero,
-            Scarlett,
-            Count
+            GpuDeviceHandle CreateGfxDevice();
+            void DestroyGfxDevice(GpuDeviceHandle hdl);
+            CommandQueueHandle CreateCommandQueue(CommandQueueType type);
+            void DestroyCommandQueue(CommandQueueHandle hdl);
         };
 
         class LibraryLoader
@@ -37,6 +31,7 @@ namespace lwgl
         public:
 
             static ExternalFunctions LoadExternalFunctions(GfxPlatform gfx);
+            static void UnloadExternalFunctions(ExternalFunctions &functions);
 
         private:
 
@@ -45,11 +40,10 @@ namespace lwgl
             // Platform-dependent implementations required.
             // Look into `Library/Implementations/<platform>.inl`
             static LibraryHandle LoadDynamicLibrary(const wchar_t *name);
+            static void UnloadDynamicLibrary(LibraryHandle handle);
             static void* GetFunctionAddress(LibraryHandle lib, const char *functionName);
 
-            static ExternalFunctions    g_Functions;
-            static LibraryHandle        g_LoadedGfxLibrary;
-            static const wchar_t*       g_GfxPlatformLibNames[];
+            static const wchar_t* g_GfxPlatformLibNames[];
 
             LibraryLoader() = delete;
             ~LibraryLoader() = delete;

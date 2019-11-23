@@ -123,6 +123,12 @@
     <ClInclude Include="Core\Defines.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Resources\ResourceTypes.h">
+      <Filter>Source Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\FrameMemoryAllocator.h">
+      <Filter>Source Files\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -130,6 +136,9 @@
     </ClCompile>
     <ClCompile Include="DataStructures\IndexFreeList.cpp">
       <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\FrameMemoryAllocator.cpp">
+      <Filter>Source Files\Memory</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

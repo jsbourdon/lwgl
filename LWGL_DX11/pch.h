@@ -11,6 +11,7 @@
 #include "framework.h"
 
 #include <cstdint>
+#include <d3d11.h>
 
 #include "LWGL_Common/Core/Defines.h"
 #include "LWGL_Common/Resources/ResourceHandles.h"

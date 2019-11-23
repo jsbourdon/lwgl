@@ -17,6 +17,7 @@
 #include <assert.h>
 
 #include "Resources/ResourceHandles.h"
+#include "Core/Defines.h"
 #include "Core/Globals.h"
 #include "Math/Math.h"
 #include "Memory/Memory.h"
