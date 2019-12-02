@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Commands\GfxCommandBuffer.h" />
     <ClInclude Include="Commands\GfxCommandPacket.h" />
     <ClInclude Include="Core\Defines.h" />
     <ClInclude Include="Core\Globals.h" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Math\Math.h" />
     <ClInclude Include="Memory\FrameMemoryAllocator.h" />
     <ClInclude Include="Memory\Memory.h" />
+    <ClInclude Include="Memory\VirtualMemoryAllocator.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resources\ResourceHandles.h" />
     <ClInclude Include="Resources\ResourceTypes.h" />
@@ -199,12 +201,18 @@
   <ItemGroup>
     <ClCompile Include="DataStructures\IndexFreeList.cpp" />
     <ClCompile Include="Memory\FrameMemoryAllocator.cpp" />
+    <ClCompile Include="Memory\VirtualMemoryAllocator.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SystemInfo\SystemInfo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Memory\Implementations\Windows\VirtualMemoryAllocator.inl" />
+    <None Include="SystemInfo\Implementations\Windows\SystemInfo.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

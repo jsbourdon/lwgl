@@ -22,7 +22,7 @@ namespace lwgl
 
             GpuDeviceHandle CreateGfxDevice();
             void DestroyGfxDevice(GpuDeviceHandle hdl);
-            CommandQueueHandle CreateCommandQueue(CommandQueueType type);
+            CommandQueueHandle CreateCommandQueue(lwgl::GpuDeviceHandle hdl, CommandQueueType type);
             void DestroyCommandQueue(CommandQueueHandle hdl);
         };
 

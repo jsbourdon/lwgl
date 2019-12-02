@@ -3,7 +3,7 @@
 #include "LWGL/Library/LibraryLoader.h"
 #include "LWGL_Common/Memory/Memory.h"
 #include "LWGL_Common/Core/Defines.h"
-#include "LWGL/Commands/GfxCommandBuffer.h"
+#include "LWGL/Commands/GfxCommandList.h"
 
 using namespace lwgl::external;
 using namespace lwgl::resources;
@@ -24,7 +24,8 @@ namespace lwgl
         CommandQueueHandle CreateCommandQueue(CommandQueueType type);
         void DestroyCommandQueue(CommandQueueHandle cmdQueueHdl);
 
-        GfxCommandBuffer CreateGfxCommandBuffer(size_t memoryByteSize = MiB(1));
+        GfxCommandList CreateGfxCommandList(size_t memoryByteSize = MiB(1));
+        void DestroyGfxCommandList(GfxCommandList list);
 
     private:
 

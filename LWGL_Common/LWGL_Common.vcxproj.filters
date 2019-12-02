@@ -43,6 +43,18 @@
     <Filter Include="Source Files\ExternalFunctions">
       <UniqueIdentifier>{248d732d-a5cf-451b-9966-54e95db202a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SystemInfo\Implementations">
+      <UniqueIdentifier>{5c5c63a2-6820-4a2d-98bc-bc28dfb04289}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SystemInfo\Implementations\Windows">
+      <UniqueIdentifier>{f1029352-a384-4ffc-8ad1-0a33c8f0780a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Memory\Implementations">
+      <UniqueIdentifier>{ae64aff2-a7da-482b-be7d-62c60f0d46b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Memory\Implementations\Windows">
+      <UniqueIdentifier>{a8b81c4e-a14b-4a28-b1ed-c50f17ba6e41}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -129,6 +141,12 @@
     <ClInclude Include="Memory\FrameMemoryAllocator.h">
       <Filter>Source Files\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="Commands\GfxCommandBuffer.h">
+      <Filter>Source Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\VirtualMemoryAllocator.h">
+      <Filter>Source Files\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -140,5 +158,19 @@
     <ClCompile Include="Memory\FrameMemoryAllocator.cpp">
       <Filter>Source Files\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="SystemInfo\SystemInfo.cpp">
+      <Filter>Source Files\SystemInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\VirtualMemoryAllocator.cpp">
+      <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SystemInfo\Implementations\Windows\SystemInfo.inl">
+      <Filter>Source Files\SystemInfo\Implementations\Windows</Filter>
+    </None>
+    <None Include="Memory\Implementations\Windows\VirtualMemoryAllocator.inl">
+      <Filter>Source Files\Memory\Implementations\Windows</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -44,9 +44,3 @@ void FrameMemoryAllocator::Reset()
 {
     m_NextByte = 0;
 }
-
-size_t FrameMemoryAllocator::Align(size_t size, size_t alignment)
-{
-    size_t factor = alignment - 1;
-    return (size + factor) & ~factor;
-}

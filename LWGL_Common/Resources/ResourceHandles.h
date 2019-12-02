@@ -88,6 +88,7 @@ namespace lwgl
 
     typedef uintptr_t GpuDeviceHandle;
     typedef uintptr_t CommandQueueHandle;
+    typedef uintptr_t GfxCommandBufferHandle;
 
     static const uintptr_t Handle_NULL = -1;
 }

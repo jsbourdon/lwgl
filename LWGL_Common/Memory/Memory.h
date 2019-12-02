@@ -27,5 +27,11 @@ namespace lwgl
         {
             return _malloca(size);
         }
+
+        inline size_t Align(size_t size, size_t alignment)
+        {
+            size_t factor = alignment - 1;
+            return (size + factor) & ~factor;
+        }
     }
 }

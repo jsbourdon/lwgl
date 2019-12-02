@@ -11,10 +11,10 @@
 
 #define ARRAY_SIZE(A) std::extent<decltype(A)>::value
 
-#define KiB(value) (1024*value)
-#define MiB(value) (KiB(value)*1024)
-#define GiB(value) (MiB(value)*1024)
-#define TiB(value) (GiB(value)*1024)
+#define KiB(value) (size_t(1024)*value)
+#define MiB(value) (KiB(value)*size_t(1024))
+#define GiB(value) (MiB(value)*size_t(1024))
+#define TiB(value) (GiB(value)*size_t(1024))
 
 // Microsoft Windows (built with MSVC)
 #ifdef _MSC_VER

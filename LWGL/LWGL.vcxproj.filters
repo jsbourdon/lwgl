@@ -54,9 +54,6 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Commands\GfxCommandBuffer.h">
-      <Filter>Source Files\Commands</Filter>
-    </ClInclude>
     <ClInclude Include="Library\LibraryLoader.h">
       <Filter>Source Files\Library</Filter>
     </ClInclude>
@@ -75,13 +72,13 @@
     <ClInclude Include="Device\GfxPlatform.h">
       <Filter>Source Files\Device</Filter>
     </ClInclude>
+    <ClInclude Include="Commands\GfxCommandList.h">
+      <Filter>Source Files\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Commands\GfxCommandBuffer.cpp">
-      <Filter>Source Files\Commands</Filter>
     </ClCompile>
     <ClCompile Include="Library\LibraryLoader.cpp">
       <Filter>Source Files\Library</Filter>
@@ -94,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="Device\GpuDevice.cpp">
       <Filter>Source Files\Device</Filter>
+    </ClCompile>
+    <ClCompile Include="Commands\GfxCommandList.cpp">
+      <Filter>Source Files\Commands</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

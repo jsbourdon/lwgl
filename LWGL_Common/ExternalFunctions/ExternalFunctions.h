@@ -13,7 +13,7 @@ namespace lwgl
         {
             typedef GpuDeviceHandle(*CreateGfxDeviceFnctPtr)();
             typedef void (*DestroyGfxDeviceFnctPtr)(lwgl::GpuDeviceHandle hdl);
-            typedef CommandQueueHandle(*CreateCommandQueueFnctPtr)(lwgl::resources::CommandQueueType);
+            typedef CommandQueueHandle(*CreateCommandQueueFnctPtr)(lwgl::GpuDeviceHandle hdl, lwgl::resources::CommandQueueType);
             typedef void (*DestroyCommandQueueFnctPtr)(lwgl::CommandQueueHandle hdl);
         }
     }

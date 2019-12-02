@@ -28,8 +28,6 @@ namespace lwgl
 
             static const size_t s_DefaultAlignment = 16;
 
-            size_t Align(size_t size, size_t alignment);
-
             uint8_t* m_MemoryPool { nullptr };
             size_t m_PoolByteSize { 0 };
             size_t m_NextByte { 0 };

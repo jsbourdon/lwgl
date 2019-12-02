@@ -8,11 +8,14 @@
 #include "LWGL/WindowFactory/WindowFactory.h"
 #include "LWGL/Events/MessagePump.h"
 #include "LWGL_Common/Resources/ResourceHandles.h"
+#include "LWGL_Common/SystemInfo/SystemInfo.h"
+#include "LWGL_Common/Memory/VirtualMemoryAllocator.h"
 #include "LWGL/Device/GfxPlatform.h"
 #include "LWGL/Device/GpuDevice.h"
 
 using namespace lwgl;
 using namespace lwgl::external;
+using namespace lwgl::memory;
 using namespace std::chrono_literals;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -27,7 +30,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     factory::DisplayWindow(hwnd);
 
     GpuDevice *pDevice = GpuDevice::CreateDevice(GfxPlatform::D3D11);
-
+    
     while (!lwgl::events::PumpMessages())
     {
         std::this_thread::sleep_for(100ms);

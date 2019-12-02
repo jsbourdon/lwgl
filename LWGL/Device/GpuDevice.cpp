@@ -41,7 +41,7 @@ GpuDevice::~GpuDevice()
 CommandQueueHandle GpuDevice::CreateCommandQueue(CommandQueueType type)
 {
     LWGL_ASSERT(type == CommandQueueType::Graphic, "Unsupported Command Queue type");
-    return m_LibFunctions.CreateCommandQueue(type);
+    return m_LibFunctions.CreateCommandQueue(m_DeviceHandle, type);
 }
 
 void GpuDevice::DestroyCommandQueue(CommandQueueHandle cmdQueueHdl)
@@ -49,8 +49,8 @@ void GpuDevice::DestroyCommandQueue(CommandQueueHandle cmdQueueHdl)
     m_LibFunctions.DestroyCommandQueue(cmdQueueHdl);
 }
 
-GfxCommandBuffer GpuDevice::CreateGfxCommandBuffer(size_t memoryByteSize)
+GfxCommandList GpuDevice::CreateGfxCommandList(size_t memoryByteSize)
 {
-    GfxCommandBuffer cmdBuffer;
-    return cmdBuffer;
+    GfxCommandList cmdList;
+    return cmdList;
 }

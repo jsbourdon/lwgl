@@ -15,9 +15,9 @@ void ExternalFunctions::DestroyGfxDevice(GpuDeviceHandle hdl)
     (*m_DestroyGfxDeviceFnctPtr)(hdl);
 }
 
-CommandQueueHandle ExternalFunctions::CreateCommandQueue(CommandQueueType type)
+CommandQueueHandle ExternalFunctions::CreateCommandQueue(lwgl::GpuDeviceHandle hdl, CommandQueueType type)
 {
-    return (*m_CreateCmdQueueFnctPtr)(type);
+    return (*m_CreateCmdQueueFnctPtr)(hdl, type);
 }
 
 void ExternalFunctions::DestroyCommandQueue(CommandQueueHandle hdl)

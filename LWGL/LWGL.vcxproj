@@ -165,7 +165,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Commands\GfxCommandBuffer.h" />
+    <ClInclude Include="Commands\GfxCommandList.h" />
     <ClInclude Include="Device\GfxPlatform.h" />
     <ClInclude Include="Device\GpuDevice.h" />
     <ClInclude Include="Events\Implementations\Windows\MessagePump.inl" />
@@ -176,7 +176,7 @@
     <ClInclude Include="WindowFactory\WindowFactory.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Commands\GfxCommandBuffer.cpp" />
+    <ClCompile Include="Commands\GfxCommandList.cpp" />
     <ClCompile Include="Device\GpuDevice.cpp" />
     <ClCompile Include="Events\MessagePump.cpp" />
     <ClCompile Include="Library\LibraryLoader.cpp" />

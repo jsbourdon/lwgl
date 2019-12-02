@@ -17,11 +17,5 @@ namespace lwgl
             uintptr_t               m_DescriptorTableCount;
             uintptr_t*              m_ResourceHandles;
         };
-
-        struct GfxCommandPacketList
-        {
-            GfxCommandPacket *m_pPackets;
-            uint32_t m_Count;
-        };
     }
 }
