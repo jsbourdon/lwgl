@@ -6,10 +6,22 @@
 #include <type_traits>
 #include <tuple>
 
+#include "LWGL_Common/Memory/ThreadHeapAllocator.h"
+
 namespace lwgl
 {
     namespace threading
     {
+        class WorkerThreadBase
+        {
+        protected:
+
+            WorkerThreadBase()
+            {
+                lwgl::memory::ForceGlobalAllocations(true);
+            }
+        };
+
         template<typename R, typename ...A>
         class WorkerThread;
 
@@ -22,14 +34,16 @@ namespace lwgl
         // executes the function, notify any waiting thread and yields/sleeps/waits again.
         //
         template<typename ReturnType, typename ...ArgumentTypes>
-        class WorkerThread<ReturnType(ArgumentTypes...)>
+        class WorkerThread<ReturnType(ArgumentTypes...)> : WorkerThreadBase
         {
+            typedef WorkerThreadBase base;
+
         public:
 
             typedef ReturnType(*FunctionType)(ArgumentTypes...);
 
-            WorkerThread(FunctionType threadFunction);
-            ~WorkerThread() = default;
+            WorkerThread(FunctionType threadFunction, size_t heapByteSize, size_t initialCommitByteSize);
+            ~WorkerThread();
 
             void Init();
             void Shutdown();
@@ -39,7 +53,7 @@ namespace lwgl
 
         private:
 
-            static void ThreadMain(WorkerThread *thisThread);
+            static void ThreadMain(WorkerThread *thisThread, size_t heapByteSize, size_t initialCommitByteSize);
 
             void Execute();
 
@@ -57,17 +71,30 @@ namespace lwgl
 }
 
 using namespace lwgl::threading;
+using namespace lwgl::memory;
 
 template<typename ReturnType, typename ...ArgumentTypes>
-WorkerThread<ReturnType(ArgumentTypes...)>::WorkerThread(FunctionType threadFunction)
-    : m_Function(threadFunction)
-    , m_Thread(ThreadMain, this)
-{ }
+WorkerThread<ReturnType(ArgumentTypes...)>::WorkerThread(FunctionType threadFunction, size_t heapByteSize, size_t initialCommitByteSize)
+    : base()
+    , m_Function(threadFunction)
+    , m_Thread(ThreadMain, this, heapByteSize, initialCommitByteSize)
+{ 
+    // Enabled in the base class constructor to make sure all
+    // members use the global allocator.
+    lwgl::memory::ForceGlobalAllocations(false);
+}
+
+template<typename ReturnType, typename ...ArgumentTypes>
+WorkerThread<ReturnType(ArgumentTypes...)>::~WorkerThread()
+{
+    Shutdown();
+}
 
 template<typename ReturnType, typename ...ArgumentTypes>
 void WorkerThread<ReturnType(ArgumentTypes...)>::Init()
 {
     std::unique_lock<std::mutex> lck(m_Mutex);
+
     if (!m_Running)
     {
         m_CondValue.wait(lck);
@@ -77,9 +104,15 @@ void WorkerThread<ReturnType(ArgumentTypes...)>::Init()
 template<typename ReturnType, typename ...ArgumentTypes>
 void WorkerThread<ReturnType(ArgumentTypes...)>::Shutdown()
 {
+    // Make sure all allocations created during member allocation
+    // will be deallocated from the global allocator.
+    lwgl::memory::ForceGlobalAllocations(true);
+
     m_Running = false;
     m_CondValue.notify_all();
     m_Thread.join();
+
+    lwgl::memory::ForceGlobalAllocations(false);
 }
 
 template<typename ReturnType, typename ...ArgumentTypes>
@@ -99,8 +132,9 @@ ReturnType WorkerThread<ReturnType(ArgumentTypes...)>::Wait()
 }
 
 template<typename ReturnType, typename ...ArgumentTypes>
-void WorkerThread<ReturnType(ArgumentTypes...)>::ThreadMain(WorkerThread *thisThread)
+void WorkerThread<ReturnType(ArgumentTypes...)>::ThreadMain(WorkerThread *thisThread, size_t heapByteSize, size_t initialCommitByteSize)
 {
+    ThreadHeapAllocator::Init(heapByteSize, initialCommitByteSize);
     thisThread->Execute();
 }
 

@@ -35,7 +35,8 @@ const wchar_t* LibraryLoader::g_GfxPlatformLibNames[] =
     L"LWGL_Neo",
     L"LWGL_Scorpio",
     L"LWGL_Prospero",
-    L"LWGL_Scarlett",
+    L"LWGL_Lockhart",
+    L"LWGL_Anaconda"
 };
 
 ExternalFunctions LibraryLoader::LoadExternalFunctions(GfxPlatform gfx)

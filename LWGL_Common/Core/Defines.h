@@ -57,6 +57,7 @@
             {                                                                                                           \
                 char tmp[1024];                                                                                         \
                 sprintf_s(tmp, ARRAY_SIZE(tmp), "Assertion failed: %s\n%s", #x, msg);                                   \
+                printf_s("%s", tmp);                                                                                    \
                 int selection = MessageBoxA(NULL, tmp, "COM Call Failed", MB_OKCANCEL | MB_ICONERROR | MB_TASKMODAL);   \
                 if (selection == IDCANCEL) DebugBreak();                                                                \
             }                                                                                                           \

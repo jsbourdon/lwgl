@@ -13,7 +13,8 @@ namespace lwgl
         Neo,
         Scorpio,
         Prospero,
-        Scarlett,
+        Lockhart,
+        Anaconda,
         Count
     };
 }

@@ -147,6 +147,9 @@
     <ClInclude Include="Memory\VirtualMemoryAllocator.h">
       <Filter>Source Files\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="Memory\ThreadHeapAllocator.h">
+      <Filter>Source Files\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -162,6 +165,12 @@
       <Filter>Source Files\SystemInfo</Filter>
     </ClCompile>
     <ClCompile Include="Memory\VirtualMemoryAllocator.cpp">
+      <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\Memory.cpp">
+      <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\ThreadHeapAllocator.cpp">
       <Filter>Source Files\Memory</Filter>
     </ClCompile>
   </ItemGroup>

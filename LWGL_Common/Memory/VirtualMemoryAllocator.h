@@ -16,17 +16,19 @@ namespace lwgl
             static void Release(void *pMemory);
             static void ForceReleaseToOS(void *pMemory);
 
+            static uint32_t GetSystemPageSize() { return s_Allocator.m_AllocationPageSize; }
+
         private:
 
             static constexpr size_t MARKER = 0xDEADBEEFBADDEED1;
 
             struct alignas(sizeof(size_t)) VMHeader
             {
-                VMHeader* m_Next { nullptr };
-                size_t m_Size { 0 };
-                size_t m_Alignment { 0 };
+                VMHeader*   m_Next { nullptr };
+                size_t      m_Size { 0 };
+                size_t      m_Alignment { 0 };
             #ifdef _DEBUG
-                size_t m_Marker { MARKER };
+                size_t      m_Marker { MARKER };
             #endif
             };
 
@@ -43,10 +45,10 @@ namespace lwgl
             VirtualMemoryAllocator();
             ~VirtualMemoryAllocator();
 
-            VMHeader* m_FreeHead { nullptr };
-            VMHeader* m_FreeTail { nullptr };
-            std::mutex m_Mutex {};
-            uint32_t m_AllocationPageSize { 0 };
+            VMHeader*   m_FreeHead { nullptr };
+            VMHeader*   m_FreeTail { nullptr };
+            std::mutex  m_Mutex {};
+            uint32_t    m_AllocationPageSize { 0 };
         };
     }
 }

@@ -30,6 +30,7 @@ VirtualMemoryAllocator::VirtualMemoryAllocator()
 void* VirtualMemoryAllocator::Allocate(size_t byteSize, size_t commitByteSize, size_t alignment)
 {
     LWGL_ASSERT(alignment <= s_Allocator.m_AllocationPageSize, "Unsupported alignment");
+    LWGL_ASSERT(commitByteSize <= byteSize, "Invalid commit byte size");
 
     std::unique_lock<std::mutex> lock(s_Allocator.m_Mutex);
 

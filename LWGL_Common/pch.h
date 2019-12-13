@@ -15,6 +15,7 @@
 #include <malloc.h>
 #include <type_traits>
 #include <assert.h>
+#include <algorithm>
 
 #include "Resources/ResourceHandles.h"
 #include "Core/Defines.h"
