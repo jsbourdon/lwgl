@@ -18,13 +18,13 @@ FrameMemoryAllocator::~FrameMemoryAllocator()
 
 void FrameMemoryAllocator::Init(size_t poolByteSize)
 {
-    m_PoolByteSize = Align(poolByteSize, s_DefaultAlignment);
-    m_MemoryPool = static_cast<uint8_t*>(AlignedAlloc(m_PoolByteSize, s_DefaultAlignment));
+    m_PoolByteSize = Align(poolByteSize, s_MaxAlignment);
+    m_MemoryPool = static_cast<uint8_t*>(AlignedAlloc(m_PoolByteSize, s_MaxAlignment));
 }
 
 void* FrameMemoryAllocator::Allocate(size_t byteSize, size_t alignment)
 {
-    LWGL_ASSERT(alignment <= s_DefaultAlignment, "16 is maximum supported alignment for this allocator");
+    LWGL_ASSERT(alignment <= s_MaxAlignment, "FrameMemoryAllocator::Allocate: Maximum supported alignment exceeded.");
 
     size_t allocByteSize = Align(byteSize, alignment);
     size_t alignedOffset = Align(m_NextByte, alignment);

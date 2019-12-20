@@ -16,17 +16,18 @@ namespace lwgl
             FrameMemoryAllocator(size_t poolByteSize);
             ~FrameMemoryAllocator();
 
-            void Init(size_t poolByteSize);
+            void            Init(size_t poolByteSize);
 
-            void* Allocate(size_t byteSize, size_t alignment = sizeof(uintptr_t));
-            MemoryBookmark SetBookmark() const { return m_NextByte; }
-            void Reset(MemoryBookmark bookmark);
-            void Reset();
-            size_t GetAllocatedByteCount() const { return m_NextByte; }
+            void*           Allocate(size_t byteSize, size_t alignment = sizeof(uintptr_t));
+            MemoryBookmark  SetBookmark() const { return m_NextByte; }
+            void            Reset(MemoryBookmark bookmark);
+            void            Reset();
+            size_t          GetAllocatedByteCount() const { return m_NextByte; }
+            void*           GetFrameStartAddress() { return m_MemoryPool; }
 
         private:
 
-            static const size_t s_DefaultAlignment = 16;
+            static constexpr size_t s_MaxAlignment = 16;
 
             uint8_t* m_MemoryPool { nullptr };
             size_t m_PoolByteSize { 0 };

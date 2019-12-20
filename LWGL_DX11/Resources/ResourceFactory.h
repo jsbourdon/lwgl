@@ -17,4 +17,10 @@ extern "C"
 
     EXPORT_SYMBOL
     void DestroyCommandQueue(lwgl::CommandQueueHandle hdl);
+
+    EXPORT_SYMBOL
+    lwgl::CommandBufferHandle CreateCommandBuffer(lwgl::GpuDeviceHandle hdl, lwgl::resources::CommandBufferType type);
+
+    EXPORT_SYMBOL
+    void DestroyCommandBuffer(lwgl::CommandBufferHandle hdl);
 }

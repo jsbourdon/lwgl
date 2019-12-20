@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Memory\Implementations\Windows">
       <UniqueIdentifier>{a8b81c4e-a14b-4a28-b1ed-c50f17ba6e41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Synchronization">
+      <UniqueIdentifier>{77ed0860-ca18-44da-9cd1-af86d54fd85b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -150,6 +153,21 @@
     <ClInclude Include="Memory\ThreadHeapAllocator.h">
       <Filter>Source Files\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="Memory\RingBuffer.h">
+      <Filter>Source Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="Descriptors\PrimitiveTopology.h">
+      <Filter>Source Files\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Descriptors\ViewportDescriptor.h">
+      <Filter>Source Files\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Descriptors\ScissorRectDescriptor.h">
+      <Filter>Source Files\Descriptors</Filter>
+    </ClInclude>
+    <ClInclude Include="Sync\Barrier.h">
+      <Filter>Source Files\Synchronization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -171,6 +189,9 @@
       <Filter>Source Files\Memory</Filter>
     </ClCompile>
     <ClCompile Include="Memory\ThreadHeapAllocator.cpp">
+      <Filter>Source Files\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="Memory\RingBuffer.cpp">
       <Filter>Source Files\Memory</Filter>
     </ClCompile>
   </ItemGroup>

@@ -48,7 +48,7 @@ IndexFreeList::~IndexFreeList()
 
 Handle IndexFreeList::Add(uint32_t index)
 {
-    assert((m_FreeListIndex < m_Capacity && m_Count < m_Capacity) && "Free list is full");
+    LWGL_ASSERT(m_FreeListIndex < m_Capacity && m_Count < m_Capacity, "Free list is full");
 
     ++m_Count;
 
@@ -66,31 +66,31 @@ Handle IndexFreeList::Add(uint32_t index)
 
 uint32_t IndexFreeList::Remove(const Handle &handle)
 {
-    assert(ValidateHandle(handle));
+    LWGL_ASSERT(ValidateHandle(handle), "IndexFreeList::Remove: Invalid handle. Most probably already removed");
 
     --m_Count;
 
     Item &item = m_Items[handle.m_Value];
     item.m_Next = m_FreeListIndex;
-    m_FreeListIndex = handle.m_Value;
+    m_FreeListIndex = static_cast<uint32_t>(handle.m_Value);
 
 #if VALIDATE_HANDLES
     ++item.m_Handle.m_Generation; // Bump generation so any remaining handle copy is invalidated
 #endif
 
-    return item.m_Handle.m_Value;
+    return static_cast<uint32_t>(item.m_Handle.m_Value);
 }
 
 uint32_t IndexFreeList::Get(const Handle &handle) const
 {
-    assert(ValidateHandle(handle));
+    LWGL_ASSERT(ValidateHandle(handle), "IndexFreeList::Get: Invalid handle.");
     Item &item = m_Items[handle.m_Value];
-    return item.m_Handle.m_Value;
+    return static_cast<uint32_t>(item.m_Handle.m_Value);
 }
 
 void IndexFreeList::Update(const Handle &handle, uint32_t index)
 {
-    assert(ValidateHandle(handle));
+    LWGL_ASSERT(ValidateHandle(handle), "IndexFreeList::Update: Invalid handle.");
     Item &item = m_Items[handle.m_Value];
     item.m_Handle.m_Value = index;
 }

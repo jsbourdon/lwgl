@@ -58,3 +58,13 @@ void DestroyCommandQueue(CommandQueueHandle hdl)
     ID3D11DeviceContext *pContext = reinterpret_cast<ID3D11DeviceContext*>(hdl);
     pContext->Release();
 }
+
+CommandBufferHandle CreateCommandBuffer(lwgl::GpuDeviceHandle hdl, lwgl::resources::CommandBufferType type)
+{
+    return Handle_NULL;
+}
+
+void DestroyCommandBuffer(lwgl::CommandBufferHandle hdl)
+{
+    // Nothing to do under D3D11
+}

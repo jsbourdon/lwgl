@@ -12,6 +12,31 @@ void lwgl::memory::ForceGlobalAllocations(bool force)
     s_ForceGlobalAlloc = force;
 }
 
+void* lwgl::memory::AlignedAlloc(size_t size, size_t /*alignment*/)
+{
+    // Aligned on page size by default
+    return ThreadHeapAllocator::Allocate(size);
+}
+
+void* lwgl::memory::AlignedRealloc(void *pMemory, size_t newSize, size_t /*alignment*/)
+{
+    // Aligned on page size by default
+    void *pNewAddr = ThreadHeapAllocator::Allocate(newSize);
+
+    size_t originalSize = ThreadHeapAllocator::AllocationSize(pMemory);
+    size_t copySize = std::min(originalSize, newSize);
+
+    memcpy(pNewAddr, pMemory, copySize);
+    ThreadHeapAllocator::Release(pMemory);
+
+    return pNewAddr;
+}
+
+void lwgl::memory::FreeAlignedAlloc(void *pAlloc)
+{
+    ThreadHeapAllocator::Release(pAlloc);
+}
+
 void* operator new(std::size_t count)
 {
     if (s_ForceGlobalAlloc)

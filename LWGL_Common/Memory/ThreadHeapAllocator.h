@@ -17,6 +17,7 @@ namespace lwgl
             static void     Init(size_t heapByteSize, size_t initialCommitByteSize);
             static void*    Allocate(size_t byteSize);
             static void     Release(void *pMemory);
+            static size_t   AllocationSize(void *pMemory);
             static void     Defrag();
 
         private:
@@ -29,6 +30,7 @@ namespace lwgl
 
             void*       AllocateInternal(size_t byteSize);
             void        ReleaseInternal(void *pMemory);
+            size_t      AllocationSizeInternal(void *pMemory);
             void        DefragInternal();
 
             void        CommitMorePages(uint32_t pageCount);

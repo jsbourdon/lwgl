@@ -42,5 +42,23 @@ namespace lwgl
             float rcpFar = 1.0f / farClip;
             return Vector2 { (rcpFar - rcpNear), rcpNear };
         }
+
+        template<typename T>
+        inline constexpr T Log2(T value)
+        {
+            return (value < 2) ? 1 : Log2(value >> 1);
+        }
+
+        template<typename T>
+        inline constexpr T CountTrailingZeros(T value)
+        {
+            return Log2(value & -value);
+        }
+
+        template<typename T>
+        inline constexpr T CountLeadingZeros(T value)
+        {
+            return sizeof(value) * 8 - CountTrailingZeros(0x01 << Log2(value));
+        }
     }
 }

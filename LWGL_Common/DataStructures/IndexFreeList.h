@@ -40,10 +40,10 @@ namespace lwgl
 
             bool ValidateHandle(const Handle& handle) const;
 
-            Item* m_Items { nullptr };
-            uint32_t m_Capacity;
-            uint32_t m_Count { 0 };
-            uint32_t m_FreeListIndex { 0 };
+            Item*       m_Items { nullptr };
+            uint32_t    m_Capacity;
+            uint32_t    m_Count { 0 };
+            uint32_t    m_FreeListIndex { 0 };
         };
     }
 }

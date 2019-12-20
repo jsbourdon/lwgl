@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "IndexFreeList.h"
+#include "LWGL_Common/Resources/ResourceHandles.h"
 
 namespace lwgl
 {
@@ -15,7 +16,7 @@ namespace lwgl
         // To keep a stable access to objects in the array, `Handle` are 
         // used.
         //
-        // Every operation in this list is in O(1)
+        // All operations in this list are in O(1)
         //
         template<typename T>
         class PackedArray
@@ -45,14 +46,15 @@ namespace lwgl
     }
 }
 
+using namespace lwgl;
 using namespace lwgl::data;
 
 template<typename T>
 PackedArray<T>::PackedArray(uint32_t capacity)
 {
     m_Lookup.Init(capacity);
-    m_LookupHandles = static_cast<Handle*>(lwgl::core::AlignedAlloc(capacity, alignof(Handle)));
-    m_Values = static_cast<T*>(lwgl::core::AlignedAlloc(capacity, alignof(T)));
+    m_LookupHandles = static_cast<Handle*>(lwgl::memory::AlignedAlloc(capacity, alignof(Handle)));
+    m_Values = static_cast<T*>(lwgl::memory::AlignedAlloc(capacity, alignof(T)));
 }
 
 template<typename T>
@@ -84,8 +86,8 @@ PackedArray<T>& PackedArray<T>::operator=(PackedArray<T> &&other) noexcept
 template<typename T>
 PackedArray<T>::~PackedArray()
 {
-    lwgl::core::FreeAlignedAlloc(m_Values);
-    lwgl::core::FreeAlignedAlloc(m_LookupHandles);
+    lwgl::memory::FreeAlignedAlloc(m_Values);
+    lwgl::memory::FreeAlignedAlloc(m_LookupHandles);
 }
 
 template<typename T>

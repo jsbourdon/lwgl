@@ -58,7 +58,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     WindowHandle hwnd = factory::CreateNewWindow(reinterpret_cast<lwgl::AppHandle>(hInstance), 1920, 1080);
     factory::DisplayWindow(hwnd);
 
-    GpuDevice *pDevice = GpuDevice::CreateDevice(GfxPlatform::D3D11);
+    LibraryLoader::Init(GfxPlatform::D3D11);
+    GpuDevice *pDevice = GpuDevice::CreateDevice();
     
     while (!lwgl::events::PumpMessages())
     {

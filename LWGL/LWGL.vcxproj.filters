@@ -75,6 +75,9 @@
     <ClInclude Include="Commands\GfxCommandList.h">
       <Filter>Source Files\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Commands\GfxCommandQueue.h">
+      <Filter>Source Files\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -93,6 +96,9 @@
       <Filter>Source Files\Device</Filter>
     </ClCompile>
     <ClCompile Include="Commands\GfxCommandList.cpp">
+      <Filter>Source Files\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="Commands\GfxCommandQueue.cpp">
       <Filter>Source Files\Commands</Filter>
     </ClCompile>
   </ItemGroup>

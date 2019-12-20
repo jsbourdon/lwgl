@@ -10,5 +10,13 @@ namespace lwgl
             Compute,
             Copy
         };
+
+        enum class CommandBufferType
+        {
+            Graphic,
+            GraphicBundle,
+            Compute,
+            Copy
+        };
     }
 }

@@ -42,6 +42,11 @@ void ThreadHeapAllocator::Release(void *pMemory)
     s_Allocator.ReleaseInternal(pMemory);
 }
 
+size_t ThreadHeapAllocator::AllocationSize(void *pMemory)
+{
+    return s_Allocator.AllocationSizeInternal(pMemory);
+}
+
 void ThreadHeapAllocator::Defrag()
 {
     s_Allocator.DefragInternal();
@@ -100,6 +105,12 @@ void ThreadHeapAllocator::ReleaseInternal(void *pMemory)
     FreeRange &range = m_pFreeRanges[m_FreeRangesCount++];
     range.m_Index = pageIndex;
     range.m_Count = m_pPages[pageIndex];
+}
+
+size_t ThreadHeapAllocator::AllocationSizeInternal(void *pMemory)
+{
+    uint32_t pageIndex = AddressToPageIndex(pMemory);
+    return m_pPages[pageIndex] * m_SystemPageSize;
 }
 
 void ThreadHeapAllocator::DefragInternal()
