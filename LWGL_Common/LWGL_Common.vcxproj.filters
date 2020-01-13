@@ -22,38 +22,8 @@
     <Filter Include="Source Files\Commands">
       <UniqueIdentifier>{e8fd3a56-ab4f-4a3b-8748-098c37957938}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\DataStructures">
-      <UniqueIdentifier>{83f718a9-d2d8-459a-a0f5-45e0bf23813e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{4ecda35b-d5a3-477c-83ed-cace5521a7d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Threading">
-      <UniqueIdentifier>{77aded16-eb80-4063-b69d-397726ca46b6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Math">
-      <UniqueIdentifier>{93482598-3393-4e4d-b3ce-b4653ba08f4f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Memory">
-      <UniqueIdentifier>{ca484395-e3d1-49cb-91e5-8505365b7112}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SystemInfo">
-      <UniqueIdentifier>{2463273c-671f-4acf-9f93-404072fff56d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\ExternalFunctions">
       <UniqueIdentifier>{248d732d-a5cf-451b-9966-54e95db202a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SystemInfo\Implementations">
-      <UniqueIdentifier>{5c5c63a2-6820-4a2d-98bc-bc28dfb04289}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SystemInfo\Implementations\Windows">
-      <UniqueIdentifier>{f1029352-a384-4ffc-8ad1-0a33c8f0780a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Memory\Implementations">
-      <UniqueIdentifier>{ae64aff2-a7da-482b-be7d-62c60f0d46b5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Memory\Implementations\Windows">
-      <UniqueIdentifier>{a8b81c4e-a14b-4a28-b1ed-c50f17ba6e41}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Synchronization">
       <UniqueIdentifier>{77ed0860-ca18-44da-9cd1-af86d54fd85b}</UniqueIdentifier>
@@ -111,50 +81,14 @@
     <ClInclude Include="Commands\GfxCommandPacket.h">
       <Filter>Source Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="DataStructures\PackedArray.h">
-      <Filter>Source Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Globals.h">
-      <Filter>Source Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="DataStructures\IndexFreeList.h">
-      <Filter>Source Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="Threading\WorkerThread.h">
-      <Filter>Source Files\Threading</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Math.h">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemInfo\SystemInfo.h">
-      <Filter>Source Files\SystemInfo</Filter>
-    </ClInclude>
-    <ClInclude Include="Memory\Memory.h">
-      <Filter>Source Files\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="ExternalFunctions\ExternalFunctions.h">
       <Filter>Source Files\ExternalFunctions</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\Defines.h">
-      <Filter>Source Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="Resources\ResourceTypes.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Memory\FrameMemoryAllocator.h">
-      <Filter>Source Files\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="Commands\GfxCommandBuffer.h">
       <Filter>Source Files\Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="Memory\VirtualMemoryAllocator.h">
-      <Filter>Source Files\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="Memory\ThreadHeapAllocator.h">
-      <Filter>Source Files\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="Memory\RingBuffer.h">
-      <Filter>Source Files\Memory</Filter>
     </ClInclude>
     <ClInclude Include="Descriptors\PrimitiveTopology.h">
       <Filter>Source Files\Descriptors</Filter>
@@ -173,34 +107,5 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DataStructures\IndexFreeList.cpp">
-      <Filter>Source Files\DataStructures</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\FrameMemoryAllocator.cpp">
-      <Filter>Source Files\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="SystemInfo\SystemInfo.cpp">
-      <Filter>Source Files\SystemInfo</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\VirtualMemoryAllocator.cpp">
-      <Filter>Source Files\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\Memory.cpp">
-      <Filter>Source Files\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\ThreadHeapAllocator.cpp">
-      <Filter>Source Files\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="Memory\RingBuffer.cpp">
-      <Filter>Source Files\Memory</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SystemInfo\Implementations\Windows\SystemInfo.inl">
-      <Filter>Source Files\SystemInfo\Implementations\Windows</Filter>
-    </None>
-    <None Include="Memory\Implementations\Windows\VirtualMemoryAllocator.inl">
-      <Filter>Source Files\Memory\Implementations\Windows</Filter>
-    </None>
   </ItemGroup>
 </Project>

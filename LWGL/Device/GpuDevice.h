@@ -1,14 +1,14 @@
 #pragma once
 
 #include "LWGL/Library/LibraryLoader.h"
-#include "LWGL_Common/Memory/Memory.h"
-#include "LWGL_Common/Core/Defines.h"
+#include "Salvation_Common/Memory/Memory.h"
+#include "Salvation_Common/Core/Defines.h"
+#include "Salvation_Common/DataStructures/PackedArray.h"
 #include "LWGL/Commands/GfxCommandList.h"
-#include "LWGL_Common/DataStructures/PackedArray.h"
 
+using namespace salvation::memory;
 using namespace lwgl::external;
 using namespace lwgl::resources;
-using namespace lwgl::memory;
 using namespace lwgl::command;
 
 namespace lwgl

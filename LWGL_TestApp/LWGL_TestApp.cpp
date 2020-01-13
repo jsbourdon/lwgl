@@ -8,17 +8,17 @@
 #include "LWGL/WindowFactory/WindowFactory.h"
 #include "LWGL/Events/MessagePump.h"
 #include "LWGL_Common/Resources/ResourceHandles.h"
-#include "LWGL_Common/SystemInfo/SystemInfo.h"
-#include "LWGL_Common/Memory/VirtualMemoryAllocator.h"
-#include "LWGL_Common/Memory/ThreadHeapAllocator.h"
-#include "LWGL_Common/Threading/WorkerThread.h"
+#include "Salvation_Common/SystemInfo/SystemInfo.h"
+#include "Salvation_Common/Memory/VirtualMemoryAllocator.h"
+#include "Salvation_Common/Memory/ThreadHeapAllocator.h"
+#include "Salvation_Common/Threading/WorkerThread.h"
 #include "LWGL/Device/GfxPlatform.h"
 #include "LWGL/Device/GpuDevice.h"
 
 using namespace lwgl;
 using namespace lwgl::external;
-using namespace lwgl::memory;
-using namespace lwgl::threading;
+using namespace salvation::memory;
+using namespace salvation::threading;
 using namespace std::chrono_literals;
 
 static int WorkerFunction(int iterationCount)

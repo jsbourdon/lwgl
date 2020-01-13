@@ -265,6 +265,9 @@
     <ProjectReference Include="..\LWGL\LWGL.vcxproj">
       <Project>{98dfea95-03b7-4815-9c03-c996bd969274}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\Salvation_Common\Salvation_Common.vcxproj">
+      <Project>{47ba147b-3811-44d8-acf8-c8cf87880980}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

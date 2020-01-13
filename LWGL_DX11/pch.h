@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <d3d11.h>
 
-#include "LWGL_Common/Core/Defines.h"
-#include "LWGL_Common/Resources/ResourceHandles.h"
+#include "Salvation_Common/Core/Defines.h"
+#include "Salvation_Common/Handle/Handle.h"
 
 #endif //PCH_H

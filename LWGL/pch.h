@@ -12,6 +12,6 @@
 
 #include <cstdint>
 #include "LWGL_Common/Resources/ResourceHandles.h"
-#include "LWGL_Common/Core/Defines.h"
+#include "Salvation_Common/Core/Defines.h"
 
 #endif //PCH_H

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LWGL_Common/Core/Defines.h"
+#include "Salvation_Common/Core/Defines.h"
 #include "LWGL_Common/Resources/ResourceHandles.h"
 #include "LWGL_Common/Commands/GfxCommandBuffer.h"
 

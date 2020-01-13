@@ -2,9 +2,9 @@
 
 #include "LWGL_Common/Commands/GfxCommandBuffer.h"
 #include "LWGL_Common/Sync/Barrier.h"
-#include "LWGL_Common/Memory/FrameMemoryAllocator.h"
+#include "Salvation_Common/Memory/FrameMemoryAllocator.h"
 
-using namespace lwgl::memory;
+using namespace salvation::memory;
 using namespace lwgl::command;
 using namespace lwgl::sync;
 

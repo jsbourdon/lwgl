@@ -33,7 +33,7 @@ GpuDeviceHandle CreateGfxDevice()
             &pDevice, 
             nullptr, 
             nullptr),
-        lwgl::Handle_NULL);
+        salvation::Handle_NULL);
 
     return reinterpret_cast<GpuDeviceHandle>(pDevice);
 }

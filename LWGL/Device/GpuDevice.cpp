@@ -2,11 +2,11 @@
 #include "GpuDevice.h"
 #include "GfxPlatform.h"
 #include "LWGL/Library/LibraryLoader.h"
-#include "LWGL_Common/Memory/ThreadHeapAllocator.h"
+#include "Salvation_Common/Memory/ThreadHeapAllocator.h"
 
 using namespace lwgl;
 using namespace lwgl::external;
-using namespace lwgl::memory;
+using namespace salvation::memory;
 
 GpuDevice::GpuDevice()
     : m_CmdBuffers(s_MaxCmdBufferCount)
@@ -47,7 +47,7 @@ void GpuDevice::DestroyDevice(GpuDevice *pDevice)
 
 CommandQueueHandle GpuDevice::CreateCommandQueue(CommandQueueType type)
 {
-    LWGL_ASSERT(type == CommandQueueType::Graphic, "Unsupported Command Queue type");
+    SALVATION_ASSERT(type == CommandQueueType::Graphic, "Unsupported Command Queue type");
     return m_LibFunctions.CreateCommandQueue(m_DeviceHandle, type);
 }
 
