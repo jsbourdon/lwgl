@@ -4,3 +4,6 @@
 [submodule "3rd/DirectXMath"]
 	path = 3rd/DirectXMath
 	url = https://github.com/microsoft/DirectXMath.git
+[submodule "Salvation_Common"]
+	path = Salvation_Common
+	url = https://github.com/jsbourdon/salvation_common.git
