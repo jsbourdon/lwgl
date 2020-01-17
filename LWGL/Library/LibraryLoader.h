@@ -56,7 +56,7 @@ namespace lwgl
         private:
 
             template<typename T>
-            inline static T LoadFunction(const char *pFnctName);
+            inline static void LoadFunction(const char *pFnctName, T &fnctPtr);
 
             // Platform-dependent implementations required.
             // Look into `Library/Implementations/<platform>.inl`

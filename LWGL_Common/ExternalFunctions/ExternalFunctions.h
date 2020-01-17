@@ -10,8 +10,6 @@ namespace lwgl
 {
     namespace external
     {
-        typedef bool(*InitLibFnctPtr)();
-
         namespace device
         {
             typedef GpuDeviceHandle(*CreateGfxDeviceFnctPtr)();

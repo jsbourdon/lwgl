@@ -7,8 +7,6 @@
 #include "Salvation_Common/Math/Math.h"
 #include "Salvation_Common/Handle/Handle.h"
 
-#define VALIDATE_HANDLES _DEBUG
-
 using namespace salvation;
 
 namespace lwgl

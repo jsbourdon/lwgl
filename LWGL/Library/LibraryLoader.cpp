@@ -88,9 +88,9 @@ void LibraryLoader::Shutdown()
 }
 
 template<typename T>
-T LibraryLoader::LoadFunction(const char *pFnctName)
+void LibraryLoader::LoadFunction(const char *pFnctName, T &fnctPtr)
 {
-    return reinterpret_cast<T>(GetFunctionAddress(s_PlatformLibHdl, pFnctName));
+    fnctPtr = reinterpret_cast<T>(GetFunctionAddress(s_PlatformLibHdl, pFnctName));
 }
 
 GpuDeviceFunctions LibraryLoader::LoadGpuDeviceFunctions()
@@ -98,12 +98,12 @@ GpuDeviceFunctions LibraryLoader::LoadGpuDeviceFunctions()
     GpuDeviceFunctions functions;
     functions.m_LibHandle = s_PlatformLibHdl;
     
-    functions.m_CreateGfxDeviceFnctPtr = LoadFunction<CreateGfxDeviceFnctPtr>("CreateGfxDevice");
-    functions.m_DestroyGfxDeviceFnctPtr = LoadFunction<DestroyGfxDeviceFnctPtr>("DestroyGfxDevice");
-    functions.m_CreateCmdQueueFnctPtr = LoadFunction<CreateCommandQueueFnctPtr>("CreateCommandQueue");
-    functions.m_DestroyCmdQueueFnctPtr = LoadFunction<DestroyCommandQueueFnctPtr>("DestroyCommandQueue");
-    functions.m_CreateCommandBufferFnctPtr = LoadFunction<CreateCommandBufferFnctPtr>("CreateCommandBuffer");
-    functions.m_DestroyCommandBufferFnctPtr = LoadFunction<DestroyCommandBufferFnctPtr>("DestroyCommandBuffer");
+    LoadFunction("CreateGfxDevice", functions.m_CreateGfxDeviceFnctPtr);
+    LoadFunction("DestroyGfxDevice", functions.m_DestroyGfxDeviceFnctPtr);
+    LoadFunction("CreateCommandQueue", functions.m_CreateCmdQueueFnctPtr);
+    LoadFunction("DestroyCommandQueue", functions.m_DestroyCmdQueueFnctPtr);
+    LoadFunction("CreateCommandBuffer", functions.m_CreateCommandBufferFnctPtr);
+    LoadFunction("DestroyCommandBuffer", functions.m_DestroyCommandBufferFnctPtr);
 
     return functions;
 }
@@ -113,9 +113,9 @@ CommandQueueFunctions LibraryLoader::LoadCommandQueueFunctions()
     CommandQueueFunctions functions;
     functions.m_LibHandle = s_PlatformLibHdl;
 
-    functions.m_ExecuteCmdBuffersFnctPtr = LoadFunction<ExecuteCommandBuffersFnctPtr>("ExecuteCommandBuffers");
-    functions.m_SignalFenceFnctPtr = LoadFunction<SignalFenceFnctPtr>("SignalFence");
-    functions.m_WaitForFenceFnctPtr = LoadFunction<WaitForFenceFnctPtr>("WaitForFence");
+    LoadFunction("ExecuteCommandBuffers", functions.m_ExecuteCmdBuffersFnctPtr);
+    LoadFunction("SignalFence", functions.m_SignalFenceFnctPtr);
+    LoadFunction("WaitForFence", functions.m_WaitForFenceFnctPtr);
 
     return functions;
 }
