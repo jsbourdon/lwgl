@@ -6,6 +6,7 @@
 #include "Core/IRenderer.h"
 #include "Core/GfxDevice.h"
 #include "Core/GfxDeviceContext.h"
+#include "Core/Globals.h"
 #include "Resources/Mesh.h"
 #include "Resources/Shader.h"
 #include "Resources/Buffer.h"

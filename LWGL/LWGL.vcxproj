@@ -90,7 +90,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -99,6 +99,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)bin\$(PlatformToolset)\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DXUT.lib;DXUTOpt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -107,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -116,6 +120,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)bin\$(PlatformToolset)\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DXUT.lib;DXUTOpt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -126,7 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -137,6 +145,10 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)bin\$(PlatformToolset)\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DXUT.lib;DXUTOpt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -147,7 +159,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWarningAsError>true</TreatWarningAsError>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -158,120 +170,84 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(ProjectDir)bin\$(PlatformToolset)\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DXUT.lib;DXUTOpt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Core\Constants.h" />
-    <ClInclude Include="Core\GfxDevice.h" />
-    <ClInclude Include="Core\GfxDeviceContext.h" />
-    <ClInclude Include="Core\Globals.h" />
-    <ClInclude Include="Core\IRenderer.h" />
-    <ClInclude Include="Core\Macros.h" />
-    <ClInclude Include="Core\RefCountedObject.h" />
-    <ClInclude Include="Core\RenderCore.h" />
-    <ClInclude Include="Core\TypeDefs.h" />
-    <ClInclude Include="Debugging\DebuggingFeatures.h" />
-    <ClInclude Include="Debugging\DebugResourceManager.h" />
-    <ClInclude Include="Descriptors\BlendStateDescriptor.h" />
-    <ClInclude Include="Descriptors\BufferDescriptor.h" />
-    <ClInclude Include="Descriptors\ClearDescriptor.h" />
-    <ClInclude Include="Descriptors\DepthStencilStateDescriptor.h" />
-    <ClInclude Include="Descriptors\InputLayoutDescriptor.h" />
-    <ClInclude Include="Descriptors\PipelineDescriptor.h" />
-    <ClInclude Include="Descriptors\PixelFormats.h" />
-    <ClInclude Include="Descriptors\RasterizerStateDescriptor.h" />
-    <ClInclude Include="Descriptors\ResourceUsage.h" />
-    <ClInclude Include="Descriptors\SamplerStateDescriptor.h" />
-    <ClInclude Include="Descriptors\ShaderDescriptor.h" />
-    <ClInclude Include="Descriptors\SurfaceDescriptor.h" />
-    <ClInclude Include="Descriptors\TextureDescriptor.h" />
-    <ClInclude Include="framework.h" />
-    <ClInclude Include="Inputs\IInputReceiver.h" />
-    <ClInclude Include="Pipeline\GfxPipeline.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="Resources\BlendState.h" />
-    <ClInclude Include="Resources\Buffer.h" />
-    <ClInclude Include="Resources\DepthStencilState.h" />
-    <ClInclude Include="Resources\RasterizerState.h" />
-    <ClInclude Include="Resources\RenderTarget.h" />
-    <ClInclude Include="Resources\SamplerState.h" />
-    <ClInclude Include="Resources\InputLayout.h" />
-    <ClInclude Include="Resources\Mesh.h" />
-    <ClInclude Include="Resources\Shader.h" />
-    <ClInclude Include="Resources\Texture.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="Resources\TextureArray.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="Utilities\Camera.h" />
-    <ClInclude Include="Utilities\FixedCamera.h" />
+    <ClInclude Include="include\Core\Constants.h" />
+    <ClInclude Include="include\Core\GfxDevice.h" />
+    <ClInclude Include="include\Core\GfxDeviceContext.h" />
+    <ClInclude Include="include\Core\Globals.h" />
+    <ClInclude Include="include\Core\IRenderer.h" />
+    <ClInclude Include="include\Core\Macros.h" />
+    <ClInclude Include="include\Core\RefCountedObject.h" />
+    <ClInclude Include="include\Core\RenderCore.h" />
+    <ClInclude Include="include\Core\TypeDefs.h" />
+    <ClInclude Include="include\Debugging\DebuggingFeatures.h" />
+    <ClInclude Include="include\Debugging\DebugResourceManager.h" />
+    <ClInclude Include="include\Descriptors\BlendStateDescriptor.h" />
+    <ClInclude Include="include\Descriptors\BufferDescriptor.h" />
+    <ClInclude Include="include\Descriptors\ClearDescriptor.h" />
+    <ClInclude Include="include\Descriptors\DepthStencilStateDescriptor.h" />
+    <ClInclude Include="include\Descriptors\InputLayoutDescriptor.h" />
+    <ClInclude Include="include\Descriptors\PipelineDescriptor.h" />
+    <ClInclude Include="include\Descriptors\PixelFormats.h" />
+    <ClInclude Include="include\Descriptors\RasterizerStateDescriptor.h" />
+    <ClInclude Include="include\Descriptors\ResourceUsage.h" />
+    <ClInclude Include="include\Descriptors\SamplerStateDescriptor.h" />
+    <ClInclude Include="include\Descriptors\ShaderDescriptor.h" />
+    <ClInclude Include="include\Descriptors\SurfaceDescriptor.h" />
+    <ClInclude Include="include\Descriptors\TextureDescriptor.h" />
+    <ClInclude Include="include\Inputs\IInputReceiver.h" />
+    <ClInclude Include="include\Pipeline\GfxPipeline.h" />
+    <ClInclude Include="include\Resources\BlendState.h" />
+    <ClInclude Include="include\Resources\Buffer.h" />
+    <ClInclude Include="include\Resources\DepthStencilState.h" />
+    <ClInclude Include="include\Resources\RasterizerState.h" />
+    <ClInclude Include="include\Resources\RenderTarget.h" />
+    <ClInclude Include="include\Resources\SamplerState.h" />
+    <ClInclude Include="include\Resources\InputLayout.h" />
+    <ClInclude Include="include\Resources\Mesh.h" />
+    <ClInclude Include="include\Resources\Shader.h" />
+    <ClInclude Include="include\Resources\Texture.h" />
+    <ClInclude Include="include\pch.h" />
+    <ClInclude Include="include\Resources\TextureArray.h" />
+    <ClInclude Include="include\Utilities\Camera.h" />
+    <ClInclude Include="include\Utilities\FixedCamera.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core\GfxDevice.cpp" />
-    <ClCompile Include="Core\GfxDeviceContext.cpp" />
-    <ClCompile Include="Core\Globals.cpp" />
-    <ClCompile Include="Core\RenderCore.cpp" />
-    <ClCompile Include="Debugging\DebuggingFeatures.cpp" />
-    <ClCompile Include="Debugging\DebugResourceManager.cpp" />
-    <ClCompile Include="pch.cpp">
+    <ClCompile Include="source\Core\GfxDevice.cpp" />
+    <ClCompile Include="source\Core\GfxDeviceContext.cpp" />
+    <ClCompile Include="source\Core\Globals.cpp" />
+    <ClCompile Include="source\Core\RenderCore.cpp" />
+    <ClCompile Include="source\Debugging\DebuggingFeatures.cpp" />
+    <ClCompile Include="source\Debugging\DebugResourceManager.cpp" />
+    <ClCompile Include="source\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Pipeline\GfxPipeline.cpp" />
-    <ClCompile Include="Resources\BlendState.cpp" />
-    <ClCompile Include="Resources\Buffer.cpp" />
-    <ClCompile Include="Resources\DepthStencilState.cpp" />
-    <ClCompile Include="Resources\InputLayout.cpp" />
-    <ClCompile Include="Resources\Mesh.cpp" />
-    <ClCompile Include="Resources\RasterizerState.cpp" />
-    <ClCompile Include="Resources\RenderTarget.cpp" />
-    <ClCompile Include="Resources\SamplerState.cpp" />
-    <ClCompile Include="Resources\Shader.cpp" />
-    <ClCompile Include="Resources\Texture.cpp" />
-    <ClCompile Include="Resources\TextureArray.cpp" />
-    <ClCompile Include="Utilities\Camera.cpp" />
-    <ClCompile Include="Utilities\FixedCamera.cpp" />
+    <ClCompile Include="source\Pipeline\GfxPipeline.cpp" />
+    <ClCompile Include="source\Resources\BlendState.cpp" />
+    <ClCompile Include="source\Resources\Buffer.cpp" />
+    <ClCompile Include="source\Resources\DepthStencilState.cpp" />
+    <ClCompile Include="source\Resources\InputLayout.cpp" />
+    <ClCompile Include="source\Resources\Mesh.cpp" />
+    <ClCompile Include="source\Resources\RasterizerState.cpp" />
+    <ClCompile Include="source\Resources\RenderTarget.cpp" />
+    <ClCompile Include="source\Resources\SamplerState.cpp" />
+    <ClCompile Include="source\Resources\Shader.cpp" />
+    <ClCompile Include="source\Resources\Texture.cpp" />
+    <ClCompile Include="source\Resources\TextureArray.cpp" />
+    <ClCompile Include="source\Utilities\Camera.cpp" />
+    <ClCompile Include="source\Utilities\FixedCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="LWGL.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="LWGL.ico" />
-    <Image Include="small.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\3rd\DXUT\Core\DXUT_2019_Win10.vcxproj">
-      <Project>{85344b7f-5aa0-4e12-a065-d1333d11f6ca}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\3rd\DXUT\Optional\DXUTOpt_2019_Win10.vcxproj">
-      <Project>{61b333c2-c4f7-4cc1-a9bf-83f6d95588eb}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Core\RefCountedObject.inl" />
-    <None Include="InlinedShaders\FullScreenTriangleVS.hlsli">
-      <FileType>Document</FileType>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">VSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</EntryPointName>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ObjectFileOutput>
-    </None>
+    <None Include="include\Core\RefCountedObject.inl" />
+    <None Include="include\InlinedShaders\FullScreenTriangleVS.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

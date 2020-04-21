@@ -5,14 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{1c345687-9792-455e-9484-7dab03f88d2a}</UniqueIdentifier>
     </Filter>
@@ -39,220 +31,198 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="framework.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\IRenderer.h">
+    <ClInclude Include="include\Core\IRenderer.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\RenderCore.h">
+    <ClInclude Include="include\Core\RenderCore.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\GfxDevice.h">
+    <ClInclude Include="include\Core\GfxDevice.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\GfxDeviceContext.h">
+    <ClInclude Include="include\Core\GfxDeviceContext.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Mesh.h">
+    <ClInclude Include="include\Resources\Mesh.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Pipeline\GfxPipeline.h">
+    <ClInclude Include="include\Pipeline\GfxPipeline.h">
       <Filter>Source Files\Pipeline</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\PipelineDescriptor.h">
+    <ClInclude Include="include\Descriptors\PipelineDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\InputLayoutDescriptor.h">
+    <ClInclude Include="include\Descriptors\InputLayoutDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Shader.h">
+    <ClInclude Include="include\Resources\Shader.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Macros.h">
+    <ClInclude Include="include\Core\Macros.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\BlendStateDescriptor.h">
+    <ClInclude Include="include\Descriptors\BlendStateDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\BlendState.h">
+    <ClInclude Include="include\Resources\BlendState.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\ShaderDescriptor.h">
+    <ClInclude Include="include\Descriptors\ShaderDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\PixelFormats.h">
+    <ClInclude Include="include\Descriptors\PixelFormats.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\InputLayout.h">
+    <ClInclude Include="include\Resources\InputLayout.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\DepthStencilStateDescriptor.h">
+    <ClInclude Include="include\Descriptors\DepthStencilStateDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\DepthStencilState.h">
+    <ClInclude Include="include\Resources\DepthStencilState.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\BufferDescriptor.h">
+    <ClInclude Include="include\Descriptors\BufferDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Buffer.h">
+    <ClInclude Include="include\Resources\Buffer.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\Camera.h">
+    <ClInclude Include="include\Utilities\Camera.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="Core\TypeDefs.h">
+    <ClInclude Include="include\Core\TypeDefs.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Constants.h">
+    <ClInclude Include="include\Core\Constants.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\SamplerStateDescriptor.h">
+    <ClInclude Include="include\Descriptors\SamplerStateDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\SamplerState.h">
+    <ClInclude Include="include\Resources\SamplerState.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\RasterizerStateDescriptor.h">
+    <ClInclude Include="include\Descriptors\RasterizerStateDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\RasterizerState.h">
+    <ClInclude Include="include\Resources\RasterizerState.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\ClearDescriptor.h">
+    <ClInclude Include="include\Descriptors\ClearDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Core\RefCountedObject.h">
+    <ClInclude Include="include\Core\RefCountedObject.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Inputs\IInputReceiver.h">
+    <ClInclude Include="include\Inputs\IInputReceiver.h">
       <Filter>Source Files\Inputs</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\RenderTarget.h">
+    <ClInclude Include="include\Resources\RenderTarget.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Debugging\DebugResourceManager.h">
+    <ClInclude Include="include\Debugging\DebugResourceManager.h">
       <Filter>Source Files\Debugging</Filter>
     </ClInclude>
-    <ClInclude Include="Debugging\DebuggingFeatures.h">
+    <ClInclude Include="include\Debugging\DebuggingFeatures.h">
       <Filter>Source Files\Debugging</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\SurfaceDescriptor.h">
+    <ClInclude Include="include\Descriptors\SurfaceDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Core\Globals.h">
+    <ClInclude Include="include\Core\Globals.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\TextureDescriptor.h">
+    <ClInclude Include="include\Descriptors\TextureDescriptor.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Descriptors\ResourceUsage.h">
+    <ClInclude Include="include\Descriptors\ResourceUsage.h">
       <Filter>Source Files\Descriptors</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\Texture.h">
+    <ClInclude Include="include\Resources\Texture.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Resources\TextureArray.h">
+    <ClInclude Include="include\Resources\TextureArray.h">
       <Filter>Source Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\FixedCamera.h">
+    <ClInclude Include="include\Utilities\FixedCamera.h">
       <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core\RenderCore.cpp">
+    <ClCompile Include="source\Core\RenderCore.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\GfxDevice.cpp">
+    <ClCompile Include="source\Core\GfxDevice.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Core\GfxDeviceContext.cpp">
+    <ClCompile Include="source\Core\GfxDeviceContext.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\Mesh.cpp">
+    <ClCompile Include="source\Resources\Mesh.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\Shader.cpp">
+    <ClCompile Include="source\Resources\Shader.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\BlendState.cpp">
+    <ClCompile Include="source\Resources\BlendState.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\InputLayout.cpp">
+    <ClCompile Include="source\Resources\InputLayout.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Pipeline\GfxPipeline.cpp">
+    <ClCompile Include="source\Pipeline\GfxPipeline.cpp">
       <Filter>Source Files\Pipeline</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\DepthStencilState.cpp">
+    <ClCompile Include="source\Resources\DepthStencilState.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\Buffer.cpp">
+    <ClCompile Include="source\Resources\Buffer.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities\Camera.cpp">
+    <ClCompile Include="source\Utilities\Camera.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\SamplerState.cpp">
+    <ClCompile Include="source\Resources\SamplerState.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\RasterizerState.cpp">
+    <ClCompile Include="source\Resources\RasterizerState.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\RenderTarget.cpp">
+    <ClCompile Include="source\Resources\RenderTarget.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Debugging\DebugResourceManager.cpp">
+    <ClCompile Include="source\Debugging\DebugResourceManager.cpp">
       <Filter>Source Files\Debugging</Filter>
     </ClCompile>
-    <ClCompile Include="Debugging\DebuggingFeatures.cpp">
+    <ClCompile Include="source\Debugging\DebuggingFeatures.cpp">
       <Filter>Source Files\Debugging</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\Texture.cpp">
+    <ClCompile Include="source\Resources\Texture.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Core\Globals.cpp">
+    <ClCompile Include="source\Core\Globals.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Resources\TextureArray.cpp">
+    <ClCompile Include="source\Resources\TextureArray.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities\FixedCamera.cpp">
+    <ClCompile Include="source\Utilities\FixedCamera.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="LWGL.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="LWGL.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Core\RefCountedObject.inl">
-      <Filter>Source Files\Core</Filter>
-    </None>
-    <None Include="InlinedShaders\FullScreenTriangleVS.hlsli">
+    <None Include="include\InlinedShaders\FullScreenTriangleVS.hlsli">
       <Filter>Source Files\InlinedShaders</Filter>
+    </None>
+    <None Include="include\Core\RefCountedObject.inl">
+      <Filter>Source Files\Core</Filter>
     </None>
   </ItemGroup>
 </Project>
