@@ -519,15 +519,16 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
     Shader *pShader = new Shader();
 
     ShaderType type = desc.Type;
-    const wchar_t *filePath = desc.FilePath;
-    const char *code = desc.Code;
-    const char *entryPoint = desc.EntryPoint;
-    const char *debugName = desc.DebugName;
+    const wchar_t* filePath = desc.FilePath;
+    const wchar_t* bytecodeFilePath = desc.BytecodeFilePath;
+    const char* code = desc.Code;
+    const char* entryPoint = desc.EntryPoint;
+    const char* debugName = desc.DebugName;
 
     pShader->m_Type = type;
 
     // NULL shader
-    if (filePath == nullptr && code == nullptr)
+    if (filePath == nullptr && code == nullptr && bytecodeFilePath == nullptr)
     {
         return pShader;
     }
@@ -542,6 +543,10 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
         ID3DBlob* pErrorBuffer = nullptr;
         CHECK_HRESULT_RETURN_VALUE(D3DCompile(code, strlen(code), nullptr, nullptr, nullptr, entryPoint, 
             s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer, &pErrorBuffer), pShader);
+    }
+    else if (bytecodeFilePath != nullptr)
+    {
+        CHECK_HRESULT_RETURN_VALUE(D3DReadFileToBlob(bytecodeFilePath, &pShaderBuffer), pShader);
     }
     else
     {

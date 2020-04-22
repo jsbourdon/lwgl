@@ -15,6 +15,7 @@ namespace lwgl
         struct ShaderDescriptor
         {
             const wchar_t*  FilePath { nullptr };
+            const wchar_t*  BytecodeFilePath { nullptr };
             const char*     Code { nullptr };
             const char*     EntryPoint { nullptr };
             const char*     DebugName { nullptr };

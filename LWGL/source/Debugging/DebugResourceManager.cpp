@@ -14,7 +14,6 @@ DebugResourceManager::~DebugResourceManager()
 
 bool DebugResourceManager::Init(GfxNativeDevice *pDevice, GfxNativeDeviceContext *pContext)
 {
-    DXUTSetMediaSearchPath(L"..\\3rd\\DXUT\\Media\\");
     CHECK_HRESULT_RETURN_VALUE(m_DXUTRscManager.OnD3D11CreateDevice(pDevice, pContext), false);
     return true;
 }

@@ -29,6 +29,9 @@
     <Filter Include="Source Files\InlinedShaders">
       <UniqueIdentifier>{d15c2efc-2454-468b-bc16-ea581a208534}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Media">
+      <UniqueIdentifier>{42e7c53b-03ce-4071-ba0c-5d96381c8737}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\IRenderer.h">
@@ -148,9 +151,7 @@
     <ClInclude Include="include\Utilities\FixedCamera.h">
       <Filter>Source Files\Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
+    <ClInclude Include="include\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\Core\RenderCore.cpp">
@@ -192,9 +193,6 @@
     <ClCompile Include="source\Resources\RasterizerState.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="source\Resources\RenderTarget.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
@@ -216,6 +214,9 @@
     <ClCompile Include="source\Utilities\FixedCamera.cpp">
       <Filter>Source Files\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="source\pch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="include\InlinedShaders\FullScreenTriangleVS.hlsli">
@@ -224,5 +225,10 @@
     <None Include="include\Core\RefCountedObject.inl">
       <Filter>Source Files\Core</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="media\Font.dds">
+      <Filter>Media</Filter>
+    </Image>
   </ItemGroup>
 </Project>

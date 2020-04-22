@@ -7,8 +7,6 @@ using namespace resources;
 
 Shader::Shader()
     : base()
-    , m_pShaderBuffer(nullptr)
-    , m_Type(ShaderType::Unknonwn)
 {
 
 }
