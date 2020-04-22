@@ -546,11 +546,15 @@ Shader* GfxDevice::CreateShader(const ShaderDescriptor &desc)
     }
     else if (bytecodeFilePath != nullptr)
     {
-        CHECK_HRESULT_RETURN_VALUE(D3DReadFileToBlob(bytecodeFilePath, &pShaderBuffer), pShader);
+        wchar_t tmpFileName[1024];
+        CHECK_HRESULT_RETURN_VALUE(DXUTFindDXSDKMediaFileCch(tmpFileName, ARRAYSIZE(tmpFileName), bytecodeFilePath), pShader);
+        CHECK_HRESULT_RETURN_VALUE(D3DReadFileToBlob(tmpFileName, &pShaderBuffer), pShader);
     }
     else
     {
-        CHECK_HRESULT_RETURN_VALUE(DXUTCompileFromFile(filePath, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer), pShader);
+        wchar_t tmpFileName[1024];
+        CHECK_HRESULT_RETURN_VALUE(DXUTFindDXSDKMediaFileCch(tmpFileName, ARRAYSIZE(tmpFileName), filePath), pShader);
+        CHECK_HRESULT_RETURN_VALUE(DXUTCompileFromFile(tmpFileName, nullptr, entryPoint, s_ShaderModels[size_t(type)], dwShaderFlags, 0, &pShaderBuffer), pShader);
     }
 
     pShader->m_pShaderBuffer = pShaderBuffer;

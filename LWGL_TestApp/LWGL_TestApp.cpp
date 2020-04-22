@@ -83,12 +83,14 @@ public:
             pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Tangent, 0 });
 
             pipelineDesc.VertexShader.Type = ShaderType::VertexShader;
-            pipelineDesc.VertexShader.FilePath = L"BasicHLSL11_VS.hlsl";
+            //pipelineDesc.VertexShader.FilePath = L"BasicHLSL11_VS.hlsl";
+            pipelineDesc.VertexShader.BytecodeFilePath = L"BasicHLSL11_VS.cso";
             pipelineDesc.VertexShader.EntryPoint = "VSMain";
             pipelineDesc.VertexShader.DebugName = "BasicHLSL11_VS";
 
             pipelineDesc.FragmentShader.Type = ShaderType::FragmentShader;
-            pipelineDesc.FragmentShader.FilePath = L"BasicHLSL11_PS.hlsl";
+            //pipelineDesc.FragmentShader.FilePath = L"BasicHLSL11_PS.hlsl";
+            pipelineDesc.FragmentShader.BytecodeFilePath = L"BasicHLSL11_PS.cso";
             pipelineDesc.FragmentShader.EntryPoint = "PSMain";
             pipelineDesc.FragmentShader.DebugName = "BasicHLSL11_PS";
 
@@ -113,7 +115,8 @@ public:
             pipelineDesc.InputLayout.Elements.push_back({ InputLayoutSemantic::Position, 0 });
 
             pipelineDesc.VertexShader.Type = ShaderType::VertexShader;
-            pipelineDesc.VertexShader.FilePath = L"ShadowMap_VS.hlsl";
+            //pipelineDesc.VertexShader.FilePath = L"ShadowMap_VS.hlsl";
+            pipelineDesc.VertexShader.BytecodeFilePath = L"ShadowMap_VS.cso";
             pipelineDesc.VertexShader.EntryPoint = "VSMain";
             pipelineDesc.VertexShader.DebugName = "ShadowMap_VS";
 
@@ -140,7 +143,8 @@ public:
             pipelineDesc.VertexShader.FilePath = nullptr;
 
             pipelineDesc.FragmentShader.Type = ShaderType::FragmentShader;
-            pipelineDesc.FragmentShader.FilePath = L"Test.hlsl";
+            //pipelineDesc.FragmentShader.FilePath = L"Test.hlsl";
+            pipelineDesc.FragmentShader.BytecodeFilePath = L"Test.cso";
             pipelineDesc.FragmentShader.EntryPoint = "PSMain";
             pipelineDesc.FragmentShader.DebugName = "Test";
 
