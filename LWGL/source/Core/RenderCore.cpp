@@ -212,7 +212,7 @@ void RenderCore::InternalInit(wchar_t const *windowTitle, uint32_t windowWidth, 
     DXUTSetCallbackFrameMove(OnFrameMove, this);
     DXUTSetCallbackD3D11FrameRender(OnD3D11FrameRender, this);
 
-    DXUTInit(true, true, NULL); // Parse the command line, show msgboxes on error, no extra command line params
+    DXUTInit(true, false, NULL); // Parse the command line, show msgboxes on error, no extra command line params
     DXUTSetCursorSettings(true, true);
     DXUTCreateWindow(windowTitle);
 
